@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCourses — Case Study — Tanmay Padekar</title>
+<meta name="description" content="Redesigning RIT's Learning Management System to reduce student stress and improve academic workflows.">
+<script>
+  (function(){
+    try {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15140F; --paper:#F5F4F0; --signal:#FF5A1F; --moss:#4A6FA5; --stone:#8C8473;
+    --line: rgba(21,20,15,0.14);
+    --display: 'Space Grotesk', sans-serif; --body: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
+    --body-text: #43412F; --shadow-soft: rgba(21,20,15,0.03);
+    color-scheme: light;
+  }
+  [data-theme="dark"]{
+    --ink:#E0E0E0; --paper:#1E1E1E; --signal:#FF7A47; --moss:#7AA2D4; --stone:#9A9A9A;
+    --line: rgba(224,224,224,0.14); --body-text: #B0B0B0; --shadow-soft: rgba(224,224,224,0.04);
+    color-scheme: dark;
+  }
+  [data-theme="dark"] footer{ background:#222222; color:#E0E0E0; }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--body);
+    font-weight:200; letter-spacing:-0.015em; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    transition: background-color .35s ease, color .35s ease;
+  }
+  ::selection{ background:var(--signal); color:var(--paper); }
+  a{ color:inherit; text-decoration:none; }
+  :focus-visible{ outline: 2px solid var(--signal); outline-offset: 3px; }
+  .wrap{ max-width: 1320px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .nav-mark{ font-family:var(--mono); font-weight:600; font-size:14px; letter-spacing:0.04em; display:flex; align-items:center; gap:8px; }
+  .nav-mark .dot{ width:7px; height:7px; border-radius:50%; background:#3DDC84; box-shadow:0 0 6px 1px rgba(61,220,132,0.7), 0 0 2px rgba(61,220,132,0.9); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0;} }
+  .nav-right{ display:flex; align-items:center; gap:24px; }
+  .nav-links{ display:flex; gap:22px; font-family:var(--mono); font-size:11px; letter-spacing:0.07em; }
+  .nav-links a{ position:relative; padding-bottom:4px; color:var(--stone); transition: color .2s ease; }
+  .nav-links a:hover, .nav-links a.active{ color:var(--ink); }
+  .nav-links a::after{ content:''; position:absolute; left:0; bottom:-1px; width:0; height:1px; background:var(--signal); transition: width .25s ease; }
+  .nav-links a:hover::after{ width:100%; }
+  .theme-toggle{ display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer; flex-shrink:0; transition: border-color .2s ease, color .2s ease, transform .15s ease; }
+  .theme-toggle:hover{ border-color:var(--signal); color:var(--signal); }
+  .theme-toggle:active{ transform: scale(0.92); }
+  .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:flex; }
+  @media (max-width: 720px){ .nav-links{ display:none; } }
+
+  /* ---------- LAYOUT: TOC panel + case content ---------- */
+  .stage{
+    display:grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+  }
+  @media (max-width: 980px){ .stage{ grid-template-columns: 1fr; } }
+
+  .toc-panel{
+    border-right: 1px solid var(--line);
+    padding: 40px 24px;
+    position: sticky;
+    top: 64px;
+    align-self: start;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  @media (max-width: 980px){
+    .toc-panel{ position: static; height: auto; border-right:none; border-bottom:1px solid var(--line); }
+  }
+  .toc-back{
+    display: inline-flex; align-items:center; gap:8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing:0.04em; color: var(--stone);
+    margin-bottom: 28px; transition: color .2s ease;
+  }
+  .toc-back:hover{ color: var(--signal); }
+  .toc-eyebrow{ font-family: var(--mono); font-size: 11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--stone); margin-bottom: 18px; }
+  .toc-list{ list-style:none; }
+  .toc-list li{ margin-bottom: 2px; }
+  .toc-link{
+    display:flex; align-items:center; gap:8px; padding: 9px 10px; border-radius:6px; font-family:var(--mono); font-size:12.5px;
+    color: var(--stone); transition: color .2s ease, background .2s ease, padding-left .2s ease;
+  }
+  .toc-link:hover{ color: var(--ink); background: var(--shadow-soft); padding-left: 15px; }
+  .toc-link.is-active{ color: var(--signal); }
+  .toc-link::before{
+    content: '→';
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .2s ease, transform .2s ease;
+    flex-shrink: 0;
+  }
+  .toc-link.is-active::before{
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ---------- CASE HEADER ---------- */
+  .case-head{ padding: 48px 56px 40px; border-bottom: 1px solid var(--line); }
+  @media (max-width: 720px){ .case-head{ padding: 32px 24px; } }
+  .case-eyebrow{ font-family: var(--mono); font-size: 12px; letter-spacing:0.08em; color: var(--signal); margin-bottom: 20px; }
+  .case-head h1{
+    font-family: var(--display); font-weight: 700; letter-spacing:-0.01em;
+    font-size: clamp(26px, 4vw, 44px); line-height: 1.2; max-width: none;
+  }
+  .case-meta{ display:flex; flex-wrap:wrap; gap: 32px; margin-top: 32px; }
+  .case-meta div .k{ font-family: var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color: var(--stone); margin-bottom: 6px; }
+  .case-meta div .v{ font-size: 14.5px; color: var(--body-text); }
+
+  /* ---------- READING PROGRESS BAR ---------- */
+  .progress-bar{
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--signal); z-index: 60; transition: width 0.1s linear;
+  }
+
+  .case-hero-img{ margin: 40px 56px 0; border-radius: 8px; overflow:hidden; border:1px solid var(--line); }
+  @media (max-width: 720px){ .case-hero-img{ margin: 32px 24px 0; } }
+  .case-hero-img img{ width:100%; display:block; }
+
+  /* ---------- SECTIONS ---------- */
+  .case-section{
+    padding: 64px 56px; border-bottom: 1px solid var(--line); scroll-margin-top: 80px;
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(.16,.84,.44,1), transform 0.6s cubic-bezier(.16,.84,.44,1);
+  }
+  .case-section.is-revealed{ opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce){ .case-section{ opacity:1; transform:none; transition:none; } }
+  @media (max-width: 720px){ .case-section{ padding: 48px 24px; } }
+  .case-section:last-of-type{ border-bottom: none; }
+  .case-section-label{
+    font-family: var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color: var(--signal); margin-bottom: 20px; display:flex; align-items:center; gap:10px;
+    counter-increment: section-counter;
+  }
+  .case-section-label::before{
+    content: counter(section-counter, decimal-leading-zero) ' —';
+    color: var(--stone); font-weight: 600; letter-spacing: 0.04em;
+    width: auto; height: auto; background: none;
+  }
+  main{ counter-reset: section-counter; }
+  .case-section h2{
+    font-family: var(--display); font-weight:600; font-size: clamp(21px, 2.8vw, 30px);
+    letter-spacing:-0.01em; margin-bottom: 20px; max-width: 780px;
+  }
+  .case-section p{ font-size: 16px; line-height: 1.75; color: var(--body-text); max-width: 720px; margin-bottom: 18px; }
+  .case-section p:last-child{ margin-bottom: 0; }
+
+  .stat-row{ display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; margin-top: 28px; }
+  @media (max-width: 720px){ .stat-row{ grid-template-columns: 1fr; } }
+  .stat-row > div{ border:1px solid var(--line); border-radius:10px; padding:24px 22px; transition: border-color .25s ease, transform .25s ease; }
+  .stat-row > div:hover{ border-color: var(--signal); transform: translateY(-3px); }
+  .stat-row .num{ font-family:var(--mono); font-size: clamp(28px,3.4vw,38px); font-weight:700; color:var(--signal); line-height:1; }
+  .stat-row .lbl{ font-size:13.5px; color:var(--stone); margin-top:10px; max-width: 220px; line-height:1.5; }
+
+  .case-cols3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 28px; }
+  @media (max-width: 860px){ .case-cols3{ grid-template-columns: 1fr; } }
+  .case-cols2{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+  @media (max-width: 860px){ .case-cols2{ grid-template-columns: 1fr; } }
+  .plain-shot{ margin-top: 24px; }
+  .plain-shot img{ width: 100%; height: auto; display: block; }
+  .case-col-card{ border:1px solid var(--line); border-radius:8px; padding:22px; }
+  .case-col-card .h{ font-family:var(--display); font-weight:600; font-size:16px; margin-bottom:10px; }
+  .case-col-card p{ font-size:14px; margin-bottom:8px; }
+  .case-col-card .tag-yes{ color: var(--moss); font-family:var(--mono); font-size:11px; letter-spacing:0.04em; }
+  .case-col-card .tag-no{ color: var(--stone); font-family:var(--mono); font-size:11px; letter-spacing:0.04em; }
+  .case-col-card.is-chosen{ border-color: var(--signal); background: color-mix(in srgb, var(--signal) 5%, var(--paper)); }
+
+  .case-list{ list-style:none; margin-top: 8px; }
+  .case-list li{ position:relative; padding-left:24px; font-size:15.5px; line-height:1.7; color:var(--body-text); margin-bottom:10px; max-width:700px; }
+  .case-list li:last-child{ margin-bottom:0; }
+  .case-list li::before{ content:'—'; position:absolute; left:0; color:var(--signal); }
+
+  .flow-card{ border:1px solid var(--line); border-radius:8px; padding:24px; margin-top:20px; }
+  .flow-card .flow-num{ font-family:var(--mono); font-size:11px; color:var(--signal); letter-spacing:0.06em; margin-bottom:10px; }
+  .flow-card h3{ font-family:var(--display); font-weight:600; font-size:18px; margin-bottom:12px; }
+  .flow-card .flow-k{ font-family:var(--mono); font-size:11px; color:var(--stone); text-transform:uppercase; letter-spacing:0.04em; margin-top:12px; margin-bottom:4px; }
+  .flow-card p{ font-size:14.5px; margin-bottom:0; }
+
+  .case-quote{
+    border-left: 2px solid var(--signal); padding: 4px 0 4px 24px; margin: 28px 0;
+    font-family: var(--display); font-style: italic; font-size: 18px; line-height: 1.6; color: var(--ink); max-width: 620px;
+  }
+
+  .case-video{
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+  .case-video video{ width: 100%; display: block; background: var(--ink); }
+  .case-video-cap{ padding: 14px 18px; font-family:var(--mono); font-size:12px; color:var(--stone); border-top:1px solid var(--line); }
+
+  .state-compare{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+    align-items: start;
+  }
+  .state-compare figure{ margin: 0; min-width: 0; }
+  .state-compare img{ width: 100%; height: auto; display: block; }
+  .state-compare figcaption{
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--stone);
+  }
+  @media (max-width: 480px){
+    .state-compare{ gap: 12px; }
+    .state-compare figcaption{ font-size: 10px; }
+  }
+
+  .case-screens{ display:grid; grid-template-columns: 1fr; gap: 24px; margin-top: 28px; }
+
+  .dashboard-feature-layout{
+    display: grid;
+    grid-template-columns: minmax(0, 580px) minmax(0, 340px);
+    gap: 40px;
+    align-items: start;
+    margin-top: 28px;
+  }
+  .dashboard-feature-layout .case-screen{ margin: 0; border: none; border-radius: 0; background: none; }
+
+  .dashboard-features-stack{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .dashboard-features-stack .case-col-card{ width: 100%; }
+  .dashboard-features-stack .case-col-card-text{ min-width: 0; }
+  .feature-detail-shot{
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .feature-detail-shot img{ width: 100%; display: block; }
+  @media (max-width: 860px){
+    .dashboard-feature-layout{ grid-template-columns: 1fr; gap: 24px; }
+  }
+  .case-screen{ border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .case-screen img{ width:100%; display:block; }
+
+  .visual-media-row{
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .visual-media-col{ min-width: 0; }
+  img.visual-img-plain{
+    height: 400px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  @media (max-width: 720px){
+    img.visual-img-plain{ height: 220px; }
+  }
+  @media (max-width: 480px){
+    img.visual-img-plain{ height: 160px; }
+  }
+
+  .placeholder-note{
+    margin-top: 28px; padding: 16px 18px; border: 1px dashed var(--line); border-radius: 6px;
+    font-family: var(--mono); font-size: 12px; color: var(--stone); line-height: 1.6; max-width: 700px;
+  }
+  .placeholder-note strong{ color: var(--ink); }
+
+  /* ---------- Image placeholders (marks where reference-site images go) ---------- */
+  .img-ph-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 24px; }
+  .img-ph-grid.cols-2{ grid-template-columns: repeat(2, 1fr); }
+  .img-ph-grid.cols-1{ grid-template-columns: 1fr; }
+  @media (max-width: 860px){ .img-ph-grid{ grid-template-columns: 1fr; } }
+  .img-ph{
+    aspect-ratio: 4 / 3;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: repeating-linear-gradient(45deg, transparent, transparent 8px, var(--line) 8px, var(--line) 9px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    padding: 16px; text-align: center;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+  .img-ph:hover{ border-color: var(--stone); transform: translateY(-3px); }
+  .img-ph svg{ color: var(--stone); opacity: 0.7; }
+  .img-ph span{
+    font-family: var(--mono); font-size: 11px; color: var(--stone); letter-spacing: 0.02em;
+    background: var(--paper); padding: 3px 9px; border-radius: 4px; line-height:1.5;
+  }
+  .img-ph.is-video{ aspect-ratio: 16/9; }
+
+  .img-real{
+    aspect-ratio: 4/3;
+    background: #E7E5E0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  [data-theme="dark"] .img-real{ background: #2A2A2A; }
+  .img-real:hover{ border-color: var(--stone); transform: translateY(-3px); }
+  .img-real img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .img-real-cap{ margin-top:8px; font-family:var(--mono); font-size:11px; color:var(--stone); text-align:center; }
+
+  .next-project{ padding: 56px 56px 0; }
+  @media (max-width: 720px){ .next-project{ padding: 40px 24px 0; } }
+  .next-project .k{ font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--stone); text-transform:uppercase; margin-bottom:12px; }
+  .next-project a.card{
+    display:block; padding: 24px 28px; border:1px solid var(--line); border-radius:8px;
+    transition: border-color .2s ease, transform .2s ease; margin-bottom: 56px;
+  }
+  .next-project a.card:hover{ border-color: var(--signal); transform: translateX(4px); }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background: var(--ink); color: var(--paper); padding: 90px 56px 40px; }
+  @media (max-width: 720px){ footer{ padding: 64px 24px 32px; } }
+  .footer-head{ font-family:var(--display); font-size: clamp(30px, 5vw, 60px); line-height:1.1; max-width: 14ch; }
+  .footer-head .accent{ color:var(--signal); }
+  .footer-bottom{ margin-top: 40px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color: rgba(247,243,236,0.4); flex-wrap:wrap; gap:8px; }
+  .footer-back{
+    display:inline-block; margin-top:24px; font-family:var(--mono); font-size:12px;
+    color: rgba(247,243,236,0.85); border-bottom:1px solid rgba(247,243,236,0.3); padding-bottom:2px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .footer-back:hover{ color: var(--signal); border-color: var(--signal); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-mark"><span class="dot"></span> Tanmay P.</div>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html#top">Home</a>
+        <a href="work.html" class="active">Work</a>
+        <a href="lab.html">Lab</a>
+        <a href="about.html">About</a>
+        <a href="/resume.pdf" download>Resume</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
+        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="stage">
+  <aside class="toc-panel">
+    <a href="work.html" class="toc-back">&#8592; Back to all work</a>
+    <div class="toc-eyebrow">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#hypothesis" class="toc-link" data-target="hypothesis">Hypothesis</a></li>
+      <li><a href="#audit" class="toc-link" data-target="audit">UX Audit &amp; Evidence</a></li>
+      <li><a href="#research" class="toc-link" data-target="research">User Research</a></li>
+      <li><a href="#problem" class="toc-link" data-target="problem">Problem Statement</a></li>
+      <li><a href="#opportunity" class="toc-link" data-target="opportunity">Design Opportunity</a></li>
+      <li><a href="#concepts" class="toc-link" data-target="concepts">Concepts Explored</a></li>
+      <li><a href="#flows" class="toc-link" data-target="flows">User Flows</a></li>
+      <li><a href="#visual" class="toc-link" data-target="visual">Visual System</a></li>
+      <li><a href="#dashboard" class="toc-link" data-target="dashboard">Final Dashboard</a></li>
+      <li><a href="#inclass" class="toc-link" data-target="inclass">In-Class Experience</a></li>
+      <li><a href="#assignment" class="toc-link" data-target="assignment">Assignment Experience</a></li>
+      <li><a href="#comms" class="toc-link" data-target="comms">Communication</a></li>
+      <li><a href="#results" class="toc-link" data-target="results">Test Results</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="case-head">
+      <div class="case-eyebrow">Case Study — N°001</div>
+      <h1>Redesigning RIT's Learning Management System to reduce student stress and improve academic workflows</h1>
+      <div class="case-meta">
+        <div><div class="k">Role</div><div class="v">Product Design (UX Research &amp; UI)</div></div>
+        <div><div class="k">Timeline</div><div class="v">Jun – Sep 2024</div></div>
+        <div><div class="k">Tools</div><div class="v">Figma, Webflow</div></div>
+        <div><div class="k">Platform</div><div class="v">Web</div></div>
+      </div>
+    </div>
+
+    <div class="case-hero-img">
+      <img src="assets/img/mycourses-redesigned-dashboard-shown-on-an-408a4d.webp" alt="MyCourses redesigned dashboard on desktop">
+    </div>
+
+    <section class="case-section" id="hypothesis">
+      <div class="case-section-label">Hypothesis</div>
+      <h2>Students were struggling to navigate MyCourses because the platform treats every context the same</h2>
+      <p>Whether a student is in a lecture, studying independently, or submitting an assignment, the interface stays static. During a UX audit, MyCourses came across as functioning more like a file repository than an academic workflow tool — course pages were cluttered and inconsistently organized, making materials hard to find quickly, especially mid-lecture.</p>
+      <p>Assignment submission also lacked clear feedback, leading students to repeatedly re-check whether their work had actually uploaded. And communication inside the platform felt outdated enough that many students had moved conversations to Discord or WhatsApp instead.</p>
+      <p>Together, these patterns suggested the platform simply didn't align with how students actually manage their academic workflow.</p>
+    </section>
+
+    <section class="case-section" id="audit">
+      <div class="case-section-label">UX Audit &amp; Evidence</div>
+      <h2>Three structural issues kept surfacing</h2>
+      <p>To understand the current experience, I audited the existing platform to identify what was contributing to confusion, inefficiency, and poor task flow.</p>
+      <div class="case-cols3">
+        <div class="case-col-card">
+          <div class="h">Unclear navigation hierarchy</div>
+          <p>Multiple options carried similar visual weight, forcing students to scan and rely on memory rather than an intuitive structure — increasing cognitive load during time-sensitive moments.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Fragmented workflow</div>
+          <p>Assignments, materials, and related tasks lived across different sections with no clear connection, forcing students to mentally bridge gaps between pages just to complete one task.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Misaligned priorities</div>
+          <p>The homepage surfaced secondary information first, while critical actions like accessing materials or assignments were pushed further down the hierarchy.</p>
+        </div>
+      </div>
+      <div class="img-ph-grid">
+        <div>
+          <div class="img-real">
+            <img src="assets/img/mycourses-navigation-hierarchy-flat-top-nav-737471.webp" alt="MyCourses navigation hierarchy — flat top nav with many equal-weight menu items">
+          </div>
+          <div class="img-real-cap">Navigation hierarchy</div>
+        </div>
+        <div>
+          <div class="img-real">
+            <img src="assets/img/mycourses-table-of-contents-syllabus-assignments-f23204.webp" alt="MyCourses table of contents — syllabus, assignments, readings, and weekly content scattered across a sidebar">
+          </div>
+          <div class="img-real-cap">Fragmented workflow</div>
+        </div>
+        <div>
+          <div class="img-real">
+            <img src="assets/img/mycourses-homepage-course-listing-prioritized-ov-f77b0a.webp" alt="MyCourses homepage — course listing prioritized over the Work To Do panel">
+          </div>
+          <div class="img-real-cap">Homepage priority mismatch</div>
+        </div>
+      </div>
+      <div class="img-ph-grid cols-1" style="margin-top:20px;">
+        <div>
+          <div class="img-real" style="aspect-ratio: 1.08/1;">
+            <img src="assets/img/current-mycourses-student-workflow-diagram-showi-cd347d.webp" alt="Current MyCourses student workflow diagram showing header, body, overview, and course view branches">
+          </div>
+          <div class="img-real-cap">Current student workflow diagram (full journey map)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section" id="research">
+      <div class="case-section-label">User Research</div>
+      <h2>A survey to validate the audit findings</h2>
+      <p>To better understand how students actually interact with MyCourses, I ran a survey focused on navigation, assignment submission, and communication — anonymous, RIT students, aimed at uncovering how students manage academic workflow across different contexts.</p>
+      <div class="stat-row">
+        <div><div class="num">85%</div><div class="lbl">felt anxious trying to locate files during lectures</div></div>
+        <div><div class="num">92%</div><div class="lbl">double-checked submissions due to unclear system feedback</div></div>
+        <div><div class="num">78%</div><div class="lbl">preferred external tools like Discord over LMS discussion forums</div></div>
+      </div>
+    </section>
+
+    <section class="case-section" id="problem">
+      <div class="case-section-label">Refined Problem Statement</div>
+      <h2>The platform treats every interaction the same — and that's the actual problem</h2>
+      <p>The current MyCourses experience doesn't support how students actually manage their academic workflow. By treating all interactions identically, it creates friction in three critical areas: accessing materials during lectures, confirming assignment submissions, and communicating with peers. As a result, students lean on workarounds and spend unnecessary cognitive effort just navigating the system.</p>
+      <ul class="case-list">
+        <li>Navigation friction during time-sensitive situations</li>
+        <li>Lack of clear, reliable system feedback</li>
+        <li>Fragmented communication happening outside the platform</li>
+      </ul>
+    </section>
+
+    <section class="case-section" id="opportunity">
+      <div class="case-section-label">Design Opportunity</div>
+      <h2>How might we redesign MyCourses to match how students actually work?</h2>
+      <p>Specifically: reduce cognitive load, improve clarity during key interactions, and enable more natural communication — without adding complexity on top of an already cluttered system.</p>
+    </section>
+
+    <section class="case-section" id="concepts">
+      <div class="case-section-label">Concepts Explored</div>
+      <h2>Three directions, one clear winner</h2>
+      <div class="case-cols3">
+        <div class="case-col-card">
+          <div class="img-real" style="aspect-ratio:4/3.2; margin-bottom:14px;">
+            <img src="assets/img/centralized-academic-planner-concept-color-coded-d4bbc6.png" alt="Centralized Academic Planner concept — color-coded weekly status blocks">
+          </div>
+          <div class="h">Centralized Academic Planner</div>
+          <p>A unified dashboard aggregating assignments, deadlines, and schedules into one view.</p>
+          <div class="tag-no">Not chosen — helped with organization, but didn't address real-time, in-lecture needs.</div>
+        </div>
+        <div class="case-col-card">
+          <div class="img-real" style="aspect-ratio:4/3.2; margin-bottom:14px;">
+            <img src="assets/img/gamified-progress-tracker-concept-academic-weeks-249eec.webp" alt="Gamified Progress Tracker concept — academic weeks visualized as a game-board path">
+          </div>
+          <div class="h">Gamified Progress Tracker</div>
+          <p>Visualized academic progress as a journey to keep students engaged with coursework.</p>
+          <div class="tag-no">Not chosen — added visual complexity without solving core navigation/submission issues.</div>
+        </div>
+        <div class="case-col-card is-chosen">
+          <div class="img-real" style="aspect-ratio:4/3.2; margin-bottom:14px;">
+            <img src="assets/img/context-aware-interface-system-concept-in-c0575b.webp" alt="Context-Aware Interface System concept — In-Class banner and live session details">
+          </div>
+          <div class="h">Context-Aware Interface System</div>
+          <p>An adaptive interface that changes based on student context — in-class vs. studying — prioritizing relevant info and actions.</p>
+          <div class="tag-yes">Chosen — directly addressed multiple pain points at once: cognitive load, lecture-time access, and submission/communication clarity.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section" id="flows">
+      <div class="case-section-label">User Flows</div>
+      <h2>Simplifying the key student interactions</h2>
+      <p>I mapped flows for the most common student tasks, focused on reducing friction and steps during critical moments.</p>
+      <div class="flow-card">
+        <div class="flow-num">FLOW 1</div>
+        <h3>Contextual Learning</h3>
+        <div class="flow-k">The feature</div>
+        <p>A dedicated toggle on the Course Page that switches the interface between "Study Mode" and "In-Class Mode."</p>
+        <div class="flow-k">How it works</div>
+        <p>Toggled to "In-Class," the dashboard minimizes upcoming assignments and prioritizes live tools: lecture slides, collaborative files (Figma), and real-time polls.</p>
+        <div class="flow-k">Why it matters</div>
+        <p>It aligns the digital interface with the physical environment, cutting distractions during lectures.</p>
+      </div>
+      <div class="placeholder-note"><strong>Note:</strong> the source material has two more flows listed — "Submitting Assignment" and "Community & Collaboration" — but their descriptions on the live site are identical copies of the Contextual Learning flow above (looks like they were never individually written up). Send me the real specifics for those two and I'll add them properly instead of repeating this one.</div>
+    </section>
+
+    <section class="case-section" id="visual">
+      <div class="case-section-label">Visual System</div>
+      <h2>A calmer, more legible interface</h2>
+      <p><strong style="color:var(--ink)">Typography</strong> — Instrument Sans, a variable sans-serif chosen for geometric clarity and strong on-screen legibility, keeping dense academic content readable without visual fatigue.</p>
+      <p><strong style="color:var(--ink)">Color</strong> — a deep navy-dark base (#27303A) to reduce eye strain during late-night study sessions, with a lime accent (#93F604) reserved for primary actions and success states. Three additional soft accent colors color-code individual courses for quick recognition.</p>
+      <div class="visual-media-row">
+        <div class="visual-media-col">
+            <img class="visual-img-plain" src="assets/img/instrument-sans-typography-specimen-weights-alph-0e8d93.webp" alt="Instrument Sans typography specimen — weights, alphabet, numerals, and large glyph study">
+          <div class="img-real-cap">Typography system — Instrument Sans</div>
+        </div>
+        <div class="visual-media-col">
+            <img class="visual-img-plain" src="assets/img/color-palette-navy-27303a-lime-93f604-0db45f.png" alt="Color palette — navy #27303A, lime #93F604, and three course accent colors">
+          <div class="img-real-cap">Color palette</div>
+        </div>
+      </div>
+      <div class="case-quote">"I'd love a dark mode! For night studying possibly." — student, during testing</div>
+    </section>
+
+    <section class="case-section" id="dashboard">
+      <div class="case-section-label">Final Dashboard Experience</div>
+      <h2>A centralized, context-aware student hub</h2>
+      <p>The redesigned homepage surfaces the most relevant information based on what a student actually needs in the moment, instead of scattering content evenly across the page.</p>
+      <div class="dashboard-feature-layout">
+        <div class="case-screen">
+          <img src="assets/img/mycourses-redesigned-dashboard-hey-maya-greeting-c16e44.webp" alt="MyCourses redesigned dashboard — Hey Maya greeting, weekly update, Quick Submit panel, and course cards">
+        </div>
+        <div class="dashboard-features-stack">
+          <div class="case-col-card">
+            <div class="case-col-card-text">
+              <div class="h">AI Personalized Overview</div>
+              <p>Greets students with a contextual summary — weekly updates, pending tasks, and overall progress.</p>
+            </div>
+          </div>
+          <div class="case-col-card">
+            <div class="case-col-card-text">
+              <div class="h">Quick Submit Panel</div>
+              <p>Assignments surface with deadline and status, so students can upload work without hopping across pages.</p>
+              <div class="feature-detail-shot">
+                <img src="assets/img/quick-submit-panel-detail-assignment-status-b37ea1.webp" alt="Quick Submit panel detail — assignment status and upload actions">
+              </div>
+            </div>
+          </div>
+          <div class="case-col-card">
+            <div class="case-col-card-text">
+              <div class="h">Course Cards</div>
+              <p>Each course is a self-contained unit — assignments, notifications, and key actions in a single card.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+
+    <section class="case-section" id="inclass">
+      <div class="case-section-label">In-Class Experience</div>
+      <h2>Adapting the interface for real-time learning</h2>
+      <p>In-Class Mode adapts the interface to support students during live lectures — prioritizing relevant materials and minimizing distractions, so students can find what they need without navigating a complex course structure.</p>
+      <div class="case-video">
+        <video src="uxclass-toggle.mp4" controls muted loop playsinline preload="metadata"></video>
+        <div class="case-video-cap">In-Class Mode toggle — switching the interface between Study Mode and In-Class Mode</div>
+      </div>
+      <div class="state-compare">
+        <figure>
+          <img src="assets/img/ux-design-strategies-course-page-with-5ae89a.webp" alt="UX Design Strategies course page with In-Class Mode on — live workshop card, quick-access files, and the assistant button">
+          <figcaption>In-Class Mode — on</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/img/ux-design-strategies-course-page-with-467705.webp" alt="UX Design Strategies course page with In-Class Mode off — standard announcement card">
+          <figcaption>Study Mode — off</figcaption>
+        </figure>
+      </div>
+      <div class="case-cols3" style="margin-top:20px;">
+        <div class="case-col-card">
+          <div class="h">Context-aware interface</div>
+          <p>The system adjusts based on whether the student is in a live class, surfacing lecture materials instantly.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Instant access to materials</div>
+          <p>Lecture files, links, and resources appear upfront — no folder-hunting mid-class.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Week-based structure</div>
+          <p>Expandable sections and progress indicators help students track completion and stay aligned with the course flow.</p>
+        </div>
+      </div>
+      <div class="case-quote">"This directly solves my 92% submission anxiety problem." — student, during testing</div>
+    </section>
+
+    <section class="case-section" id="assignment">
+      <div class="case-section-label">Assignment Experience</div>
+      <h2>Submitting with confidence, not uncertainty</h2>
+      <p>The assignment experience was redesigned around clear status indicators and intuitive interactions, so students can quickly understand progress and complete tasks with confidence.</p>
+      <div class="plain-shot">
+        <img src="assets/img/assignments-page-modular-assignment-cards-each-ceca4b.webp" alt="Assignments page — modular assignment cards, each with requirements, discussion, due date, and an Upload / Swipe to Submit control">
+      </div>
+      <div class="case-cols2">
+        <div class="case-col-card">
+          <div class="h">Modular Assignment Cards</div>
+          <p>Each card bundles requirements, discussion, deadlines, and actions in one place — no more navigating across pages for one assignment.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Swipe to Submit</div>
+          <p>A gesture-based submission replaces the traditional button — more intentional, more satisfying, and it reduces accidental submissions while giving a clear sense of completion.</p>
+          <div class="feature-detail-shot">
+            <img src="assets/img/upload-and-swipe-to-submit-control-64b7a2.png" alt="Upload and Swipe to Submit control on an assignment card">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-section" id="comms">
+      <div class="case-section-label">Communication Experience</div>
+      <h2>Real-time, contextual collaboration</h2>
+      <p>Static discussion boards were replaced with a real-time, chat-based interface — supporting faster, more natural interactions without leaving the learning environment.</p>
+      <div class="plain-shot">
+        <img src="assets/img/discussion-page-course-channels-friends-and-1b85fe.webp" alt="Discussion page — course channels, friends and peers list, live chat thread, and shared links and documents">
+      </div>
+      <div class="case-cols3" style="margin-top:20px;">
+        <div class="case-col-card">
+          <div class="h">Real-time conversations</div>
+          <p>Chat replaces forums, so students communicate more naturally and get quicker responses.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Contextual channels</div>
+          <p>Conversations are organized by course and topic, keeping discussion relevant and easy to navigate.</p>
+        </div>
+        <div class="case-col-card">
+          <div class="h">Seamless resource sharing</div>
+          <p>Links, documents, and files can be shared directly in conversation — no platform-hopping required.</p>
+        </div>
+      </div>
+      <div class="placeholder-note"><strong>Note:</strong> your reference site also includes a short interaction-design video showing microinteractions (button presses, transitions). Send that clip over and I'll add a dedicated section for it with a video embed.</div>
+    </section>
+
+    <section class="case-section" id="results">
+      <div class="case-section-label">Test Results</div>
+      <h2>Faster, clearer, more confident</h2>
+      <p>The redesigned system streamlined key interactions, making it easier for students to navigate, submit work, and stay on track.</p>
+      <div class="stat-row">
+        <div><div class="num">1.75×</div><div class="lbl">faster assignment submission time</div></div>
+        <div><div class="num">85%</div><div class="lbl">reduction in time to locate course materials</div></div>
+        <div><div class="num">91%</div><div class="lbl">increase in clarity around submission status</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="next-project">
+  <div class="wrap" style="padding:0;">
+    <div class="k">Next case study</div>
+    <a href="work.html#proj-tigertrack" class="card">
+      <div style="font-family:var(--mono); font-size:11px; color:var(--stone); margin-bottom:6px;">N°002 &#8594;</div>
+      <div style="font-family:var(--display); font-weight:600; font-size:20px;">Designing Tiger Track to bring clarity to on-campus finance tracking</div>
+    </a>
+  </div>
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <h1 class="footer-head">Let's build <span class="accent">something</span> together.</h1>
+    <a href="mailto:tp1035@g.rit.edu" class="footer-back">tp1035@g.rit.edu →</a>
+    <br>
+    <a href="index.html#top" class="footer-back">← Back to home</a>
+    <div class="footer-bottom">
+      <span>© 2026 Tanmay Padekar. All rights reserved.</span>
+      <span>Designed &amp; built from scratch.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  function setTheme(theme){
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    try { localStorage.setItem('theme', theme); } catch(e){}
+    themeToggle.setAttribute('aria-pressed', theme === 'dark');
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    setTheme(isDark ? 'light' : 'dark');
+  });
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    themeToggle.setAttribute('aria-pressed', 'true');
+    themeToggle.setAttribute('aria-label', 'Switch to light mode');
+  }
+
+  // Highlight the active TOC entry based on scroll position
+  const tocLinks = Array.from(document.querySelectorAll('.toc-link[data-target]'));
+  const sections = tocLinks.map(l => document.getElementById(l.dataset.target)).filter(Boolean);
+  function updateActive(){
+    let current = sections[0];
+    const scrollPos = window.scrollY + 100;
+    sections.forEach(el => { if (el.offsetTop <= scrollPos) current = el; });
+    tocLinks.forEach(l => l.classList.toggle('is-active', current && l.dataset.target === current.id));
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+
+  // ---------- Reading progress bar ----------
+  const progressBar = document.getElementById('progressBar');
+  function updateProgress(){
+    const doc = document.documentElement;
+    const scrollTop = window.scrollY;
+    const scrollable = doc.scrollHeight - window.innerHeight;
+    const pct = scrollable > 0 ? (scrollTop / scrollable) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // ---------- Scroll-reveal for case sections ----------
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const caseSections = document.querySelectorAll('.case-section');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const revealObserver = new IntersectionObserver((observed) => {
+      observed.forEach(item => {
+        if (item.isIntersecting) {
+          item.target.classList.add('is-revealed');
+          revealObserver.unobserve(item.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    caseSections.forEach(el => revealObserver.observe(el));
+  } else {
+    caseSections.forEach(el => el.classList.add('is-revealed'));
+  }
+
+  // ---------- Count-up animation for stat numbers ----------
+  const statNums = document.querySelectorAll('.stat-row .num');
+  function animateCount(el){
+    const raw = el.textContent.trim();
+    const match = raw.match(/^([\d.]+)(.*)$/);
+    if (!match) return;
+    const target = parseFloat(match[1]);
+    const suffix = match[2];
+    const isDecimal = match[1].includes('.');
+    const duration = 900;
+    const start = performance.now();
+    function tick(now){
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      el.textContent = (isDecimal ? current.toFixed(2) : Math.round(current)) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = raw;
+    }
+    requestAnimationFrame(tick);
+  }
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const statObserver = new IntersectionObserver((observed) => {
+      observed.forEach(item => {
+        if (item.isIntersecting) {
+          animateCount(item.target);
+          statObserver.unobserve(item.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    statNums.forEach(el => statObserver.observe(el));
+  }
+</script>
+
+</body>
+</html>

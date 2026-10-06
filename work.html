@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Work — Tanmay Padekar</title>
+<meta name="description" content="Selected product design work by Tanmay Padekar.">
+<script>
+  (function(){
+    try {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = saved || (prefersDark ? 'dark' : 'light');
+      if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15140F;
+    --paper:#F5F4F0;
+    --signal:#FF5A1F;
+    --moss:#4A6FA5;
+    --stone:#8C8473;
+    --line: rgba(21,20,15,0.14);
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --body-text: #43412F;
+    --shadow-soft: rgba(21,20,15,0.03);
+    color-scheme: light;
+  }
+  [data-theme="dark"]{
+    --ink:#E0E0E0;
+    --paper:#1E1E1E;
+    --signal:#FF7A47;
+    --moss:#7AA2D4;
+    --stone:#9A9A9A;
+    --line: rgba(224,224,224,0.14);
+    --body-text: #B0B0B0;
+    --shadow-soft: rgba(224,224,224,0.04);
+    color-scheme: dark;
+  }
+  [data-theme="dark"] footer{ background:#222222; color:#E0E0E0; }
+  [data-theme="dark"] .entry-visual{ background: #000; }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-weight:200;
+    letter-spacing:-0.015em;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    transition: background-color .35s ease, color .35s ease;
+  }
+  ::selection{ background:var(--signal); color:var(--paper); }
+  a{ color:inherit; text-decoration:none; }
+  :focus-visible{ outline: 2px solid var(--signal); outline-offset: 3px; }
+  .wrap{ max-width: 1320px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .nav-mark{ font-family:var(--mono); font-weight:600; font-size:14px; letter-spacing:0.04em; display:flex; align-items:center; gap:8px; }
+  .nav-mark .dot{ width:7px; height:7px; border-radius:50%; background:#3DDC84; box-shadow:0 0 6px 1px rgba(61,220,132,0.7), 0 0 2px rgba(61,220,132,0.9); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0;} }
+  .nav-right{ display:flex; align-items:center; gap:24px; }
+  .nav-links{ display:flex; gap:22px; font-family:var(--mono); font-size:11px; letter-spacing:0.07em; }
+  .nav-links a{ position:relative; padding-bottom:4px; color:var(--stone); transition: color .2s ease; }
+  .nav-links a:hover, .nav-links a.active{ color:var(--ink); }
+  .nav-links a::after{ content:''; position:absolute; left:0; bottom:-1px; width:0; height:1px; background:var(--signal); transition: width .25s ease; }
+  .nav-links a:hover::after{ width:100%; }
+  .theme-toggle{ display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer; flex-shrink:0; transition: border-color .2s ease, color .2s ease, transform .15s ease; }
+  .theme-toggle:hover{ border-color:var(--signal); color:var(--signal); }
+  .theme-toggle:active{ transform: scale(0.92); }
+  .theme-toggle .icon-moon{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-sun{ display:none; }
+  [data-theme="dark"] .theme-toggle .icon-moon{ display:flex; }
+  @media (max-width: 720px){ .nav-links{ display:none; } }
+
+  /* ---------- LAYOUT: title panel + cards ---------- */
+  .stage{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 64px);
+  }
+  @media (max-width: 980px){ .stage{ grid-template-columns: 1fr; } }
+
+  .titles-panel{
+    border-right: 1px solid var(--line);
+    padding: 48px 28px;
+    position: sticky;
+    top: 64px;
+    align-self: start;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  @media (max-width: 980px){
+    .titles-panel{ position: static; height: auto; border-right:none; border-bottom:1px solid var(--line); }
+  }
+  .titles-eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--stone);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .titles-list{ list-style:none; }
+  .titles-list li{ margin-bottom: 4px; }
+  .title-link{
+    display: block;
+    padding: 12px 10px;
+    border-radius: 6px;
+    font-family: var(--display);
+    font-size: 15px;
+    color: var(--stone);
+    transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s ease;
+  }
+  .title-link .n{
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--stone);
+    margin-right: 8px;
+    letter-spacing: 0.05em;
+  }
+  .title-link:hover{ color: var(--ink); background: var(--shadow-soft); padding-left: 16px; }
+  .title-link.is-active{ color: var(--signal); }
+  .title-link.is-active .n{ color: var(--signal); }
+  .title-link.is-pending{ opacity: 0.45; pointer-events: none; }
+
+  .titles-panel-footer{
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--line);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--stone);
+    line-height: 1.6;
+  }
+  .titles-panel-footer a{ color: var(--ink); border-bottom: 1px solid var(--line); transition: color .2s ease, border-color .2s ease; }
+  .titles-panel-footer a:hover{ color: var(--signal); border-color: var(--signal); }
+
+  .work-head{ padding: 48px 56px 0; }
+  @media (max-width: 720px){ .work-head{ padding: 32px 24px 0; } }
+  .work-head h1{
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 4.5vw, 52px);
+    letter-spacing: -0.01em;
+  }
+  .work-head p{
+    margin-top: 14px;
+    max-width: 560px;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--stone);
+  }
+
+  .log{
+    padding: 32px 56px 80px;
+    display:flex;
+    flex-direction:column;
+  }
+  @media (max-width: 720px){ .log{ padding: 24px 24px 56px; } }
+
+  .entry{
+    border-top: 1px solid var(--line);
+    padding: 56px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    scroll-margin-top: 88px;
+  }
+  .entry:last-child{ border-bottom: 1px solid var(--line); }
+  .entry.is-pending{
+    opacity: 0.45;
+    pointer-events: none;
+    grid-template-columns: 1fr;
+  }
+
+  .entry-visual{ order: 1; }
+  .entry-content{ order: 2; min-width: 0; }
+  /* Alternate sides: even projects show the image on the right */
+  .entry:nth-of-type(even) .entry-visual{ order: 2; }
+  .entry:nth-of-type(even) .entry-content{ order: 1; }
+
+  @media (max-width: 860px){
+    .entry{ grid-template-columns: 1fr; gap: 24px; }
+    .entry-visual, .entry:nth-of-type(even) .entry-visual{ order: 1; }
+    .entry-content, .entry:nth-of-type(even) .entry-content{ order: 2; }
+  }
+
+  .entry-index{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--signal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .entry-index::before{ content: 'N°'; color: var(--stone); font-weight: 400; margin-right: -4px; }
+  .entry-index .stat{
+    display: inline-block; font-size: 10px; padding: 2px 8px;
+    border: 1px solid var(--moss); color: var(--moss); letter-spacing: 0.06em; border-radius: 2px;
+  }
+  .entry-index .stat.pending{ border-color: var(--stone); color: var(--stone); }
+
+  .entry-visual{
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    position: relative;
+    background: var(--ink);
+    cursor: pointer;
+  }
+  .entry-visual img{ width:100%; height:100%; object-fit:cover; display:block; transform:scale(1); transition: transform 0.4s cubic-bezier(.16,.84,.44,1); }
+  .entry-visual::after{
+    content: 'View Project →'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:14px; letter-spacing:0.1em; color:#fff;
+    background: rgba(21,20,15,0); opacity:0; transition: background 0.4s ease, opacity 0.4s ease; z-index:1;
+  }
+  .entry:hover .entry-visual img{ transform: scale(1.04); }
+  .entry:hover .entry-visual::after{ background: rgba(21,20,15,0.52); opacity:1; }
+  [data-theme="dark"] .entry:hover .entry-visual::after{ background: rgba(0,0,0,0.58); }
+  .entry-visual::before{
+    content: attr(data-label); position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em; color: rgba(247,243,236,0.35);
+    text-align:center; padding:16px; border:1px dashed rgba(247,243,236,0.15); margin:14px; border-radius:3px; z-index:0;
+  }
+
+  .entry-heading{
+    font-family: var(--display);
+    font-size: clamp(22px, 2.8vw, 34px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .entry-tags{ display:flex; flex-wrap:wrap; gap:14px 22px; margin-bottom:28px; }
+  .tag{
+    --corner: var(--line);
+    position: relative;
+    font-family: var(--mono); font-size:13px; letter-spacing:0.02em; color:var(--ink); opacity:0.6;
+    padding: 5px 16px;
+    background:
+      linear-gradient(var(--corner), var(--corner)) top left / 8px 1.5px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) top left / 1.5px 6px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) top right / 8px 1.5px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) top right / 1.5px 6px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) bottom left / 8px 1.5px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) bottom left / 1.5px 6px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) bottom right / 8px 1.5px no-repeat,
+      linear-gradient(var(--corner), var(--corner)) bottom right / 1.5px 6px no-repeat;
+  }
+
+  .entry-description{ font-size:16px; line-height:1.65; color:var(--body-text); max-width:640px; margin-bottom: 24px; }
+
+  .entry-result{ display:flex; gap:40px; flex-wrap:wrap; padding-top:22px; border-top:1px solid var(--line); }
+  .entry-result .num{ font-family:var(--mono); font-size:24px; font-weight:700; color:var(--signal); line-height:1; letter-spacing:-0.01em; }
+  .entry-result .lbl{ font-family:var(--mono); font-size:11px; color:var(--stone); letter-spacing:0.05em; text-transform:uppercase; margin-top:8px; }
+
+  .entry-readlink{
+    display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
+    color:var(--ink); border-bottom:1px solid var(--ink); padding-bottom:2px; width:max-content; margin-top:22px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .entry-readlink:hover{ color:var(--signal); border-color:var(--signal); }
+
+  .entry-meta{ margin-top:14px; font-family:var(--mono); font-size:11px; color:var(--stone); letter-spacing:0.04em; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ background: var(--ink); color: var(--paper); padding: 90px 56px 40px; }
+  @media (max-width: 720px){ footer{ padding: 64px 24px 32px; } }
+  .footer-head{ font-family:var(--display); font-size: clamp(30px, 5vw, 60px); line-height:1.1; max-width: 14ch; }
+  .footer-head .accent{ color:var(--signal); }
+  .footer-bottom{ margin-top: 40px; display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color: rgba(247,243,236,0.4); flex-wrap:wrap; gap:8px; }
+  .footer-back{
+    display:inline-block; margin-top:24px; font-family:var(--mono); font-size:12px;
+    color: rgba(247,243,236,0.85); border-bottom:1px solid rgba(247,243,236,0.3); padding-bottom:2px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .footer-back:hover{ color: var(--signal); border-color: var(--signal); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="nav-mark"><span class="dot"></span> Tanmay P.</div>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="index.html#top">Home</a>
+        <a href="work.html" class="active">Work</a>
+        <a href="lab.html">Lab</a>
+        <a href="about.html">About</a>
+        <a href="/resume.pdf" download>Resume</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
+        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="stage">
+  <aside class="titles-panel">
+    <div class="titles-eyebrow">All Projects</div>
+    <ul class="titles-list">
+      <li><a href="#proj-mycourses" class="title-link" data-target="proj-mycourses"><span class="n">001</span>MyCourses</a></li>
+      <li><a href="#proj-tigertrack" class="title-link" data-target="proj-tigertrack"><span class="n">002</span>Tiger Track</a></li>
+      <li><a href="#proj-starpath" class="title-link" data-target="proj-starpath"><span class="n">003</span>StarPath</a></li>
+      <li><a href="#proj-pending" class="title-link is-pending"><span class="n">004</span>In progress</a></li>
+    </ul>
+    <div class="titles-panel-footer">
+      03 case studies live / 01 pending<br>
+      <a href="mailto:tp1035@g.rit.edu">Get in touch →</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="work-head">
+      <h1>Selected Work</h1>
+      <p>A handful of product design projects — some shipped, some concepts — spanning academic tools, campus fintech, and a bit of speculative sci-curiosity.</p>
+    </div>
+
+    <section class="log">
+      <article class="entry" id="proj-mycourses">
+        <div class="entry-visual">
+          <img src="assets/img/mycourses-redesigned-dashboard-shown-on-an-408a4d.webp" alt="MyCourses redesigned dashboard">
+        </div>
+        <div class="entry-content">
+          <div class="entry-index">001</div>
+          <h3 class="entry-heading">Redesigning MyCourses to reduce assignment-related anxiety and improve daily clarity for students with inbuilt AI assistant</h3>
+          <div class="entry-tags">
+            <span class="tag">UX Research</span>
+            <span class="tag">Interface Design</span>
+            <span class="tag">Information Architecture</span>
+          </div>
+          <p class="entry-description">MyCourses buried deadlines and submission status behind clutter. I redesigned the dashboard around a clearer hierarchy and built in an AI assistant that surfaces what's due, submitted, and needs action — giving students daily clarity instead of last-minute scrambling.</p>
+          <a href="mycourses.html" class="entry-readlink">View project →</a>
+        </div>
+      </article>
+
+      <article class="entry" id="proj-tigertrack">
+        <div class="entry-visual">
+          <img src="assets/img/tiger-track-app-screenshot-1d949c.webp" alt="Tiger Track app screenshot">
+        </div>
+        <div class="entry-content">
+          <div class="entry-index">002</div>
+          <h3 class="entry-heading">Designing Tiger Track to bring clarity to on-campus finance tracking</h3>
+          <div class="entry-tags">
+            <span class="tag">UX Research</span>
+            <span class="tag">UI Design</span>
+            <span class="tag">Interaction Design</span>
+            <span class="tag">FinTech</span>
+          </div>
+          <p class="entry-description">RIT students struggled to track expenses and understand where their money went — existing tools buried transaction details that mattered. I led research and design for Tiger Track, a transparent finance-tracking experience with real-time balances and low-balance alerts that helps students stay ahead of overspending.</p>
+          <div class="entry-result">
+            <div><div class="num">30%</div><div class="lbl">adoption within 3 months</div></div>
+            <div><div class="num">40%</div><div class="lbl">better budget awareness</div></div>
+            <div><div class="num">60%</div><div class="lbl">faster expense tracking</div></div>
+          </div>
+          <a href="#" class="entry-readlink">View project →</a>
+        </div>
+      </article>
+
+      <article class="entry" id="proj-starpath">
+        <div class="entry-visual">
+          <img src="assets/img/starpath-app-screenshot-c29190.webp" alt="StarPath app screenshot">
+        </div>
+        <div class="entry-content">
+          <div class="entry-index">003</div>
+          <h3 class="entry-heading">StarPath — an AR-powered companion for exploring the night sky</h3>
+          <div class="entry-tags">
+            <span class="tag">UX Design</span>
+            <span class="tag">AR/UI Design</span>
+            <span class="tag">Product Strategy</span>
+            <span class="tag">Information Architecture</span>
+          </div>
+          <p class="entry-description">Stargazing apps tend to overwhelm beginners or under-serve experienced astronomers. StarPath is a mobile app concept bringing real-time celestial event tracking, an AR-based sky map, and a community astrophotography gallery into one experience — helping anyone plan sessions and identify what they're looking at just by pointing their phone at the sky.</p>
+          <a href="#" class="entry-readlink">View project →</a>
+        </div>
+      </article>
+
+      <article class="entry is-pending" id="proj-pending">
+        <div class="entry-index">004 <span class="stat pending">In progress</span></div>
+        <h3 class="entry-heading">Next case study — in progress</h3>
+        <p class="entry-description">I'm writing this one up now. Check back soon, or get in touch if you'd like a preview before it's posted.</p>
+        <div class="entry-meta">Coming soon</div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<footer id="contact">
+  <div class="wrap">
+    <h1 class="footer-head">Let's build <span class="accent">something</span> together.</h1>
+    <a href="mailto:tp1035@g.rit.edu" class="footer-back">tp1035@g.rit.edu →</a>
+    <br>
+    <a href="index.html#top" class="footer-back">← Back to home</a>
+    <div class="footer-bottom">
+      <span>© 2026 Tanmay Padekar. All rights reserved.</span>
+      <span>Designed &amp; built from scratch.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('theme-toggle');
+  function setTheme(theme){
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    try { localStorage.setItem('theme', theme); } catch(e){}
+    themeToggle.setAttribute('aria-pressed', theme === 'dark');
+    themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    setTheme(isDark ? 'light' : 'dark');
+  });
+  if (document.documentElement.getAttribute('data-theme') === 'dark') {
+    themeToggle.setAttribute('aria-pressed', 'true');
+    themeToggle.setAttribute('aria-label', 'Switch to light mode');
+  }
+
+  // Highlight the active title in the left panel based on scroll position
+  const titleLinks = Array.from(document.querySelectorAll('.title-link[data-target]'));
+  const entries = titleLinks.map(l => document.getElementById(l.dataset.target)).filter(Boolean);
+
+  function updateActive(){
+    let current = entries[0];
+    const scrollPos = window.scrollY + 120;
+    entries.forEach(el => {
+      if (el.offsetTop <= scrollPos) current = el;
+    });
+    titleLinks.forEach(l => l.classList.toggle('is-active', l.dataset.target === current.id));
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+</script>
+
+</body>
+</html>
