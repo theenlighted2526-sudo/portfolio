@@ -1282,6 +1282,12 @@
     background: var(--ink); color: var(--paper);
   }
   [data-theme="dark"] .tool-tile.mono img{ filter: invert(1); }
+
+  /* Status panel spans the full width when it sits below the intro */
+  @media (max-width: 980px){
+    .ledger > div:first-child{ flex: 1 1 100%; }
+    .ledger-block{ max-width: 520px; }
+  }
 </style>
 </head>
 <body>
@@ -1701,28 +1707,18 @@
     <div>
       <div class="ledger-block">
         <div class="ledger-label"><span class="bar"></span>Status</div>
-        <div class="ledger-row"><span class="k">Role</span><span class="v">Product Designer</span></div>
+        <div class="ledger-row"><span class="k">Focus</span><span class="v">AI products</span></div>
         <div class="ledger-row"><span class="k">Experience</span><span class="v">3+ yrs · industry</span></div>
         <div class="ledger-row"><span class="k">Now</span><span class="v">MS HCI, RIT</span></div>
         <div class="ledger-row"><span class="k">Based in</span><span class="v">Rochester, NY</span></div>
         <div class="ledger-row"><span class="k">Available</span><span class="v open">Open — Summer '27</span></div>
-      </div>
-
-      <div class="ledger-block has-rail">
-        <div class="ledger-label"><span class="bar"></span>Process</div>
-        <div class="proc-rail"></div>
-        <div class="ledger-row proc-row" data-stage="research" tabindex="0" role="button" aria-pressed="false"><span class="k">Research</span><span class="v">mixed-methods</span></div>
-        <div class="ledger-row proc-row" data-stage="design" tabindex="0" role="button" aria-pressed="false"><span class="k">Design</span><span class="v">Figma, systems</span></div>
-        <div class="ledger-row proc-row" data-stage="validate" tabindex="0" role="button" aria-pressed="false"><span class="k">Validate</span><span class="v">usability testing</span></div>
-        <div class="ledger-row proc-row" data-stage="build" tabindex="0" role="button" aria-pressed="false"><span class="k">Build</span><span class="v">prototypes in code</span></div>
-        <div class="proc-hint">↳ click a stage to see it in the work below</div>
       </div>
     </div>
 
     <div class="ledger-foot">
       <a href="/resume.pdf" download class="ledger-resume">↓ Download Résumé (PDF)</a><br>
       LAST UPDATED<br>
-      Jun 21 2026<br><br>
+      Oct 7 2026<br><br>
       Case studies reviewed under NDA on request.
     </div>
   </aside>
@@ -1772,7 +1768,7 @@
             <div class="entry-desc-row">
               <p class="entry-description">MyCourses buried deadlines and submission status behind clutter. I redesigned the dashboard around a clearer hierarchy and built in an AI assistant that surfaces what's due, submitted, and needs action — giving students daily clarity instead of last-minute scrambling.</p>
             </div>
-            <div class="entry-result stage-mark" data-stage="validate" data-stage-label="Validate">
+            <div class="entry-result">
               <div><div class="num">1.75×</div><div class="lbl">faster submission time</div></div>
               <div><div class="num">85%</div><div class="lbl">less time finding materials</div></div>
               <div><div class="num">91%</div><div class="lbl">clearer submission status</div></div>
@@ -1797,7 +1793,7 @@
             <div class="entry-desc-row">
               <p class="entry-description">RIT students struggled to track expenses and understand where their money went — existing tools buried transaction details that mattered. I led research and design for Tiger Track, a transparent finance-tracking experience with real-time balances and low-balance alerts that helps students stay ahead of overspending.</p>
             </div>
-            <div class="entry-result stage-mark" data-stage="validate" data-stage-label="Validate">
+            <div class="entry-result">
               <div><div class="num">30%</div><div class="lbl">adoption within 3 months</div></div>
               <div><div class="num">40%</div><div class="lbl">better budget awareness</div></div>
               <div><div class="num">60%</div><div class="lbl">faster expense tracking</div></div>
@@ -2531,6 +2527,20 @@ document.querySelectorAll('.tool-tile img').forEach(img => {
   };
   if (img.complete && img.naturalWidth === 0) fail(); else img.addEventListener('error', fail);
 });
+</script>
+
+<script>
+// On phones and small tablets, show the status panel after the intro instead of above the headline
+(function(){
+  const ledger = document.querySelector('.ledger');
+  const hero = document.querySelector('.hero');
+  const stage = document.querySelector('.stage');
+  if (!ledger || !hero || !stage) return;
+  const mq = window.matchMedia('(max-width: 980px)');
+  const place = () => { if (mq.matches) hero.after(ledger); else stage.prepend(ledger); };
+  place();
+  mq.addEventListener('change', place);
+})();
 </script>
 
 </body>
