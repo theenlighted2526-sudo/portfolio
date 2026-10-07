@@ -304,6 +304,8 @@
 
   .entry-readlink.is-soon{ color: var(--stone); border-bottom: 1px dashed var(--stone); cursor: default; }
   .entry-readlink.is-soon:hover{ color: var(--stone); border-color: var(--stone); }
+  .entry.no-link .entry-visual{ cursor: default; }
+  .entry.no-link .entry-visual::after{ content: 'Case study coming soon'; }
 </style>
 </head>
 <body>
@@ -366,7 +368,7 @@
         </div>
       </article>
 
-      <article class="entry" id="proj-tigertrack">
+      <article class="entry no-link" id="proj-tigertrack">
         <div class="entry-visual">
           <img src="assets/img/tiger-track-app-screenshot-1d949c.webp" alt="Tiger Track app screenshot">
         </div>
@@ -389,7 +391,7 @@
         </div>
       </article>
 
-      <article class="entry" id="proj-starpath">
+      <article class="entry no-link" id="proj-starpath">
         <div class="entry-visual">
           <img src="assets/img/starpath-app-screenshot-c29190.webp" alt="StarPath app screenshot">
         </div>
@@ -467,5 +469,13 @@
   updateActive();
 </script>
 
+<script>
+// Clicking a project image opens its case study, like the "View project" link
+document.querySelectorAll('.entry').forEach(entry => {
+  const link = entry.querySelector('a.entry-readlink[href]');
+  const visual = entry.querySelector('.entry-visual');
+  if (link && visual) visual.addEventListener('click', () => { location.href = link.href; });
+});
+</script>
 </body>
 </html>
