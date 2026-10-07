@@ -29,7 +29,7 @@
     --paper:#F5F4F0;
     --signal:#FF5A1F;
     --moss:#4A6FA5;
-    --stone:#8C8473;
+    --stone:#6E675A;
     --line: rgba(21,20,15,0.14);
     --display: 'Space Grotesk', sans-serif;
     --body: 'Inter', sans-serif;
@@ -90,8 +90,8 @@
     background:var(--paper);
     color:var(--ink);
     font-family:var(--body);
-    font-weight: 200;
-    letter-spacing: -0.015em;
+    font-weight: 300;
+    letter-spacing: -0.01em;
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
     transition: background-color .35s ease, color .35s ease;
@@ -415,9 +415,12 @@
     display:inline-block;
     white-space: nowrap;
     vertical-align: top;
+    min-height: 1.12em;
   }
   #rotator{ color: var(--signal); }
-  #rotator .caret{
+  .rotator-line .caret{
+    height: 0.9em;
+    vertical-align: -0.08em;
     display:inline-block;
     width: 2px;
     margin-left: 2px;
@@ -433,15 +436,15 @@
     max-width: 560px;
     margin-top: 28px;
     font-family: 'Inter', var(--body), sans-serif;
-    font-weight: 200;
-    letter-spacing: -0.015em;
-    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    font-size: 17px;
     line-height: 1.6;
-    color: var(--stone);
+    color: var(--body-text);
   }
   .hero-sub strong{
     color: var(--ink);
-    font-weight: 200;
+    font-weight: 500;
   }
 
   .hero-cta{
@@ -1223,6 +1226,36 @@
   #ruler-coord-x{ top: 3px; transform: translateX(-50%); }
   #ruler-coord-y{ left: 1px; transform: translateY(-50%) rotate(-90deg); transform-origin: center; }
 
+
+  /* Case studies that aren't written up yet */
+  .entry-readlink.is-soon{ color: var(--stone); border-bottom: 1px dashed var(--stone); cursor: default; }
+  .entry-readlink.is-soon:hover{ color: var(--stone); border-color: var(--stone); }
+  .entry.no-link .entry-visual{ cursor: default; }
+  .entry.no-link .entry-visual::after{ content: 'Case study coming soon'; }
+  /* Missing image: hide the broken icon, show the labelled placeholder instead */
+  .entry-visual.img-missing img{ display: none; }
+  .about-simple-photo.img-missing{ aspect-ratio: 4 / 5; background: var(--ink); display:flex; align-items:center; justify-content:center; }
+  .about-simple-photo.img-missing img{ display: none; }
+  .about-simple-photo.img-missing::after{ content: attr(data-label); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: rgba(247,243,236,0.45); }
+
+  /* Phones: tighter spacing, full-width buttons, compact sidebar */
+  @media (max-width: 560px){
+    .wrap{ padding: 0 20px; }
+    .hero{ padding: 28px 20px 44px; }
+    .hero-sub{ font-size: 16px; }
+    .hero-cta{ flex-direction: column; align-items: stretch; margin-top: 28px; }
+    .hero-cta .btn{ justify-content: center; text-align: center; }
+    .section-head{ padding: 36px 20px 0; }
+    .log{ padding: 20px 20px 48px; }
+    .entry-heading{ font-size: 22px; }
+    .entry-visual{ aspect-ratio: 4 / 3; margin-bottom: 20px; }
+    .entry-result{ gap: 18px 28px; }
+    .ledger{ padding: 20px; gap: 16px; }
+    .ledger-block.has-rail, .ledger-foot{ display: none; }
+    .tools-grid{ padding: 20px 20px 48px; gap: 10px; }
+    .research{ padding: 20px 20px 48px; }
+    footer{ padding: 56px 20px 28px; }
+  }
 </style>
 </head>
 <body>
@@ -1722,7 +1755,7 @@
         </div>
       </article>
 
-      <article class="entry" id="proj-tigertrack">
+      <article class="entry no-link" id="proj-tigertrack">
         <div class="entry-index">002</div>
         <h3 class="entry-heading">Designing Tiger Track to bring clarity to on-campus finance tracking</h3>
         <div class="entry-tags">
@@ -1742,12 +1775,12 @@
               <div><div class="num">40%</div><div class="lbl">better budget awareness</div></div>
               <div><div class="num">60%</div><div class="lbl">faster expense tracking</div></div>
             </div>
-            <a href="#" class="entry-readlink">View project →</a>
+            <span class="entry-readlink is-soon">Case study coming soon</span>
           </div>
         </div>
       </article>
 
-      <article class="entry" id="proj-starpath">
+      <article class="entry no-link" id="proj-starpath">
         <div class="entry-index">003</div>
         <h3 class="entry-heading">StarPath — an AR-powered companion for exploring the night sky</h3>
         <div class="entry-tags">
@@ -1762,7 +1795,7 @@
             <div class="entry-desc-row">
               <p class="entry-description">Stargazing apps tend to overwhelm beginners or under-serve experienced astronomers. StarPath is a mobile app concept bringing real-time celestial event tracking, an AR-based sky map, and a community astrophotography gallery into one experience — helping anyone plan sessions and identify what they're looking at just by pointing their phone at the sky.</p>
             </div>
-            <a href="#" class="entry-readlink">View project →</a>
+            <span class="entry-readlink is-soon">Case study coming soon</span>
           </div>
         </div>
       </article>
@@ -1835,7 +1868,7 @@
       <span class="section-tag">about</span>
     </div>
     <section class="about-simple">
-      <div class="about-simple-photo">
+      <div class="about-simple-photo" data-label="Photo coming soon">
         <img src="assets/img/tanmay-padekar-52f61e.jpg" alt="Tanmay Padekar">
       </div>
       <div class="about-simple-text">
@@ -1864,7 +1897,7 @@
         <div class="footer-label">Open to</div>
         <div>Full-time product design roles</div>
         <div>Contract & freelance work</div>
-        <div>Summer 2026 onwards</div>
+        <div>Summer 2027 onwards</div>
       </div>
       <div class="footer-col">
         <div class="footer-label">Elsewhere</div>
@@ -2396,7 +2429,7 @@
   const hoverRules = [
     { selector: 'a[href^="#"]',                  cls: 'is-hover', text: 'Go' },
     { selector: 'a[download]',                   cls: 'is-cta',   text: 'Download' },
-    { selector: '.entry-readlink',               cls: 'is-cta',   text: 'View →' },
+    { selector: 'a.entry-readlink',             cls: 'is-cta',   text: 'View →' },
     { selector: '.paper-link',                   cls: 'is-cta',   text: 'Read →' },
     { selector: '.btn-fill',                     cls: 'is-cta',   text: 'Go' },
     { selector: '.btn-ghost',                    cls: 'is-hover',  text: 'Go' },
@@ -2434,6 +2467,24 @@
     el.addEventListener('mouseleave', clearHover);
   });
 })();
+</script>
+
+<script>
+// Missing images fall back to the existing labelled placeholder
+document.querySelectorAll('.entry-visual img, .about-simple-photo img').forEach(img => {
+  const box = img.parentElement;
+  const fail = () => {
+    box.classList.add('img-missing');
+    if (!box.dataset.label) box.dataset.label = 'Image coming soon';
+  };
+  if (img.complete && img.naturalWidth === 0) fail(); else img.addEventListener('error', fail);
+});
+// Clicking a project image opens its case study, like the "View project" link
+document.querySelectorAll('.entry').forEach(entry => {
+  const link = entry.querySelector('a.entry-readlink[href]');
+  const visual = entry.querySelector('.entry-visual');
+  if (link && visual) visual.addEventListener('click', () => { location.href = link.href; });
+});
 </script>
 
 </body>
