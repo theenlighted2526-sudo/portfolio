@@ -890,7 +890,7 @@
   }
   .entry-result .num{
     font-family: var(--mono);
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--signal);
     line-height: 1;
@@ -1256,6 +1256,32 @@
     .research{ padding: 20px 20px 48px; }
     footer{ padding: 56px 20px 28px; }
   }
+
+  /* One-line proof under the hero buttons */
+  .hero-proof{
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--body-text);
+  }
+  .hero-proof span{ color: var(--signal); margin-right: 10px; }
+  /* Phones: keep the three results side by side */
+  @media (max-width: 560px){
+    .entry-result{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .entry-result .num{ font-size: 24px; }
+    .entry-result .lbl{ font-size: 10px; letter-spacing: 0.03em; }
+    .hero-proof span{ display: block; margin: 0 0 4px; }
+  }
+
+  /* Tools: letter badge when a logo isn't available; light-on-dark for black logos */
+  .tool-tile .tool-initial{
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-weight: 600; font-size: 16px;
+    background: var(--ink); color: var(--paper);
+  }
+  [data-theme="dark"] .tool-tile.mono img{ filter: invert(1); }
 </style>
 </head>
 <body>
@@ -1704,7 +1730,7 @@
   <!-- MAIN -->
   <main>
     <section class="hero" id="top">
-      <div class="hero-eyebrow">AI-Forward Product Designer</div>
+      <div class="hero-eyebrow">Tanmay Padekar · Product Designer · MS HCI at RIT</div>
 
       <h1>
         Designing products people<br>
@@ -1712,14 +1738,15 @@
         <span class="rotator-line"><span id="rotator"></span><span class="caret"></span></span>
       </h1>
       <p class="hero-sub">
-        I design AI and digital products by combining <strong>user research,
-        systems thinking, and interaction design</strong> to reduce complexity,
-        accelerate adoption, and create experiences people genuinely trust.
+        Product designer with 2+ years in industry, now doing an MS in HCI at RIT.
+        I combine <strong>user research, systems thinking, and interaction design</strong>
+        to make AI and digital products simpler to use, and I measure whether they work.
       </p>
       <div class="hero-cta">
         <a href="#work" class="btn btn-fill">Read Case Studies</a>
         <a href="/resume.pdf" download class="btn btn-ghost">Download Résumé</a>
       </div>
+      <p class="hero-proof"><span>Recent results</span> 1.75× faster assignment submission · 30% adoption in 3 months</p>
     </section>
 
     <div class="section-head" id="work">
@@ -1730,7 +1757,7 @@
     <section class="log">
       <article class="entry" id="proj-mycourses">
         <div class="entry-index">001</div>
-        <h3 class="entry-heading">Redesigning MyCourses to reduce assignment-related anxiety and improve daily clarity for students with inbuilt AI assistant</h3>
+        <h3 class="entry-heading">MyCourses: a calmer course dashboard with an AI assistant that shows what’s due</h3>
         <div class="entry-tags">
           <span class="tag">UX Research</span>
           <span class="tag">Interface Design</span>
@@ -1757,7 +1784,7 @@
 
       <article class="entry no-link" id="proj-tigertrack">
         <div class="entry-index">002</div>
-        <h3 class="entry-heading">Designing Tiger Track to bring clarity to on-campus finance tracking</h3>
+        <h3 class="entry-heading">Tiger Track: making on-campus spending easy to follow</h3>
         <div class="entry-tags">
           <span class="tag">UX Research</span>
           <span class="tag">UI Design</span>
@@ -1782,7 +1809,7 @@
 
       <article class="entry no-link" id="proj-starpath">
         <div class="entry-index">003</div>
-        <h3 class="entry-heading">StarPath — an AR-powered companion for exploring the night sky</h3>
+        <h3 class="entry-heading">StarPath: an AR guide to the night sky for beginners and experts</h3>
         <div class="entry-tags">
           <span class="tag">UX Design</span>
           <span class="tag">AR/UI Design</span>
@@ -1816,22 +1843,28 @@
 
     <div class="section-head section-divider" id="tools">
       <h2>Tools</h2>
-      <span class="section-tag">What I design and prototype with</span>
+      <span class="section-tag">design, research &amp; AI tools I work with</span>
     </div>
 
     <div class="tools-grid">
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/figma" alt="Figma logo" onerror="this.style.display='none'"><span class="tool-name">Figma</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/framer" alt="Framer logo" onerror="this.style.display='none'"><span class="tool-name">Framer</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/sketch" alt="Sketch logo" onerror="this.style.display='none'"><span class="tool-name">Sketch</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/adobephotoshop" alt="Photoshop logo" onerror="this.style.display='none'"><span class="tool-name">Photoshop</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/adobeillustrator" alt="Illustrator logo" onerror="this.style.display='none'"><span class="tool-name">Illustrator</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/adobexd" alt="Adobe XD logo" onerror="this.style.display='none'"><span class="tool-name">Adobe XD</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/notion" alt="Notion logo" onerror="this.style.display='none'"><span class="tool-name">Notion</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/miro" alt="Miro logo" onerror="this.style.display='none'"><span class="tool-name">Miro</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/webflow" alt="Webflow logo" onerror="this.style.display='none'"><span class="tool-name">Webflow</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/zeplin" alt="Zeplin logo" onerror="this.style.display='none'"><span class="tool-name">Zeplin</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/slack" alt="Slack logo" onerror="this.style.display='none'"><span class="tool-name">Slack</span></div>
-      <div class="tool-tile"><img src="https://cdn.simpleicons.org/loom" alt="Loom logo" onerror="this.style.display='none'"><span class="tool-name">Loom</span></div>
+      <div class="tool-tile" data-initial="F"><img src="https://cdn.simpleicons.org/figma" alt="" loading="lazy"><span class="tool-name">Figma</span></div>
+      <div class="tool-tile mono" data-initial="F"><img src="https://cdn.simpleicons.org/framer" alt="" loading="lazy"><span class="tool-name">Framer</span></div>
+      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/protopie" alt="" loading="lazy"><span class="tool-name">ProtoPie</span></div>
+      <div class="tool-tile" data-initial="S"><img src="https://cdn.simpleicons.org/spline" alt="" loading="lazy"><span class="tool-name">Spline</span></div>
+      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/adobephotoshop" alt="" loading="lazy"><span class="tool-name">Photoshop</span></div>
+      <div class="tool-tile" data-initial="I"><img src="https://cdn.simpleicons.org/adobeillustrator" alt="" loading="lazy"><span class="tool-name">Illustrator</span></div>
+      <div class="tool-tile mono" data-initial="M"><img src="https://cdn.simpleicons.org/maze" alt="" loading="lazy"><span class="tool-name">Maze</span></div>
+      <div class="tool-tile mono" data-initial="D"><img src="https://cdn.simpleicons.org/dovetail" alt="" loading="lazy"><span class="tool-name">Dovetail</span></div>
+      <div class="tool-tile" data-initial="M"><img src="https://cdn.simpleicons.org/miro" alt="" loading="lazy"><span class="tool-name">Miro</span></div>
+      <div class="tool-tile mono" data-initial="N"><img src="https://cdn.simpleicons.org/notion" alt="" loading="lazy"><span class="tool-name">Notion</span></div>
+      <div class="tool-tile" data-initial="H"><img src="https://cdn.simpleicons.org/hotjar" alt="" loading="lazy"><span class="tool-name">Hotjar</span></div>
+      <div class="tool-tile" data-initial="C"><img src="https://cdn.simpleicons.org/claude" alt="" loading="lazy"><span class="tool-name">Claude</span></div>
+      <div class="tool-tile mono" data-initial="C"><img src="https://cdn.simpleicons.org/openai" alt="" loading="lazy"><span class="tool-name">ChatGPT</span></div>
+      <div class="tool-tile mono" data-initial="C"><img src="https://cdn.simpleicons.org/cursor" alt="" loading="lazy"><span class="tool-name">Cursor</span></div>
+      <div class="tool-tile mono" data-initial="v"><img src="https://cdn.simpleicons.org/v0" alt="" loading="lazy"><span class="tool-name">v0</span></div>
+      <div class="tool-tile" data-initial="L"><img src="https://cdn.simpleicons.org/lovable" alt="" loading="lazy"><span class="tool-name">Lovable</span></div>
+      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/perplexity" alt="" loading="lazy"><span class="tool-name">Perplexity</span></div>
+      <div class="tool-tile" data-initial="W"><img src="https://cdn.simpleicons.org/webflow" alt="" loading="lazy"><span class="tool-name">Webflow</span></div>
     </div>
 
 
@@ -1890,8 +1923,7 @@
       <div class="footer-col">
         <div class="footer-label">Connect</div>
         <a href="mailto:tp1035@g.rit.edu">tp1035@g.rit.edu</a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn ↗</a>
-        <a href="https://github.com" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/tanmay-padekar-46562b17a" target="_blank" rel="noopener">LinkedIn ↗</a>
       </div>
       <div class="footer-col">
         <div class="footer-label">Open to</div>
@@ -2484,6 +2516,20 @@ document.querySelectorAll('.entry').forEach(entry => {
   const link = entry.querySelector('a.entry-readlink[href]');
   const visual = entry.querySelector('.entry-visual');
   if (link && visual) visual.addEventListener('click', () => { location.href = link.href; });
+});
+</script>
+
+<script>
+// Tool logos: swap a missing logo for a letter badge so every tile matches
+document.querySelectorAll('.tool-tile img').forEach(img => {
+  const fail = () => {
+    const badge = document.createElement('span');
+    badge.className = 'tool-initial';
+    badge.setAttribute('aria-hidden', 'true');
+    badge.textContent = img.closest('.tool-tile').dataset.initial;
+    img.replaceWith(badge);
+  };
+  if (img.complete && img.naturalWidth === 0) fail(); else img.addEventListener('error', fail);
 });
 </script>
 
