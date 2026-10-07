@@ -890,7 +890,7 @@
   }
   .entry-result .num{
     font-family: var(--mono);
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 700;
     color: var(--signal);
     line-height: 1;
@@ -1255,6 +1255,23 @@
     .tools-grid{ padding: 20px 20px 48px; gap: 10px; }
     .research{ padding: 20px 20px 48px; }
     footer{ padding: 56px 20px 28px; }
+  }
+
+  /* One-line proof under the hero buttons */
+  .hero-proof{
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--body-text);
+  }
+  .hero-proof span{ color: var(--signal); margin-right: 10px; }
+  /* Phones: keep the three results side by side */
+  @media (max-width: 560px){
+    .entry-result{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .entry-result .num{ font-size: 24px; }
+    .entry-result .lbl{ font-size: 10px; letter-spacing: 0.03em; }
+    .hero-proof span{ display: block; margin: 0 0 4px; }
   }
 </style>
 </head>
@@ -1704,7 +1721,7 @@
   <!-- MAIN -->
   <main>
     <section class="hero" id="top">
-      <div class="hero-eyebrow">AI-Forward Product Designer</div>
+      <div class="hero-eyebrow">Tanmay Padekar · Product Designer · MS HCI at RIT</div>
 
       <h1>
         Designing products people<br>
@@ -1712,14 +1729,15 @@
         <span class="rotator-line"><span id="rotator"></span><span class="caret"></span></span>
       </h1>
       <p class="hero-sub">
-        I design AI and digital products by combining <strong>user research,
-        systems thinking, and interaction design</strong> to reduce complexity,
-        accelerate adoption, and create experiences people genuinely trust.
+        Product designer with 2+ years in industry, now doing an MS in HCI at RIT.
+        I combine <strong>user research, systems thinking, and interaction design</strong>
+        to make AI and digital products simpler to use, and I measure whether they work.
       </p>
       <div class="hero-cta">
         <a href="#work" class="btn btn-fill">Read Case Studies</a>
         <a href="/resume.pdf" download class="btn btn-ghost">Download Résumé</a>
       </div>
+      <p class="hero-proof"><span>Recent results</span> 1.75× faster assignment submission · 30% adoption in 3 months</p>
     </section>
 
     <div class="section-head" id="work">
@@ -1730,7 +1748,7 @@
     <section class="log">
       <article class="entry" id="proj-mycourses">
         <div class="entry-index">001</div>
-        <h3 class="entry-heading">Redesigning MyCourses to reduce assignment-related anxiety and improve daily clarity for students with inbuilt AI assistant</h3>
+        <h3 class="entry-heading">MyCourses: a calmer course dashboard with an AI assistant that shows what’s due</h3>
         <div class="entry-tags">
           <span class="tag">UX Research</span>
           <span class="tag">Interface Design</span>
@@ -1757,7 +1775,7 @@
 
       <article class="entry no-link" id="proj-tigertrack">
         <div class="entry-index">002</div>
-        <h3 class="entry-heading">Designing Tiger Track to bring clarity to on-campus finance tracking</h3>
+        <h3 class="entry-heading">Tiger Track: making on-campus spending easy to follow</h3>
         <div class="entry-tags">
           <span class="tag">UX Research</span>
           <span class="tag">UI Design</span>
@@ -1782,7 +1800,7 @@
 
       <article class="entry no-link" id="proj-starpath">
         <div class="entry-index">003</div>
-        <h3 class="entry-heading">StarPath — an AR-powered companion for exploring the night sky</h3>
+        <h3 class="entry-heading">StarPath: an AR guide to the night sky for beginners and experts</h3>
         <div class="entry-tags">
           <span class="tag">UX Design</span>
           <span class="tag">AR/UI Design</span>
