@@ -1289,7 +1289,7 @@
     .ledger-block{ max-width: 520px; }
   }
 
-  /* ---------- BACKDROP: slow-drifting colour + film grain ---------- */
+  /* ---------- BACKDROP: flowing black + orange, film grain ---------- */
   #backdrop{
     position: fixed;
     inset: 0;
@@ -1299,32 +1299,47 @@
   }
   #backdrop .blob{
     position: absolute;
-    width: 70vmax;
-    height: 70vmax;
     border-radius: 50%;
-    opacity: var(--blob-opacity);
     will-change: transform;
   }
-  #backdrop .b1{
+  /* Black smoke: two large shapes that sweep across each other */
+  #backdrop .k1{
+    width: 85vmax; height: 60vmax;
+    background: radial-gradient(ellipse at center, var(--smoke) 0%, transparent 65%);
+    opacity: var(--smoke-opacity);
+    top: -20vmax; left: -25vmax;
+    animation: flow1 26s ease-in-out infinite alternate;
+  }
+  #backdrop .k2{
+    width: 75vmax; height: 55vmax;
+    background: radial-gradient(ellipse at center, var(--smoke) 0%, transparent 65%);
+    opacity: var(--smoke-opacity);
+    bottom: -25vmax; right: -20vmax;
+    animation: flow2 32s ease-in-out infinite alternate;
+  }
+  /* Orange ember drifting through the smoke */
+  #backdrop .o1{
+    width: 55vmax; height: 55vmax;
     background: radial-gradient(circle at center, var(--signal) 0%, transparent 62%);
-    top: -30vmax; right: -22vmax;
-    animation: drift1 38s ease-in-out infinite alternate;
+    opacity: var(--ember-opacity);
+    top: -15vmax; right: -15vmax;
+    animation: flow3 30s ease-in-out infinite alternate;
   }
-  #backdrop .b2{
-    background: radial-gradient(circle at center, var(--moss) 0%, transparent 62%);
-    bottom: -34vmax; left: -20vmax;
-    animation: drift2 46s ease-in-out infinite alternate;
+  @keyframes flow1{
+    0%  { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate(30vmax, 18vmax) rotate(25deg) scale(1.15); }
+    100%{ transform: translate(55vmax, 6vmax) rotate(-10deg) scale(.95); }
   }
-  #backdrop .b3{
-    background: radial-gradient(circle at center, color-mix(in srgb, var(--signal) 55%, var(--moss)) 0%, transparent 60%);
-    top: 30%; left: 35%;
-    width: 50vmax; height: 50vmax;
-    opacity: calc(var(--blob-opacity) * .7);
-    animation: drift3 54s ease-in-out infinite alternate;
+  @keyframes flow2{
+    0%  { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate(-28vmax, -20vmax) rotate(-30deg) scale(1.2); }
+    100%{ transform: translate(-50vmax, -4vmax) rotate(15deg) scale(1); }
   }
-  @keyframes drift1{ to{ transform: translate(-18vmax, 22vmax) scale(1.15); } }
-  @keyframes drift2{ to{ transform: translate(20vmax, -16vmax) scale(1.1); } }
-  @keyframes drift3{ from{ transform: translate(-10vmax, -8vmax) scale(.9); } to{ transform: translate(14vmax, 10vmax) scale(1.2); } }
+  @keyframes flow3{
+    0%  { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-25vmax, 25vmax) scale(1.2); }
+    100%{ transform: translate(-45vmax, 8vmax) scale(.9); }
+  }
   #backdrop .grain{
     position: absolute;
     inset: 0;
@@ -1332,15 +1347,15 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
   }
-  :root{ --blob-opacity: .16; --grain-opacity: .35; }
-  [data-theme="dark"]{ --blob-opacity: .14; --grain-opacity: .13; }
+  :root{ --smoke: #15140F; --smoke-opacity: .2; --ember-opacity: .16; --grain-opacity: .35; }
+  [data-theme="dark"]{ --smoke: #000000; --smoke-opacity: .85; --ember-opacity: .16; --grain-opacity: .13; }
   @media (prefers-reduced-motion: reduce){
     #backdrop .blob{ animation: none; }
   }
 </style>
 </head>
 <body>
-<div id="backdrop" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grain"></div></div>
+<div id="backdrop" aria-hidden="true"><div class="blob k1"></div><div class="blob k2"></div><div class="blob o1"></div><div class="grain"></div></div>
 
 <!-- ░░ INTRO ANIMATION OVERLAY ░░ -->
 <div id="intro-overlay" aria-hidden="true">
