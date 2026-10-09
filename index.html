@@ -1289,73 +1289,22 @@
     .ledger-block{ max-width: 520px; }
   }
 
-  /* ---------- BACKDROP: flowing black + orange, film grain ---------- */
+  /* ---------- BACKDROP: film grain ---------- */
   #backdrop{
     position: fixed;
     inset: 0;
     z-index: -1;
-    overflow: hidden;
     pointer-events: none;
-  }
-  #backdrop .blob{
-    position: absolute;
-    border-radius: 50%;
-    will-change: transform;
-  }
-  /* Black smoke: two large shapes that sweep across each other */
-  #backdrop .k1{
-    width: 85vmax; height: 60vmax;
-    background: radial-gradient(ellipse at center, var(--smoke) 0%, transparent 65%);
-    opacity: var(--smoke-opacity);
-    top: -20vmax; left: -25vmax;
-    animation: flow1 26s ease-in-out infinite alternate;
-  }
-  #backdrop .k2{
-    width: 75vmax; height: 55vmax;
-    background: radial-gradient(ellipse at center, var(--smoke) 0%, transparent 65%);
-    opacity: var(--smoke-opacity);
-    bottom: -25vmax; right: -20vmax;
-    animation: flow2 32s ease-in-out infinite alternate;
-  }
-  /* Orange ember drifting through the smoke */
-  #backdrop .o1{
-    width: 55vmax; height: 55vmax;
-    background: radial-gradient(circle at center, var(--signal) 0%, transparent 62%);
-    opacity: var(--ember-opacity);
-    top: -15vmax; right: -15vmax;
-    animation: flow3 30s ease-in-out infinite alternate;
-  }
-  @keyframes flow1{
-    0%  { transform: translate(0, 0) rotate(0deg) scale(1); }
-    50% { transform: translate(30vmax, 18vmax) rotate(25deg) scale(1.15); }
-    100%{ transform: translate(55vmax, 6vmax) rotate(-10deg) scale(.95); }
-  }
-  @keyframes flow2{
-    0%  { transform: translate(0, 0) rotate(0deg) scale(1); }
-    50% { transform: translate(-28vmax, -20vmax) rotate(-30deg) scale(1.2); }
-    100%{ transform: translate(-50vmax, -4vmax) rotate(15deg) scale(1); }
-  }
-  @keyframes flow3{
-    0%  { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-25vmax, 25vmax) scale(1.2); }
-    100%{ transform: translate(-45vmax, 8vmax) scale(.9); }
-  }
-  #backdrop .grain{
-    position: absolute;
-    inset: 0;
     opacity: var(--grain-opacity);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
   }
-  :root{ --smoke: #15140F; --smoke-opacity: .2; --ember-opacity: .16; --grain-opacity: .35; }
-  [data-theme="dark"]{ --smoke: #000000; --smoke-opacity: .85; --ember-opacity: .16; --grain-opacity: .13; }
-  @media (prefers-reduced-motion: reduce){
-    #backdrop .blob{ animation: none; }
-  }
+  :root{ --grain-opacity: .35; }
+  [data-theme="dark"]{ --grain-opacity: .13; }
 </style>
 </head>
 <body>
-<div id="backdrop" aria-hidden="true"><div class="blob k1"></div><div class="blob k2"></div><div class="blob o1"></div><div class="grain"></div></div>
+<div id="backdrop" aria-hidden="true"></div>
 
 <!-- ░░ INTRO ANIMATION OVERLAY ░░ -->
 <div id="intro-overlay" aria-hidden="true">
