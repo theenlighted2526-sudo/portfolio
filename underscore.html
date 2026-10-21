@@ -402,7 +402,84 @@
   }
   .built-list{ margin: 20px 0 0; padding-left: 20px; }
   .built-list li{ margin-bottom: 10px; color: var(--body-text); line-height: 1.6; }
+  /* ---------- Case study v2 ---------- */
+  .stage > main{ min-width: 0; } /* let wide diagrams scroll inside their box instead of widening the page */
+  .tldr{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 28px; background: var(--line); border:1px solid var(--line); border-radius: 8px; overflow:hidden; }
+  @media (max-width: 960px){ .tldr{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px){ .tldr{ grid-template-columns: 1fr; } }
+  .tldr > div{ background: var(--paper); padding: 20px; }
+  .tldr .k{ font-family: var(--mono); font-size: 11px; letter-spacing:.08em; text-transform: uppercase; color: var(--signal); margin-bottom: 10px; }
+  .tldr p{ margin: 0; font-size: 15px; line-height: 1.55; color: var(--body-text); }
+  .hmw{ margin-top: 28px; padding: 24px 28px; border-left: 3px solid var(--signal); background: color-mix(in srgb, var(--signal) 7%, transparent); font-family: var(--display); font-size: clamp(19px, 2vw, 24px); line-height: 1.35; font-weight: 500; color: var(--ink); }
+  .hmw small{ display:block; font-family: var(--mono); font-size: 11px; letter-spacing:.08em; text-transform: uppercase; color: var(--stone); margin-bottom: 8px; font-weight: 400; }
+  .assume{ margin: 20px 0 0; padding: 0; list-style: none; display:grid; gap: 10px; }
+  .assume li{ padding: 14px 16px; border: 1px dashed var(--line); border-radius: 8px; color: var(--body-text); line-height: 1.55; }
+  .assume li b{ color: var(--ink); font-weight: 600; }
+  .table-wrap{ overflow-x: auto; margin-top: 24px; border: 1px solid var(--line); border-radius: 8px; }
+  .compare{ width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14px; }
+  .compare th, .compare td{ padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.45; }
+  .compare thead th{ font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--stone); font-weight: 500; }
+  .compare tbody th{ font-weight: 600; color: var(--ink); width: 26%; }
+  .compare td{ color: var(--body-text); }
+  .compare tr:last-child th, .compare tr:last-child td{ border-bottom: 0; }
+  .compare .us{ background: color-mix(in srgb, var(--signal) 8%, transparent); color: var(--ink); }
+  .compare thead .us{ color: var(--signal); }
+  .yes::before{ content:'●  '; color: var(--signal); }
+  .no::before{ content:'○  '; color: var(--stone); }
+  .principles{ counter-reset: pr; display:grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 28px; }
+  @media (max-width: 860px){ .principles{ grid-template-columns: 1fr; } }
+  .principles > div{ border-top: 1px solid var(--ink); padding-top: 16px; }
+  .principles .h{ font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink); margin-bottom: 8px; }
+  .principles .h::before{ counter-increment: pr; content: counter(pr, decimal-leading-zero) "  "; font-family: var(--mono); font-size: 12px; color: var(--signal); font-weight: 500; }
+  .principles p{ margin: 0; color: var(--body-text); line-height: 1.6; }
+  .diagram{ margin-top: 28px; border: 1px solid var(--line); border-radius: 8px; padding: 24px; overflow-x: auto; }
+  .diagram svg{ display:block; width: 100%; min-width: 720px; height: auto; }
+  .diagram figcaption{ font-family: var(--mono); font-size: 11px; color: var(--stone); margin-top: 14px; }
+  .dg .box{ fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+  .dg .box.hot{ stroke: var(--signal); stroke-width: 1.6; }
+  .dg .lane{ fill: none; stroke: var(--line); stroke-dasharray: 4 4; }
+  .dg .arrow{ fill: none; stroke: var(--ink); stroke-width: 1.2; marker-end: url(#ah); }
+  .dg .arrow.loop{ stroke: var(--signal); stroke-dasharray: 5 4; marker-end: url(#ahs); }
+  .dg .t1{ fill: var(--ink); font-family: var(--display); font-size: 15px; font-weight: 600; }
+  .dg .t2{ fill: var(--body-text); font-family: var(--body); font-size: 12px; }
+  .dg .t3{ fill: var(--stone); font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .dg .t4{ fill: var(--signal); font-family: var(--mono); font-size: 11px; }
+  .dg .ahf{ fill: var(--ink); } .dg .ahs{ fill: var(--signal); }
+  .decision{ display:grid; grid-template-columns: 220px 1fr; gap: 28px; padding: 28px 0; border-top: 1px solid var(--line); }
+  .decision:first-of-type{ margin-top: 12px; }
+  @media (max-width: 860px){ .decision{ grid-template-columns: 1fr; gap: 12px; } }
+  .decision .q{ font-family: var(--display); font-weight: 600; font-size: 18px; line-height: 1.35; color: var(--ink); }
+  .decision .q small{ display:block; font-family: var(--mono); font-size: 11px; letter-spacing:.08em; color: var(--signal); margin-bottom: 8px; font-weight: 500; }
+  .decision dl{ margin: 0; display:grid; gap: 14px; }
+  .decision dt{ font-family: var(--mono); font-size: 11px; letter-spacing:.08em; text-transform: uppercase; color: var(--stone); }
+  .decision dd{ margin: 4px 0 0; color: var(--body-text); line-height: 1.6; }
+  .decision dd b{ color: var(--ink); font-weight: 600; }
+  .annotated{ display:grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 40px; margin-top: 28px; align-items: start; }
+  @media (max-width: 860px){ .annotated{ grid-template-columns: 1fr; } .annotated .shot{ max-width: 340px; } }
+  .annotated .shot{ position: relative; }
+  .annotated .shot img{ width:100%; height:auto; display:block; border-radius: 26px; border: 1px solid var(--line); background:#050506; }
+  .pin{ position:absolute; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; background: var(--signal); color: #fff; font-family: var(--mono); font-size: 12px; font-weight: 600; display:flex; align-items:center; justify-content:center; box-shadow: 0 0 0 3px rgba(0,0,0,.35); }
+  .notes{ margin: 0; padding: 0; list-style: none; counter-reset: nt; display:grid; gap: 18px; }
+  .notes li{ counter-increment: nt; display:grid; grid-template-columns: 30px 1fr; gap: 12px; }
+  .notes li::before{ content: counter(nt); width: 26px; height: 26px; border-radius: 50%; background: var(--signal); color:#fff; font-family: var(--mono); font-size: 12px; font-weight: 600; display:flex; align-items:center; justify-content:center; }
+  .notes b{ display:block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+  .notes span{ color: var(--body-text); line-height: 1.55; }
+  .details{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  @media (max-width: 860px){ .details{ grid-template-columns: 1fr; } }
+  .details > div{ border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+  .details .k{ font-family: var(--mono); font-size: 11px; letter-spacing:.06em; color: var(--signal); margin-bottom: 6px; text-transform: uppercase; }
+  .details .h{ font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .details p{ margin: 0; font-size: 14px; color: var(--body-text); line-height: 1.55; }
+  .type-row{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+  @media (max-width: 640px){ .type-row{ grid-template-columns: 1fr; } }
+  .type-row > div{ background:#050506; color:#F2F2F0; border-radius: 14px; padding: 20px; }
+  .type-row .big{ font-family: 'Outfit', var(--display), sans-serif; font-weight: 200; font-size: 64px; line-height: 1; letter-spacing: -.02em; }
+  .type-row .ui{ font-family: 'Manrope', var(--body), sans-serif; font-size: 20px; font-weight: 500; }
+  .type-row .cap{ font-family: var(--mono); font-size: 11px; color: #8E8E96; margin-top: 10px; }
+  .gallery-note{ font-size: 14px; color: var(--stone); margin-top: 12px; }
+
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500&family=Outfit:wght@200&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="backdrop" aria-hidden="true"></div>
@@ -433,13 +510,21 @@
     <a href="work.html" class="toc-back">&#8592; Back to all work</a>
     <div class="toc-eyebrow">On this page</div>
     <ul class="toc-list">
-      <li><a href="#moment" class="toc-link" data-target="moment">The Moment</a></li>
-      <li><a href="#problem" class="toc-link" data-target="problem">The Problem</a></li>
-      <li><a href="#approach" class="toc-link" data-target="approach">The Approach</a></li>
+      <li><a href="#overview" class="toc-link" data-target="overview">Overview</a></li>
+      <li><a href="#problem" class="toc-link" data-target="problem">Problem</a></li>
+      <li><a href="#audience" class="toc-link" data-target="audience">Who It’s For</a></li>
+      <li><a href="#landscape" class="toc-link" data-target="landscape">What Exists Today</a></li>
+      <li><a href="#principles" class="toc-link" data-target="principles">Design Principles</a></li>
+      <li><a href="#mechanic" class="toc-link" data-target="mechanic">How It Works</a></li>
+      <li><a href="#structure" class="toc-link" data-target="structure">Structure &amp; Flows</a></li>
       <li><a href="#decisions" class="toc-link" data-target="decisions">Key Decisions</a></li>
+      <li><a href="#player" class="toc-link" data-target="player">The Core Screen</a></li>
+      <li><a href="#details" class="toc-link" data-target="details">The Details</a></li>
       <li><a href="#visual" class="toc-link" data-target="visual">Visual System</a></li>
-      <li><a href="#screens" class="toc-link" data-target="screens">The Screens</a></li>
-      <li><a href="#built" class="toc-link" data-target="built">What I Built</a></li>
+      <li><a href="#screens" class="toc-link" data-target="screens">All Screens</a></li>
+      <li><a href="#testing" class="toc-link" data-target="testing">Testing</a></li>
+      <li><a href="#outcome" class="toc-link" data-target="outcome">Outcome</a></li>
+      <li><a href="#risks" class="toc-link" data-target="risks">Open Questions</a></li>
       <li><a href="#next" class="toc-link" data-target="next">What’s Next</a></li>
     </ul>
   </aside>
@@ -450,13 +535,13 @@
       <h1>Underscore: background music that follows the scene you’re reading</h1>
       <div class="case-meta">
         <div><div class="k">Role</div><div class="v">Product design, UI design, prototyping</div></div>
-        <div><div class="k">Timeline</div><div class="v">Oct 16 – 19, 2026</div></div>
+        <div><div class="k">Timeline</div><div class="v">Oct 16 – 19, 2026 (4 days)</div></div>
         <div><div class="k">Tools</div><div class="v">Claude, Web Audio</div></div>
         <div><div class="k">Platform</div><div class="v">Mobile web app</div></div>
       </div>
       <div class="case-actions">
         <a href="underscore/" class="fill" target="_blank" rel="noopener">Try the prototype ↗</a>
-        <a href="#screens">See the screens ↓</a>
+        <a href="#screens">See all screens ↓</a>
       </div>
     </div>
 
@@ -464,65 +549,177 @@
       <img src="assets/img/underscore-thumbnail.webp" alt="Underscore: every scene, its own soundtrack. The app’s now-playing screen on an iPhone with floating cards for the next scene and AI chapter mapping.">
     </div>
 
-    <section class="case-section" id="moment">
-      <div class="case-section-label">The Moment</div>
-      <h2>A missed bus, a reading playlist, and goosebumps</h2>
-      <p>After a shift I missed my bus and had half an hour at a noisy stop. I put on headphones, started a “reading background music” playlist and opened my book. I was reading a scene where a character walks along the beach in the evening, with the wind blowing and good thoughts drifting by, and the track that came on matched it exactly. The whole scene lifted. I got goosebumps.</p>
+    <section class="case-section" id="overview">
+      <div class="case-section-label">Overview</div>
+      <h2>A soundtrack for the book you’re already reading</h2>
+      <div class="tldr">
+        <div><div class="k">Problem</div><p>Books change mood scene by scene, but reading playlists stay on one mood for the whole session.</p></div>
+        <div><div class="k">Solution</div><p>Pick your book and chapter. The music and screen color change with each scene while you read on paper or Kindle.</p></div>
+        <div><div class="k">My role</div><p>Product concept, flows, nine screens, the visual system, and a working prototype with live sound.</p></div>
+        <div><div class="k">Outcome</div><p>A working web app in 4 days, tested with readers. The core moment, music that matches the scene, held up.</p></div>
+      </div>
+      <p style="margin-top:28px">After a shift I missed my bus and had half an hour at a noisy stop. I put on headphones, started a “reading background music” playlist and opened my book. The scene was a character walking along the beach in the evening, wind blowing, good thoughts drifting by, and the track that came on matched it exactly. The whole scene lifted. I got goosebumps.</p>
       <p>That was luck. Underscore is about making it happen on purpose.</p>
     </section>
 
     <section class="case-section" id="problem">
-      <div class="case-section-label">The Problem</div>
+      <div class="case-section-label">Problem</div>
       <h2>Books change mood scene by scene. Playlists don’t.</h2>
       <div class="case-cols3">
         <div class="case-col-card">
           <div class="h">One mood for a whole session</div>
-          <p>Reading playlists hold one mood for the entire session, while a single chapter can move from calm to tense to warm.</p>
+          <p>A reading playlist holds one mood for an hour, while a single chapter can move from calm to tense to warm.</p>
         </div>
         <div class="case-col-card">
           <div class="h">Readers won’t switch apps</div>
-          <p>People read on paper and Kindle. Nobody will move to a new reading app just to get music.</p>
+          <p>People read on paper and Kindle. Nobody moves to a new reading app just to get music.</p>
         </div>
         <div class="case-col-card">
           <div class="h">Hand-scoring doesn’t scale</div>
-          <p>Soundtracks scored by hand for books have been tried before (Booktrack), and they never grew beyond a small catalog.</p>
+          <p>Soundtracks scored by hand for books have been tried before (Booktrack) and stayed limited to a small catalog.</p>
         </div>
+      </div>
+      <div class="hmw"><small>How might we</small>How might we make background music follow the story, scene by scene, for any book, without asking people to change how or where they read?</div>
+    </section>
+
+    <section class="case-section" id="audience">
+      <div class="case-section-label">Who It’s For</div>
+      <h2>Readers who already put music on to read</h2>
+      <p>The starting point is someone who already reaches for a reading playlist: on a commute, at a noisy stop, or in bed at night, with a physical book or a Kindle in hand and their phone nearby. I designed around a few assumptions about that moment:</p>
+      <ul class="assume">
+        <li><b>Their eyes are on the book, not the phone.</b> Anything the app shows has to be readable at a glance, and the phone should mostly be left alone.</li>
+        <li><b>They read in dark or noisy places.</b> A bright interface would be unwelcome at night, and the sound has to work over background noise.</li>
+        <li><b>They won’t do setup for every chapter.</b> Saying which chapter they’re on is acceptable. Marking scenes or typing page numbers is not.</li>
+        <li><b>They read at their own speed.</b> Some skim, some reread. Timing has to adapt to the person, not a fixed average.</li>
+      </ul>
+    </section>
+
+    <section class="case-section" id="landscape">
+      <div class="case-section-label">What Exists Today</div>
+      <h2>Nothing follows the story for any book, wherever you read</h2>
+      <p>Readers already have three ways to get music while they read. Each covers part of the need.</p>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th></th><th>Reading playlists</th><th>Hand-scored book soundtracks</th><th>Ambient sound apps</th><th class="us">Underscore</th></tr></thead>
+          <tbody>
+            <tr><th>Changes with the scene</th><td class="no">One mood throughout</td><td class="yes">Scored scene by scene</td><td class="no">Set by you, not the story</td><td class="us yes">Follows a scene map</td></tr>
+            <tr><th>Works with any book</th><td class="yes">Yes, generically</td><td class="no">Only scored titles</td><td class="yes">Yes, generically</td><td class="us yes">AI drafts a map for any chapter</td></tr>
+            <tr><th>Read on paper or Kindle</th><td class="yes">Yes</td><td class="no">Read inside their app</td><td class="yes">Yes</td><td class="us yes">Yes, any edition</td></tr>
+            <tr><th>Gets better with use</th><td class="no">No</td><td class="no">Fixed by the scorer</td><td class="no">No</td><td class="us yes">Reader votes tune each scene</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:20px">The gap was clear: the scene-level matching of a scored soundtrack, with the reach of a playlist.</p>
+    </section>
+
+    <section class="case-section" id="principles">
+      <div class="case-section-label">Design Principles</div>
+      <h2>Four rules I designed against</h2>
+      <div class="principles">
+        <div><div class="h">Read anywhere</div><p>Paper, Kindle, any edition. The app never asks you to move your reading into it.</p></div>
+        <div><div class="h">Glance, don’t look</div><p>Every screen during reading answers one question in a second: which scene am I in, and does the music fit?</p></div>
+        <div><div class="h">Close enough, easy to correct</div><p>Timing will drift, so correcting it has to be a single tap: the page ruler or a scene number.</p></div>
+        <div><div class="h">The story is the only color</div><p>A near-black interface where color comes only from the current scene’s mood, so the room changes with the book.</p></div>
       </div>
     </section>
 
-    <section class="case-section" id="approach">
-      <div class="case-section-label">The Approach</div>
-      <h2>Read anywhere. The music keeps pace.</h2>
-      <p>You read wherever you like and tell the app which book and chapter you’re on. Underscore follows a scene-by-scene map of that chapter, moves through the scenes at your measured reading pace, and crossfades both the music and the color of the screen as each new scene begins.</p>
+    <section class="case-section" id="mechanic">
+      <div class="case-section-label">How It Works</div>
+      <h2>A chapter becomes a soundtrack in five steps</h2>
+      <p>The core idea is to estimate where the reader is instead of tracking it. Underscore knows how a chapter divides into scenes and how fast this person reads, so it can work out which scene they’re probably in and change the sound when the next one starts.</p>
+      <figure class="diagram"><svg class="dg" viewBox="-2 0 1004 270" role="img" aria-label="How Underscore works: you choose a book and chapter, the app follows a scene map of 3 to 7 scenes, uses your reading pace in words per minute to estimate where you are, and changes music and screen color as each scene begins. You can correct drift with the page ruler or by jumping to a scene."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahf" d="M0 0L10 5L0 10z"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahs" d="M0 0L10 5L0 10z"/></marker></defs><rect class="box" x="0" y="40" width="176" height="140" rx="10"/><text class="t3" x="16" y="64">1 · You choose</text><text class="t1" x="16" y="88">Book + chapter</text><text class="t2" x="16" y="110">On paper, Kindle,</text><text class="t2" x="16" y="127">any edition</text><rect class="box" x="206" y="40" width="176" height="140" rx="10"/><text class="t3" x="222" y="64">2 · The map</text><text class="t1" x="222" y="88">Scene map</text><text class="t2" x="222" y="110">3 to 7 scenes</text><text class="t2" x="222" y="127">One mood per scene</text><text class="t2" x="222" y="144">Up to 2 ambient sounds</text><rect class="box" x="412" y="40" width="176" height="140" rx="10"/><text class="t3" x="428" y="64">3 · Your pace</text><text class="t1" x="428" y="88">Words per minute</text><text class="t2" x="428" y="110">Measured in a</text><text class="t2" x="428" y="127">one-minute reading test</text><rect class="box" x="618" y="40" width="176" height="140" rx="10"/><text class="t3" x="634" y="64">4 · Position</text><text class="t1" x="634" y="88">Where you are</text><text class="t2" x="634" y="110">Words read =</text><text class="t2" x="634" y="127">pace × time reading</text><rect class="box hot" x="824" y="40" width="176" height="140" rx="10"/><text class="t3" x="840" y="64">5 · The result</text><text class="t1" x="840" y="88">Sound + color</text><text class="t2" x="840" y="110">Music crossfades,</text><text class="t2" x="840" y="127">screen glow shifts</text><text class="t2" x="840" y="144">as each scene begins</text><path class="arrow" d="M178 110.0 H202"/><path class="arrow" d="M384 110.0 H408"/><path class="arrow" d="M590 110.0 H614"/><path class="arrow" d="M796 110.0 H820"/><path class="arrow loop" d="M912.0 184 V224 H706.0 V188"/><text class="t4" x="1000" y="244" text-anchor="end">You correct drift: tap the page ruler or jump to a scene</text></svg><figcaption>The reader only does step 1. Steps 2 to 5 run on their own, and the dashed loop is the reader stepping in when timing drifts.</figcaption></figure>
+    </section>
+
+    <section class="case-section" id="structure">
+      <div class="case-section-label">Structure &amp; Flows</div>
+      <h2>Three flows and a tab bar</h2>
+      <p>On the design canvas, the nine screens sit in three flows: getting started, the reading flow, and finding books. Sounds, Stats and Profile sit outside the flows as tabs and settings.</p>
+      <figure class="diagram"><svg class="dg" viewBox="-2 0 1004 500" role="img" aria-label="App structure in four groups. Getting started: Welcome, Find your pace, Home. The reading flow: Home, Choose your chapter, Now playing. Finding books: Find a book, Add a book with AI, Draft a chapter with AI, Now playing. Tabs and settings: Read, Sounds, Stats, Profile."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahf" d="M0 0L10 5L0 10z"/></marker><marker id="ahs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ahs" d="M0 0L10 5L0 10z"/></marker></defs><rect class="lane" x="0" y="20" width="1000" height="100" rx="10"/><text class="t3" x="16" y="42">Getting started</text><rect class="lane" x="0" y="140" width="1000" height="100" rx="10"/><text class="t3" x="16" y="162">The reading flow</text><rect class="lane" x="0" y="260" width="1000" height="100" rx="10"/><text class="t3" x="16" y="282">Finding books</text><rect class="lane" x="0" y="380" width="1000" height="100" rx="10"/><text class="t3" x="16" y="402">Tabs & settings</text><rect class="box" x="150" y="38" width="168" height="62" rx="10"/><text class="t1" x="164" y="65" style="font-size:14px">Welcome</text><text class="t2" x="164" y="85" style="font-size:11.5px">What Underscore does</text><path class="arrow" d="M320 69 H368"/><rect class="box" x="370" y="38" width="168" height="62" rx="10"/><text class="t1" x="384" y="65" style="font-size:14px">Find your pace</text><text class="t2" x="384" y="85" style="font-size:11.5px">One-minute reading test</text><path class="arrow" d="M540 69 H588"/><rect class="box" x="590" y="38" width="168" height="62" rx="10"/><text class="t1" x="604" y="65" style="font-size:14px">Home</text><text class="t2" x="604" y="85" style="font-size:11.5px">Continue reading, your shelf</text><rect class="box" x="150" y="158" width="168" height="62" rx="10"/><text class="t1" x="164" y="185" style="font-size:14px">Home</text><text class="t2" x="164" y="205" style="font-size:11.5px">Pick up where you left off</text><path class="arrow" d="M320 189 H368"/><rect class="box" x="370" y="158" width="168" height="62" rx="10"/><text class="t1" x="384" y="185" style="font-size:14px">Choose your chapter</text><text class="t2" x="384" y="205" style="font-size:11.5px">Pace, time, scene count</text><path class="arrow" d="M540 189 H588"/><rect class="box hot" x="590" y="158" width="168" height="62" rx="10"/><text class="t1" x="604" y="185" style="font-size:14px">Now playing</text><text class="t2" x="604" y="205" style="font-size:11.5px">Scene, ruler, “does it fit?”</text><rect class="box" x="150" y="278" width="168" height="62" rx="10"/><text class="t1" x="164" y="305" style="font-size:14px">Find a book</text><text class="t2" x="164" y="325" style="font-size:11.5px">Search the library</text><path class="arrow" d="M320 309 H368"/><rect class="box" x="370" y="278" width="168" height="62" rx="10"/><text class="t1" x="384" y="305" style="font-size:14px">Add a book</text><text class="t2" x="384" y="325" style="font-size:11.5px">Identify it with AI</text><path class="arrow" d="M540 309 H588"/><rect class="box" x="590" y="278" width="168" height="62" rx="10"/><text class="t1" x="604" y="305" style="font-size:14px">Draft a chapter</text><text class="t2" x="604" y="325" style="font-size:11.5px">AI scene map, in seconds</text><path class="arrow" d="M760 309 H808"/><rect class="box" x="810" y="278" width="176" height="62" rx="10"/><text class="t1" x="824" y="305" style="font-size:14px">Now playing</text><text class="t2" x="824" y="325" style="font-size:11.5px">Reader votes refine it</text><rect class="box" x="150" y="398" width="150" height="62" rx="10"/><text class="t1" x="164" y="425" style="font-size:14px">Read</text><text class="t2" x="164" y="445" style="font-size:11.5px">Home and your shelf</text><rect class="box" x="320" y="398" width="150" height="62" rx="10"/><text class="t1" x="334" y="425" style="font-size:14px">Sounds</text><text class="t2" x="334" y="445" style="font-size:11.5px">Music & ambience mix</text><rect class="box" x="490" y="398" width="150" height="62" rx="10"/><text class="t1" x="504" y="425" style="font-size:14px">Stats</text><text class="t2" x="504" y="445" style="font-size:11.5px">Minutes, streak, moods</text><rect class="box" x="660" y="398" width="170" height="62" rx="10"/><text class="t1" x="674" y="425" style="font-size:14px">Profile</text><text class="t2" x="674" y="445" style="font-size:11.5px">Pace, auto-advance, haptics</text></svg><figcaption>The reading flow is the product. Everything else exists to get a reader into Now Playing quickly.</figcaption></figure>
     </section>
 
     <section class="case-section" id="decisions">
       <div class="case-section-label">Key Decisions</div>
       <h2>Four choices that shaped the product</h2>
-      <div class="case-cols2">
-        <div class="case-col-card">
-          <div class="h">Read anywhere, not in-app</div>
-          <p>It works with paper and Kindle, and with any edition of a book.</p>
+
+      <div class="decision">
+        <div class="q"><small>Decision 01</small>How does the app know where you are in the book?</div>
+        <dl>
+          <div><dt>The options</dt><dd>Track the page with the camera or an e-reader integration, ask the reader to type page numbers, or estimate position from reading speed.</dd></div>
+          <div><dt>What I chose</dt><dd><b>Estimate from pace, correct with one tap.</b> A one-minute reading test during onboarding measures words per minute. Playback moves through the chapter at that pace, and a page ruler (“You’re around page 2”) plus numbered scene buttons let the reader fix it instantly.</dd></div>
+          <div><dt>The trade-off</dt><dd>Position is approximate. I accepted that because tracking would break principle 01: it only works with some devices and editions, and a camera pointed at a page doesn’t fit reading in bed or on a bus.</dd></div>
+        </dl>
+      </div>
+
+      <div class="decision">
+        <div class="q"><small>Decision 02</small>Where does the reading happen?</div>
+        <dl>
+          <div><dt>The options</dt><dd>Build a reader with the text inside the app, as scored-soundtrack products do, or let people read wherever they already read.</dd></div>
+          <div><dt>What I chose</dt><dd><b>Read anywhere.</b> The phone becomes a companion that sits beside the book. The reader only tells it the book and chapter.</dd></div>
+          <div><dt>The trade-off</dt><dd>The app never sees the text, so it can’t be exact. In return it works with any edition and doesn’t need book licensing.</dd></div>
+        </dl>
+      </div>
+
+      <div class="decision">
+        <div class="q"><small>Decision 03</small>Who writes the scene maps?</div>
+        <dl>
+          <div><dt>The options</dt><dd>Score chapters by hand, which is high quality but doesn’t scale, or generate them.</dd></div>
+          <div><dt>What I chose</dt><dd><b>AI drafts, readers refine.</b> For any chapter, AI drafts 3 to 7 scenes with one mood each and up to two ambient sounds. Guardrails: it writes summaries in its own words and never quotes the book, never reveals anything past the current chapter, and reports low confidence when it doesn’t know a chapter. Readers can add a note for lesser-known books. A thumbs-down opens a mood picker. Your own pick always wins for you, and a new mood becomes everyone’s default once at least two readers choose it and they outnumber the “fits” votes.</dd></div>
+          <div><dt>The trade-off</dt><dd>First drafts can be wrong. The vote rule makes that self-correcting without letting one person overwrite everyone else.</dd></div>
+        </dl>
+      </div>
+
+      <div class="decision">
+        <div class="q"><small>Decision 04</small>Where does the sound come from?</div>
+        <dl>
+          <div><dt>The options</dt><dd>Stream licensed music, use a fixed set of recordings, or generate music live.</dd></div>
+          <div><dt>What I chose</dt><dd><b>Generate first, layer recordings on top.</b> Music is generated live in the browser: piano, plucked guitar and harp, music box, strings, brass and bass, with rain, waves, wind, fire, crickets and heartbeat ambience. Recorded tracks are layered in for five moods, and the app falls back to generated music if they can’t load.</dd></div>
+          <div><dt>The trade-off</dt><dd>Generated music is less rich than a produced score, but it’s free, doesn’t loop a fixed track, and avoids licensing in the first version.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="case-section" id="player">
+      <div class="case-section-label">The Core Screen</div>
+      <h2>Now Playing, designed to be glanced at</h2>
+      <p>This is the screen a reader sees most, usually for a second at a time between pages. Each element answers one question.</p>
+      <div class="annotated">
+        <div class="shot">
+          <img src="assets/img/underscore-02-now-playing.webp" alt="Now playing screen in Underscore">
+          <span class="pin" style="left:44%; top:4.5%">1</span>
+          <span class="pin" style="left:5%; top:29%">2</span>
+          <span class="pin" style="left:5%; top:41%">3</span>
+          <span class="pin" style="left:5%; top:53.5%">4</span>
+          <span class="pin" style="left:5%; top:63%">5</span>
+          <span class="pin" style="left:5%; top:71%">6</span>
         </div>
-        <div class="case-col-card">
-          <div class="h">Reading pace instead of tracking</div>
-          <p>A one-minute pace test during onboarding sets the timing. A page ruler lets you correct it with one tap, and you can skip scenes.</p>
-        </div>
-        <div class="case-col-card">
-          <div class="h">AI drafts the maps, readers refine them</div>
-          <p>Any book and chapter can be mapped in under a minute. A thumbs-down and a mood picker let readers fix scenes, and when two or more readers agree on a new mood, it becomes the default for everyone.</p>
-        </div>
-        <div class="case-col-card">
-          <div class="h">Free, licence-safe sound first</div>
-          <p>Music is generated live in the browser: piano, plucked guitar and harp, music box, strings, brass and bass, plus rain, waves, wind, fire, crickets and heartbeat ambience. Recorded tracks are layered in for five moods.</p>
-        </div>
+        <ol class="notes">
+          <li><div><b>Scene buttons</b><span>Jump straight to a scene. The fastest fix if the reader skimmed ahead or stopped to reread.</span></div></li>
+          <li><div><b>Minutes left, in a glow card</b><span>One large number in hairline type, readable from arm’s length. The card takes the current mood’s color.</span></div></li>
+          <li><div><b>What’s happening and what you hear</b><span>A spoiler-free scene line and the sound behind it, such as “Harbor murmur · warm strings”.</span></div></li>
+          <li><div><b>Page ruler</b><span>“You’re around page 2.” Shows the estimate in the reader’s own terms, and one tap corrects it.</span></div></li>
+          <li><div><b>One big control</b><span>Play and pause is the widest target on the screen, with previous and next scene on either side.</span></div></li>
+          <li><div><b>Does the music fit?</b><span>A thumbs-up or thumbs-down. This is where readers improve the map for everyone.</span></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="case-section" id="details">
+      <div class="case-section-label">The Details</div>
+      <h2>Small decisions for real reading conditions</h2>
+      <div class="details">
+        <div><div class="k">Night reading</div><div class="h">Screen stays awake</div><p>While the soundtrack plays, the app keeps the screen from locking, so the scene is always one glance away. It can be turned off in Profile.</p></div>
+        <div><div class="k">Eyes on the page</div><div class="h">A light buzz at each new scene</div><p>On phones that support it, a short vibration marks a scene change, so readers notice without looking.</p></div>
+        <div><div class="k">Reader control</div><div class="h">Auto-advance is optional</div><p>With auto-advance off, the music waits at the end of each scene instead of moving on, for slow or interrupted reading.</p></div>
+        <div><div class="k">iPhone</div><div class="h">A tip for Silent mode</div><p>iPhones mute web audio in Silent mode, so the player explains it once: turn off Silent mode, then tap Play again.</p></div>
+        <div><div class="k">Empty state</div><div class="h">“Not mapped yet” is an invitation</div><p>Chapters without a map say so in the list and offer an AI draft, instead of failing when tapped.</p></div>
+        <div><div class="k">Pace test</div><div class="h">“No rush, this isn’t a test”</div><p>The onboarding copy keeps the reading test relaxed, so it measures the reader’s normal pace.</p></div>
       </div>
     </section>
 
     <section class="case-section" id="visual">
       <div class="case-section-label">Visual System</div>
       <h2>A near-black screen where the only color comes from the scene</h2>
-      <p>Underscore is built for night reading and commutes. Each mood has its own color bloom with fine film grain, and the screen’s glow shifts when the scene changes, so the room changes with the story. Manrope keeps the text calm and clean, and hairline Outfit numerals carry the large timers. Mood markers are small gradient sound waves.</p>
+      <p>Underscore is built for night reading and commutes. Each mood has its own color bloom with fine film grain, and the glow shifts when the scene changes, so the room changes with the story. Mood markers are small gradient sound waves.</p>
       <div class="mood-grid" aria-label="Six of the eight mood glows">
         <div class="mood" style="--main:128,116,214; --core:#DCD6FF; --base:#0B0A1C;">Rain &amp; reflection</div>
         <div class="mood" style="--main:84,186,198; --core:#B9F1F0; --base:#07202A;">Open sea</div>
@@ -531,14 +728,23 @@
         <div class="mood" style="--main:232,128,64; --core:#FFD9B0; --base:#1A0B04;">Warm hearth</div>
         <div class="mood" style="--main:84,100,230; --core:#C4CCFF; --base:#05061A;">Night &amp; mystery</div>
       </div>
-      <p style="margin-top:20px;">Six of the eight moods. The other two are The call to sail and Party lights. A usability pass set 44px minimum tap targets, a 13px minimum text size, a consistent type scale, an 8-point spacing grid, safe areas and screen-reader labels.</p>
+      <p class="gallery-note">Six of the eight moods. The other two are The call to sail and Party lights.</p>
+      <div class="type-row">
+        <div><div class="big">08</div><div class="cap">Outfit 100–200 · large timers and numbers</div></div>
+        <div><div class="ui">City crowds drawn to the water’s edge</div><div class="cap">Manrope 300–600 · all interface text</div></div>
+      </div>
+      <div class="details" style="margin-top:16px">
+        <div><div class="k">Touch</div><div class="h">44px minimum tap targets</div><p>Every control is big enough to hit one-handed without looking closely.</p></div>
+        <div><div class="k">Text</div><div class="h">13px minimum, one type scale</div><p>A consistent type scale on an 8-point spacing grid, with nothing below 13px.</p></div>
+        <div><div class="k">Access</div><div class="h">Safe areas and screen-reader labels</div><p>Layouts respect the phone’s safe areas, and every icon button has a spoken label.</p></div>
+      </div>
     </section>
 
     <section class="case-section" id="screens">
-      <div class="case-section-label">The Screens</div>
+      <div class="case-section-label">All Screens</div>
       <h2>Nine screens, from first launch to your stats</h2>
       <div class="phone-grid">
-        <figure><img src="assets/img/underscore-05-welcome.webp" alt="Welcome screen" loading="lazy"><figcaption><b>Welcome</b></figcaption></figure>
+        <figure><img src="assets/img/underscore-05-welcome.webp" alt="Welcome screen" loading="lazy"><figcaption><b>Welcome</b><br>What Underscore does, in one line</figcaption></figure>
         <figure><img src="assets/img/underscore-06-reading-pace.webp" alt="Find your reading pace screen with a live timed reading test" loading="lazy"><figcaption><b>Find your reading pace</b><br>A live, timed reading test</figcaption></figure>
         <figure><img src="assets/img/underscore-01-home.webp" alt="Home screen with a continue-reading glow card and the reader's shelf" loading="lazy"><figcaption><b>Home</b><br>Continue-reading card and your shelf</figcaption></figure>
         <figure><img src="assets/img/underscore-03-choose-chapter.webp" alt="Choose your chapter screen with the book card, reading pace, and chapter list" loading="lazy"><figcaption><b>Choose your chapter</b><br>Your pace, reading time and scene count</figcaption></figure>
@@ -546,12 +752,19 @@
         <figure><img src="assets/img/underscore-04-sounds.webp" alt="Sounds screen with the music and ambience mix and mood previews" loading="lazy"><figcaption><b>Sounds</b><br>Music and ambience mix, mood previews</figcaption></figure>
         <figure><img src="assets/img/underscore-07-find-a-book.webp" alt="Find a book screen with search and adding any book with AI" loading="lazy"><figcaption><b>Find a book</b><br>Search, or add any book with AI</figcaption></figure>
         <figure><img src="assets/img/underscore-08-stats.webp" alt="Stats screen with minutes read, streak, chapters finished and most-used moods" loading="lazy"><figcaption><b>Stats</b><br>Minutes read, streak and favorite moods</figcaption></figure>
-        <figure><img src="assets/img/underscore-09-profile.webp" alt="Profile and settings screen" loading="lazy"><figcaption><b>Profile &amp; settings</b></figcaption></figure>
+        <figure><img src="assets/img/underscore-09-profile.webp" alt="Profile and settings screen" loading="lazy"><figcaption><b>Profile &amp; settings</b><br>Pace, auto-advance and haptics</figcaption></figure>
       </div>
     </section>
 
-    <section class="case-section" id="built">
-      <div class="case-section-label">What I Built</div>
+    <section class="case-section" id="testing">
+      <div class="case-section-label">Testing</div>
+      <h2>Does the core moment hold up?</h2>
+      <p>The riskiest assumption was the whole idea: would music that changes with the scene actually make reading better, or just get in the way? I put the working prototype in front of real readers to find out. The core moment held up: the music matched the scene they were reading.</p>
+      <p>I also ran a usability pass on the interface itself, which set the touch, text and accessibility rules in the visual system above.</p>
+    </section>
+
+    <section class="case-section" id="outcome">
+      <div class="case-section-label">Outcome</div>
       <h2>A working prototype, not just screens</h2>
       <ul class="built-list">
         <li>A working web app with all nine screens, installable to the phone’s home screen</li>
@@ -560,7 +773,6 @@
         <li>AI scene maps for any book and chapter, with an optional reader note for lesser-known books</li>
         <li>A shared library: drafted maps, added books and mood votes shared across all readers, with per-person votes that nobody else can overwrite</li>
       </ul>
-      <p>I tested it with real readers, and the core moment, music that matches the scene, held up.</p>
       <div class="stat-row">
         <div><div class="num">9</div><div class="lbl">screens designed</div></div>
         <div><div class="num">8</div><div class="lbl">scene moods</div></div>
@@ -569,25 +781,27 @@
       <div class="case-actions">
         <a href="underscore/" class="fill" target="_blank" rel="noopener">Try the prototype ↗</a>
       </div>
-      <p style="margin-top:16px; font-size:14px;">The AI scene drafting and the shared library run inside Claude, so on this site the prototype uses the five hand-mapped chapters and keeps your votes on your device.</p>
+      <p style="margin-top:16px; font-size:14px;">AI drafting and the shared library run inside Claude, so on this site the prototype uses the five hand-mapped chapters and keeps your votes on your device.</p>
+    </section>
+
+    <section class="case-section" id="risks">
+      <div class="case-section-label">Open Questions</div>
+      <h2>What I’d test next</h2>
+      <div class="case-cols2">
+        <div class="case-col-card"><div class="h">How far does timing drift?</div><p>How often readers tap the ruler or jump scenes would show whether pace estimation is close enough, and for whom it isn’t.</p></div>
+        <div class="case-col-card"><div class="h">Are AI maps good enough first time?</div><p>The thumbs-down rate per scene, compared between hand-mapped and AI-drafted chapters, would show where drafts need work.</p></div>
+        <div class="case-col-card"><div class="h">Do votes have enough readers?</div><p>A new mood needs two readers to agree. Lesser-known books may never reach that, so they may need a different rule.</p></div>
+        <div class="case-col-card"><div class="h">Does it help people keep reading?</div><p>Whether readers finish more chapters with the soundtrack on is the measure that matters most for the product.</p></div>
+      </div>
     </section>
 
     <section class="case-section" id="next">
       <div class="case-section-label">What’s Next</div>
       <h2>From prototype to a free web app</h2>
       <div class="case-cols3">
-        <div class="case-col-card">
-          <div class="h">Launch on the web</div>
-          <p>A free web app with its own backend for AI drafting and the shared library.</p>
-        </div>
-        <div class="case-col-card">
-          <div class="h">Fully licensed sound</div>
-          <p>Swap in fully licensed or CC0 recordings.</p>
-        </div>
-        <div class="case-col-card">
-          <div class="h">Native apps</div>
-          <p>iOS and Android apps once the web version proves itself.</p>
-        </div>
+        <div class="case-col-card"><div class="h">Launch on the web</div><p>A free web app with its own backend for AI drafting and the shared library.</p></div>
+        <div class="case-col-card"><div class="h">Fully licensed sound</div><p>Swap in fully licensed or CC0 recordings.</p></div>
+        <div class="case-col-card"><div class="h">Native apps</div><p>iOS and Android apps once the web version proves itself.</p></div>
       </div>
     </section>
   </main>
