@@ -1304,6 +1304,10 @@
   }
   :root{ --grain-opacity: .11; }
   [data-theme="dark"]{ --grain-opacity: .6; }
+
+  /* Two links side by side under a project */
+  .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
+  .entry-links .entry-readlink{ margin-top: 0; }
 </style>
 </head>
 <body>
@@ -1764,7 +1768,7 @@
 
     <div class="section-head" id="work">
       <h2>Selected Work</h2>
-      <span class="section-tag">03 case studies live / 01 pending</span>
+      <span class="section-tag">04 projects / 02 case studies</span>
     </div>
 
     <section class="log">
@@ -1840,15 +1844,33 @@
         </div>
       </article>
 
-      <article class="entry is-pending">
-        <div class="entry-top">
-          <div class="entry-index">004 <span class="stat pending">In progress</span></div>
+      <article class="entry" id="proj-underscore">
+        <div class="entry-index">004 <span class="stat">New · working prototype</span></div>
+        <h3 class="entry-heading">Underscore: background music that follows the scene you’re reading</h3>
+        <div class="entry-tags">
+          <span class="tag">Product Design</span>
+          <span class="tag">UI Design</span>
+          <span class="tag">AI Features</span>
+          <span class="tag">Prototyping</span>
         </div>
-        <div class="entry-visual" data-label="Awaiting project details"></div>
-        <div class="entry-main">
-          <h3>Next case study — in progress</h3>
-          <p>I'm writing this one up now. Check back soon, or get in touch if you'd like a preview before it's posted.</p>
-          <div class="entry-meta">Coming soon</div>
+        <div class="entry-visual">
+          <img src="assets/img/underscore-thumbnail.webp" alt="Underscore: every scene, its own soundtrack. The app’s now-playing screen on an iPhone with floating cards for the next scene and AI chapter mapping.">
+        </div>
+        <div class="entry-body">
+          <div class="entry-main">
+            <div class="entry-desc-row">
+              <p class="entry-description">I missed my bus, put on a reading playlist at a noisy stop, and the music happened to match the scene I was reading: a walk on the beach at dusk. Underscore makes that happen on purpose. You pick your book and chapter, and the soundtrack changes with each scene while you read on paper or Kindle. I designed nine screens around a glowing, mood-colored visual system, then built a working prototype with live soundscapes, AI-drafted scene maps for any book, and a shared library where readers’ votes tune the music.</p>
+            </div>
+            <div class="entry-result">
+              <div><div class="num">9</div><div class="lbl">screens designed</div></div>
+              <div><div class="num">8</div><div class="lbl">scene moods</div></div>
+              <div><div class="num">4 days</div><div class="lbl">idea to working prototype</div></div>
+            </div>
+            <div class="entry-links">
+              <a href="underscore.html" class="entry-readlink">Read the case study →</a>
+              <a href="underscore/" class="entry-readlink" target="_blank" rel="noopener">Try the prototype ↗</a>
+            </div>
+          </div>
         </div>
       </article>
     </section>

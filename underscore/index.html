@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Underscore by Tanmay Padekar: background music that follows the scene you're reading.">
+<title>Underscore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Underscore">
+<meta name="theme-color" content="#050506">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Outfit:wght@100;200&display=swap">
+<style>
+/* Layout: one phone-width column in a night-reading world; glow cards carry each scene's mood */
+:root{
+  --bg:#050506; --surface:#0F0F12; --raised:#141417; --pill:#1C1C20;
+  --line:#1A1A1F; --line-2:#26262B; --line-3:#3A3A42;
+  --fg:#F2F2F0; --fg-2:#A1A1AA; --fg-3:#8E8E96; --lime:#D6F26A; --amber:#F0B98A; --danger:#FF8A8A;
+  --font:'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --num:'Outfit', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --grain:none;
+  color-scheme: dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+#app{max-width:440px;margin:0 auto;min-height:100%;position:relative}
+
+.screen{min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;
+  padding-block:20px 120px;
+  padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
+.screen.no-nav{padding-bottom:28px}
+.screen.has-dock{padding-bottom:132px}
+
+.h1{margin:0;font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.01em;text-wrap:balance}
+.h2{margin:0;font-size:17px;font-weight:600;line-height:1.3}
+.title{margin:0;font-size:20px;font-weight:500;line-height:1.2}
+.sub{margin:0;font-size:15px;color:var(--fg-2);line-height:1.5}
+.cap{font-size:13px;color:var(--fg-3);line-height:1.3}
+.label{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-3)}
+.num{font-family:var(--num);font-weight:100;line-height:1;font-variant-numeric:tabular-nums}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+
+.iconbtn{width:44px;height:44px;box-sizing:border-box;border-radius:22px;background:var(--raised);border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--fg)}
+.chip{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.13);font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap}
+.chip.dark{background:rgba(6,8,10,.55)}
+
+/* glow cards */
+.glow{position:relative;isolation:isolate;overflow:hidden;border-radius:32px;
+  background:
+    radial-gradient(68% 56% at 50% 44%, rgba(3,3,5,.96) 0%, rgba(3,3,5,.7) 42%, rgba(3,3,5,0) 80%),
+    radial-gradient(120% 68% at 50% 112%, var(--b) 0%, rgba(var(--c),.85) 32%, rgba(var(--c),0) 72%),
+    radial-gradient(85% 70% at 0% 0%, rgba(var(--c),.85) 0%, rgba(var(--c),0) 62%),
+    radial-gradient(85% 70% at 100% 0%, rgba(var(--c2),.85) 0%, rgba(var(--c2),0) 62%),
+    var(--base);
+  box-shadow:0 26px 60px -24px rgba(var(--c),.6), inset 0 1px 0 rgba(255,255,255,.14)}
+.glow.corner{border-radius:26px;
+  background:
+    radial-gradient(95% 95% at 100% 105%, var(--b) 0%, rgba(var(--c),.9) 30%, rgba(var(--c),0) 72%),
+    radial-gradient(80% 90% at 0% 110%, rgba(var(--c2),.75) 0%, rgba(var(--c2),0) 62%),
+    var(--base);
+  box-shadow:0 18px 40px -20px rgba(var(--c),.6), inset 0 1px 0 rgba(255,255,255,.12)}
+.grain::after{content:"";position:absolute;inset:0;background-image:var(--grain);background-size:96px 96px;mix-blend-mode:soft-light;opacity:.55;pointer-events:none;z-index:0;border-radius:inherit}
+.glow > *{position:relative;z-index:1}
+
+/* buttons */
+.cta{display:flex;align-items:center;justify-content:space-between;width:100%;height:60px;padding:0 6px 0 24px;box-sizing:border-box;border-radius:30px;background:var(--pill);border:1px solid #2E2E35;color:var(--fg);font-size:16px;font-weight:600;text-align:left}
+.cta .dot{width:48px;height:48px;border-radius:24px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.textbtn{height:48px;border:none;background:transparent;color:var(--fg-2);font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center}
+
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom, 0px));display:flex;gap:4px;padding:6px;border-radius:999px;background:rgba(28,28,32,.94);border:1px solid #2A2A30;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:20;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.tabbar button{height:44px;padding:0 18px;border-radius:22px;border:none;background:transparent;color:#A8A8B0;font-size:14px}
+.tabbar button[aria-current="page"]{background:var(--fg);color:var(--bg);font-weight:600}
+
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;box-sizing:border-box;z-index:20;
+  padding-top:40px;padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px));
+  background:linear-gradient(to bottom, rgba(5,5,6,0), var(--bg) 45%)}
+
+.group{border-radius:22px;background:var(--surface);border:1px solid #1E1E23;overflow:hidden}
+.group > * + *{border-top:1px solid var(--line)}
+.listrow{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 16px;box-sizing:border-box;width:100%;background:transparent;border:none;text-align:left}
+.switch{width:60px;height:44px;flex-shrink:0;margin-right:-4px;border:none;background:transparent;display:flex;align-items:center;justify-content:center}
+.switch span{position:relative;display:block;width:50px;height:30px;border-radius:15px;background:var(--line-3);transition:background .2s}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:12px;background:var(--fg);transition:left .2s, background .2s}
+.switch[aria-checked="true"] span{background:var(--lime)}
+.switch[aria-checked="true"] span::after{left:23px;background:var(--bg)}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(16px + env(safe-area-inset-top, 0px));z-index:50;max-width:min(400px, calc(100% - 32px));box-sizing:border-box;padding:12px 18px;border-radius:18px;background:#1E1E23;border:1px solid var(--line-3);font-size:15px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+
+/* home */
+.shelf{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px}
+.shelf .tile{height:112px;padding:14px 16px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;text-align:left;border:none;color:var(--fg)}
+.addtile{height:112px;border-radius:26px;border:1px dashed var(--line-3);background:#0D0D10;color:var(--fg-3);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.search-link{display:flex;align-items:center;gap:10px;height:52px;padding:0 18px;box-sizing:border-box;border-radius:26px;background:var(--raised);border:1px solid var(--line-2);color:var(--fg-3);font-size:16px;width:100%;text-align:left}
+
+/* chapter list */
+.chrow{display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:12px 16px;box-sizing:border-box;border-radius:22px;background:var(--surface);border:1px solid #1E1E23;color:var(--fg);text-align:left}
+.chrow[aria-pressed="true"]{background:#18181C;border-color:var(--lime)}
+.chrow .n{width:36px;flex-shrink:0;font-family:var(--num);font-weight:200;font-size:26px;line-height:1;color:var(--fg-3)}
+.chrow[aria-pressed="true"] .n{color:var(--lime)}
+.chrow:disabled{opacity:.5}
+
+/* player */
+.scene-card{position:relative;flex-grow:1;min-height:300px;border-radius:32px;overflow:hidden;isolation:isolate;transition:box-shadow .9s ease}
+.scene-card .layer{position:absolute;inset:0;border-radius:inherit;box-shadow:none}
+.scene-card .layer.in{animation:fadein .9s ease both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.scene-card .content{position:relative;z-index:2;height:100%;box-sizing:border-box;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.glassbox{padding:14px 16px;border-radius:20px;background:rgba(6,6,8,.62);border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:4px}
+.sdots{display:flex;justify-content:flex-end;gap:8px;flex-grow:1;flex-wrap:wrap}
+.sdot{width:44px;height:44px;border-radius:22px;border:1px solid var(--line-3);background:transparent;color:#C4C4CC;font-size:15px;font-weight:600}
+.sdot[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.ruler{position:relative;height:36px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;touch-action:none}
+.ruler i{display:block;width:2px;border-radius:1px;height:9px;background:#26262B}
+.ruler i.major{height:16px;background:var(--line-3)}
+.ruler i.done{background:#5E5E66}
+.ruler i.major.done{background:var(--fg-3)}
+.ruler .mark{position:absolute;top:4px;width:2px;height:28px;border-radius:1px;background:var(--lime);box-shadow:0 0 10px rgba(214,242,106,.6);transform:translateX(-1px);transition:left .6s ease}
+.ctrl{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.roundbtn{width:56px;height:56px;border-radius:28px;border:1px solid var(--line-2);background:var(--raised);color:var(--fg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.roundbtn:disabled{opacity:.4}
+.playbtn{flex-grow:1;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 24px;border-radius:32px;border:1px solid #2E2E35;background:var(--pill);color:var(--fg);font-size:16px;font-weight:600}
+.playbtn .dot{width:48px;height:48px;border-radius:24px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center}
+.vote{display:flex;align-items:center;gap:8px;height:60px;padding:0 8px 0 20px;box-sizing:border-box;border-radius:30px;background:var(--surface);border:1px solid #1E1E23}
+.vote button{width:44px;height:44px;flex-shrink:0;border-radius:22px;border:none;background:var(--pill);color:var(--fg);display:flex;align-items:center;justify-content:center}
+.vote button[aria-pressed="true"].yes{background:var(--lime);color:var(--bg)}
+.vote button[aria-pressed="true"].no{background:var(--fg);color:var(--bg)}
+.hint{display:flex;align-items:center;gap:10px;padding:10px 8px 10px 16px;border-radius:16px;background:#141417;border:1px solid var(--line-2);font-size:14px;color:var(--fg-2)}
+
+/* sounds */
+input[type=range]{width:100%;height:24px;margin:0;accent-color:var(--lime)}
+.moodrow{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:0 16px;box-sizing:border-box;border:none;background:transparent;color:var(--fg);text-align:left}
+.moodrow[aria-pressed="true"]{background:#16161A}
+.moodrow .pp{width:36px;height:36px;flex-shrink:0;border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--line-3)}
+.moodrow[aria-pressed="true"] .pp{background:var(--fg);color:var(--bg);box-shadow:none}
+.wave{flex-shrink:0;margin:0 2px;overflow:visible}
+.wave .w{transition:filter .3s}
+.moodrow[aria-pressed="true"] .wave path{animation:flow 1.4s linear infinite}
+@keyframes flow{from{transform:translateX(0)}to{transform:translateX(-21px)}}
+
+/* stats */
+.seg{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid #1E1E23}
+.seg button{flex:1;height:44px;border-radius:22px;border:none;background:transparent;color:var(--fg-2);font-size:15px;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);font-weight:600}
+.bars{display:flex;align-items:flex-end;gap:6px;height:96px}
+.bars > div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.bars b{display:block;width:100%;max-width:22px;border-radius:6px;background:rgba(255,255,255,.75)}
+.bars span{font-size:12px;font-weight:500;line-height:1;color:#E4E4E7}
+.stat{height:84px;padding:14px 16px;box-sizing:border-box;border-radius:22px;background:var(--surface);border:1px solid #1E1E23;display:flex;flex-direction:column;justify-content:space-between}
+
+/* search */
+.field{display:flex;align-items:center;gap:10px;height:48px;padding:0 8px 0 16px;box-sizing:border-box;border-radius:24px;background:var(--raised);border:1px solid var(--line-3);flex-grow:1;min-width:0}
+.field input{flex-grow:1;min-width:0;background:transparent;border:none;outline:none;color:var(--fg);font:inherit;font-size:16px}
+.field input::placeholder{color:var(--fg-3)}
+.field input::-webkit-search-cancel-button{display:none}
+.result{display:flex;align-items:center;gap:16px;width:100%;min-height:84px;padding:12px 0;box-sizing:border-box;border:none;border-bottom:1px solid var(--line);background:transparent;color:var(--fg);text-align:left}
+.swatch{width:48px;height:64px;flex-shrink:0;border-radius:12px}
+
+/* AI drafting */
+.cta:disabled{opacity:.5}
+.chrow.unmapped .n{opacity:.55}
+.draftcard,.addbox{margin-top:20px;padding:18px;border-radius:24px;background:var(--surface);border:1px solid #2E2E35;display:flex;flex-direction:column;gap:10px}
+.addbox{gap:8px}
+textarea,.inp{width:100%;box-sizing:border-box;background:var(--raised);border:1px solid var(--line-3);border-radius:16px;padding:12px 14px;color:var(--fg);font:inherit;font-size:16px;line-height:1.4}
+textarea{resize:vertical;min-height:88px}
+.inp{height:48px}
+textarea::placeholder,.inp::placeholder{color:var(--fg-3)}
+.err{margin:0;font-size:14px;line-height:1.4;color:var(--danger)}
+.moodpick{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.moodpick button{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:22px;background:var(--raised);border:1px solid var(--line-2);font-size:14px;color:var(--fg)}
+.moodpick button span{width:8px;height:8px;border-radius:4px;flex-shrink:0}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001s !important;transition-duration:.001s !important}
+}
+</style>
+</head>
+<body>
+
+<div id="app" aria-live="off"></div>
+<div id="toast-slot"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- grain texture ---------- */
+try{
+  const c=document.createElement('canvas');c.width=c.height=256;
+  const x=c.getContext('2d');const d=x.createImageData(256,256);
+  for(let i=0;i<d.data.length;i+=4){const v=128+(Math.random()+Math.random()-1)*34|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}
+  x.putImageData(d,0,0);
+  document.documentElement.style.setProperty('--grain','url('+c.toDataURL()+')');
+}catch(e){}
+
+/* ---------- storage ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem('underscore_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('underscore_'+k,JSON.stringify(v))}catch(e){}},
+  clear(){try{Object.keys(localStorage).filter(k=>k.indexOf('underscore_')===0).forEach(k=>localStorage.removeItem(k))}catch(e){}}
+};
+
+/* ---------- moods ---------- */
+const MOODS={
+  rain:{name:'Rain & reflection',inst:'Rain · acoustic guitar',track:'audio/rain.mp3',has:['rain'],c:'128,116,214',c2:'70,90,170',b:'#DCD6FF',base:'#0B0A1C',
+    amb:[['rain',.8]],music:{root:50,scale:'minor',chords:[[0,3,7,10],[-4,0,3,7],[3,7,10,14],[-2,2,5,9]],pad:{kind:'strings',cutoff:950,level:.09},drone:{level:.035},bass:.06,lead:{inst:'piano',style:'melody',beat:1.05,oct:12,level:.16}}},
+  sea:{name:'Open sea',inst:'Ocean waves · gentle melody',track:'audio/sea.mp3',has:['waves'],c:'84,186,198',c2:'70,96,190',b:'#B9F1F0',base:'#07202A',
+    amb:[['waves',.9],['wind',.15]],music:{root:45,scale:'major',chords:[[0,4,7,11],[-3,0,4,7],[5,9,12,16],[7,12,14,19]],pad:{kind:'warm',cutoff:1150,level:.1},bass:.08,lead:{inst:'piano',style:'melody',beat:.8,oct:24,level:.14}}},
+  wonder:{name:'Quiet wonder',inst:'Wind · bamboo flute',track:'audio/wind.mp3',has:['wind'],c:'92,176,128',c2:'60,140,150',b:'#CFF5D8',base:'#071610',
+    amb:[['wind',.45]],music:{root:48,scale:'major',chords:[[0,4,7,11,14],[-3,0,4,7],[5,9,12,16],[7,11,14,16]],pad:{kind:'strings',cutoff:1300,level:.075,swell:true},bass:.06,lead:{inst:'harp',style:'arp',beat:.42,oct:12,level:.11}}},
+  tension:{name:'Rising tension',inst:'Heartbeat · dark strings',c:'190,50,60',c2:'120,40,90',b:'#FFB3B3',base:'#140405',
+    amb:[['heart',.7]],music:{root:49,scale:'phrygian',chords:[[0,3,7],[1,4,8],[0,3,6],[-1,3,6]],pad:{kind:'strings',cutoff:650,level:.08,swell:true},drone:{level:.08},bass:.1,lead:{inst:'piano',style:'ostinato',beat:.5,oct:-12,level:.17}}},
+  hearth:{name:'Warm hearth',inst:'Fireplace · piano',track:'audio/hearth.mp3',has:['fire'],c:'232,128,64',c2:'200,70,80',b:'#FFD9B0',base:'#1A0B04',
+    amb:[['fire',.8]],music:{root:55,scale:'major',chords:[[0,4,7,11],[-3,0,4,7],[5,9,12,16],[7,12,14,17]],pad:{kind:'warm',cutoff:1000,level:.07},bass:.07,lead:{inst:'guitar',style:'arp',beat:.45,oct:0,level:.2}}},
+  night:{name:'Night & mystery',inst:'Calm night · piano',track:'audio/night.mp3',has:['crickets'],c:'84,100,230',c2:'120,70,200',b:'#C4CCFF',base:'#05061A',
+    amb:[['crickets',.55],['wind',.1]],music:{root:52,scale:'minor',chords:[[0,3,7,14],[-4,0,3,7],[5,8,12,15],[7,12,14,17]],pad:{kind:'warm',cutoff:780,level:.07},bass:.05,lead:{inst:'bell',style:'melody',beat:.7,oct:24,level:.1}}}
+};
+const EXTRA={
+  voyage:{name:'The call to sail',inst:'Rising horns · open ocean',c:'232,128,64',c2:'84,186,198',b:'#FFD9B0',base:'#1A0B04',
+    amb:[['waves',.5],['wind',.2]],music:{root:50,scale:'major',chords:[[0,4,7,12],[5,9,12,17],[7,11,14,19],[-3,0,4,9]],pad:{kind:'brass',cutoff:1300,level:.09},drone:{level:.05},bass:.1,lead:{inst:'piano',style:'melody',beat:.6,oct:12,level:.13}}},
+  party:{name:'Party lights',inst:'Crowd chatter · bright piano',c:'214,190,90',c2:'214,106,138',b:'#FFF1B0',base:'#151004',
+    amb:[['room',.55]],music:{root:53,scale:'major',chords:[[0,4,7,9],[-3,0,4,7],[2,5,9,12],[7,11,14,17]],pad:{kind:'warm',cutoff:1600,level:.06},bass:.09,lead:{inst:'piano',style:'arp',beat:.28,oct:12,level:.11}}}
+};
+const ALL=Object.assign({},MOODS,EXTRA);
+const vars=m=>`--c:${m.c};--c2:${m.c2};--b:${m.b};--base:${m.base}`;
+
+/* ---------- books ---------- */
+const COL={
+  moby:{c:'84,186,198',c2:'70,96,190',b:'#B9F1F0',base:'#07202A'},
+  frank:{c:'84,100,230',c2:'120,70,200',b:'#C4CCFF',base:'#05061A'},
+  gatsby:{c:'150,170,80',c2:'60,130,96',b:'#EEF5A8',base:'#0A0D06'},
+  pride:{c:'214,106,138',c2:'140,70,170',b:'#FFC8D4',base:'#12070C'},
+  dracula:{c:'190,50,60',c2:'120,40,90',b:'#FFB3B3',base:'#140405'},
+  jane:{c:'128,116,214',c2:'70,90,170',b:'#DCD6FF',base:'#0B0A1C'},
+  treasure:{c:'232,128,64',c2:'200,70,80',b:'#FFD9B0',base:'#1A0B04'},
+  seawolf:{c:'60,140,150',c2:'92,176,128',b:'#CFF5D8',base:'#071610'}
+};
+const BOOKS=[
+  {id:'moby',title:'Moby-Dick',author:'Herman Melville',chapters:135,
+    titles:['Loomings','The Carpet-Bag','The Spouter-Inn','The Counterpane','Breakfast','The Street','The Chapel','The Pulpit','The Sermon','A Bosom Friend','Nightgown','Biographical'],
+    maps:{
+      1:[{t:'Restless thoughts',mood:'rain',d:'A damp, drizzly November in the soul',w:520},
+         {t:'The water-gazers',mood:'wonder',amb:[['room',.3],['waves',.35]],snd:'Harbor murmur · warm strings',d:'City crowds drawn to the water’s edge',w:560},
+         {t:'Why the sea',mood:'sea',d:'Meditation and water, wedded for ever',w:580},
+         {t:'The call to sail',mood:'voyage',d:'The great flood-gates of wonder swing open',w:550}],
+      2:[{t:'Leaving Manhattan',mood:'night',amb:[['wind',.5]],snd:'Winter wind · music box',d:'A cold Saturday night in December',w:400},
+         {t:'Dark streets',mood:'tension',amb:[['wind',.45],['heart',.25]],snd:'Bitter wind · low pulse',d:'Hunting gloomy lanes for a cheap bed',w:460},
+         {t:'The wrong door',mood:'night',amb:[['room',.35]],snd:'Hushed room · low drone',d:'Stumbling into a crowded, solemn gathering',w:380},
+         {t:'The Spouter-Inn',mood:'hearth',amb:[['wind',.6],['fire',.25]],snd:'Storm wind · crackling fire',d:'A creaking sign, a howling wind, shelter',w:460}],
+      3:[{t:'The baffling painting',mood:'night',amb:[['fire',.3],['room',.15]],snd:'Low fire · music box',d:'A smoky entry and a strange, dark picture',w:1100},
+         {t:'The whale-jaw bar',mood:'hearth',amb:[['room',.5],['fire',.35]],snd:'Tavern chatter · guitar',d:'Sailors pour in, loud and cheerful',w:1200},
+         {t:'Waiting for the harpooneer',mood:'tension',amb:[['fire',.2],['heart',.35]],snd:'Embers · low pulse',d:'A shared bed and a long, uneasy wait',w:1500},
+         {t:'Queequeg arrives',mood:'tension',amb:[['heart',.9]],snd:'Racing heartbeat · dark strings',d:'Candlelight, a tomahawk, sheer alarm',w:1000},
+         {t:'A peaceful truce',mood:'hearth',amb:[['fire',.25],['crickets',.15]],snd:'Soft guitar · night hush',d:'Calm returns and sleep comes at last',w:700}]
+    }},
+  {id:'frank',title:'Frankenstein',author:'Mary Shelley',chapters:24,titles:null,
+    maps:{
+      5:[{t:'A dreary night of November',mood:'rain',amb:[['rain',.95]],snd:'Rain on the panes · cello',d:'Candlelight, rain, the work complete',w:480},
+         {t:'It breathes',mood:'tension',amb:[['heart',.9],['rain',.3]],snd:'Heartbeat · dark strings',d:'A dull yellow eye opens',w:420},
+         {t:'Nightmares',mood:'night',amb:[['wind',.3],['heart',.3]],snd:'Night wind · music box',d:'Restless sleep and terrible dreams',w:420},
+         {t:'Wandering in the rain',mood:'rain',amb:[['rain',1],['wind',.3]],snd:'Downpour · low cello',d:'Dawn, wet streets, fear close behind',w:520},
+         {t:'Clerval',mood:'hearth',d:'A friend’s face and sudden relief',w:600}]
+    }},
+  {id:'gatsby',title:'The Great Gatsby',author:'F. Scott Fitzgerald',chapters:9,titles:null,
+    maps:{
+      3:[{t:'Music from next door',mood:'wonder',amb:[['room',.15],['crickets',.2]],snd:'Summer night · warm strings',d:'Blue gardens and summer evenings',w:1000},
+         {t:'The party in full swing',mood:'party',d:'Cocktails, laughter, an orchestra',w:1800},
+         {t:'Meeting Gatsby',mood:'wonder',d:'An old sport and a rare, reassuring smile',w:1100},
+         {t:'Wreck in the ditch',mood:'tension',amb:[['room',.35]],snd:'Crowd noise · low pulse',d:'Late-night chaos, a car without a wheel',w:900},
+         {t:'Alone on the steps',mood:'night',amb:[['crickets',.5]],snd:'Crickets · music box',d:'A lone figure waving goodbye',w:600},
+         {t:'Nick’s own summer',mood:'sea',amb:[['room',.2]],snd:'City hum · slow piano',d:'Work, the city, and Jordan Baker',w:700}]
+    }},
+  {id:'pride',title:'Pride and Prejudice',author:'Jane Austen',chapters:61,maps:{}},
+  {id:'dracula',title:'Dracula',author:'Bram Stoker',chapters:27,maps:{}},
+  {id:'jane',title:'Jane Eyre',author:'Charlotte Brontë',chapters:38,maps:{}},
+  {id:'treasure',title:'Treasure Island',author:'Robert Louis Stevenson',chapters:34,maps:{}},
+  {id:'seawolf',title:'The Sea-Wolf',author:'Jack London',chapters:39,maps:{}}
+];
+const bookById=id=>BOOKS.find(b=>b.id===id);
+/* books the reader added, and AI-drafted or reader-edited maps */
+const PALETTE=['moby','frank','gatsby','pride','dracula','jane','treasure','seawolf'];
+const hashIdx=s=>{let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)%PALETTE.length};
+let CUSTOM=store.get('custom',[]);
+let AIMAPS=store.get('aimaps',{});   // {bookId:{ch:{scenes, ai, title, conf}}}
+CUSTOM.forEach(c=>{COL[c.id]=COL[PALETTE[hashIdx(c.title)]];BOOKS.push({id:c.id,title:c.title,author:c.author,chapters:c.chapters,custom:true,known:c.known,maps:{}})});
+const HAND={};BOOKS.forEach(b=>{HAND[b.id]=Object.assign({},b.maps)});
+BOOKS.forEach(b=>{b.aiCh={};const m=AIMAPS[b.id];if(m)Object.keys(m).forEach(ch=>{if(m[ch]&&Array.isArray(m[ch].scenes)){b.maps[ch]=m[ch].scenes;if(m[ch].ai)b.aiCh[ch]=true}})});
+function saveMap(b,ch,scenes,ai,meta,keep){
+  AIMAPS[b.id]=AIMAPS[b.id]||{};const prev=AIMAPS[b.id][ch]||{};
+  AIMAPS[b.id][ch]=Object.assign({},prev,meta||{},{scenes:scenes,ai:!!ai});
+  b.maps[ch]=scenes;if(ai)b.aiCh[ch]=true;else delete b.aiCh[ch];
+  store.set('aimaps',AIMAPS);
+  if(!keep&&S.session&&S.session.book===b.id&&S.session.ch==ch&&!S.session.playing)S.session=null;
+}
+const mappedChapters=b=>Object.keys(b.maps).map(Number).sort((a,c)=>a-c);
+const chTitle=(b,n)=>(b.titles&&b.titles[n-1])||(b.remoteCh&&b.remoteCh[n]&&b.remoteCh[n].title)||(AIMAPS[b.id]&&AIMAPS[b.id][n]&&AIMAPS[b.id][n].title)||'Chapter '+n;
+const chWords=sc=>sc.reduce((s,x)=>s+x.w,0);
+const WORDS_PER_PAGE=275;
+
+/* ---------- sound engine ---------- */
+const Sound=(function(){
+  let ctx=null,master,musicBus,ambBus,rev,delayIn,noise={},current=null;
+  const bufCache={},trackBuf={},trackLoad={},HEART='audio/heart.mp3';
+  function loadTrack(url){
+    if(trackBuf[url])return Promise.resolve(trackBuf[url]);
+    if(trackLoad[url])return trackLoad[url];
+    trackLoad[url]=fetch(url).then(function(r){if(!r.ok)throw new Error('http '+r.status);return r.arrayBuffer()})
+      .then(function(ab){return new Promise(function(res,rej){const pr=ctx.decodeAudioData(ab,res,rej);if(pr&&pr.then)pr.then(res,rej)})})
+      .then(function(b){trackBuf[url]=b;return b})
+      .catch(function(e){delete trackLoad[url];throw e});
+    return trackLoad[url];
+  }
+  function neededTracks(mood,amb){
+    const list=[];if(mood.track)list.push(mood.track);
+    if((amb||mood.amb||[]).some(x=>x[0]==='heart'))list.push(HEART);
+    return list;
+  }
+  function loopBuffer(sched,buf,level,xf,dest){
+    sched.push({next:0,fn:function(t){
+      const src=ctx.createBufferSource(),g=ctx.createGain(),d=buf.duration;src.buffer=buf;
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(level,t+xf);g.gain.setValueAtTime(level,t+d-xf);g.gain.linearRampToValueAtTime(0,t+d);
+      src.connect(g);g.connect(dest);src.start(t);src.stop(t+d+.05);
+      return t+d-xf;
+    }});
+  }
+  const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],phrygian:[0,1,3,5,7,8,10]};
+  const vol={music:.7,amb:.45};
+  const mtof=m=>440*Math.pow(2,(m-69)/12);
+  function init(){
+    if(ctx){if(ctx.state!=='running')ctx.resume();return true}
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+    ctx=new AC();
+    master=ctx.createGain();master.gain.value=.9;
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=3;
+    master.connect(comp);comp.connect(ctx.destination);
+    rev=ctx.createConvolver();rev.buffer=impulse(3.2,2.6);
+    const rg=ctx.createGain();rg.gain.value=.4;rev.connect(rg);rg.connect(master);
+    musicBus=ctx.createGain();ambBus=ctx.createGain();
+    musicBus.connect(master);musicBus.connect(rev);ambBus.connect(master);
+    delayIn=ctx.createGain();
+    const dl=ctx.createDelay(1.5);dl.delayTime.value=.42;
+    const fb=ctx.createGain();fb.gain.value=.3;
+    const dlp=ctx.createBiquadFilter();dlp.type='lowpass';dlp.frequency.value=2600;
+    const wet=ctx.createGain();wet.gain.value=.2;
+    delayIn.connect(dl);dl.connect(dlp);dlp.connect(fb);fb.connect(dl);dlp.connect(wet);wet.connect(musicBus);
+    noise.white=makeNoise('white');noise.pink=makeNoise('pink');noise.brown=makeNoise('brown');
+    applyVol();
+    return true;
+  }
+  function applyVol(){if(!ctx)return;const t=ctx.currentTime;musicBus.gain.setTargetAtTime(vol.music*1.1,t,.08);ambBus.gain.setTargetAtTime(vol.amb*1.1,t,.08)}
+  function setVol(m,a){vol.music=m;vol.amb=a;applyVol()}
+  function impulse(sec,decay){
+    const r=ctx.sampleRate,len=Math.floor(r*sec),b=ctx.createBuffer(2,len,r);
+    for(let ch=0;ch<2;ch++){const d=b.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay)}
+    return b;
+  }
+  function makeNoise(kind){
+    const len=ctx.sampleRate*4,b=ctx.createBuffer(1,len,ctx.sampleRate),d=b.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,last=0;
+    for(let i=0;i<len;i++){
+      const w=Math.random()*2-1;
+      if(kind==='white')d[i]=w*.5;
+      else if(kind==='pink'){b0=.99886*b0+w*.0555179;b1=.99332*b1+w*.0750759;b2=.969*b2+w*.153852;b3=.8665*b3+w*.3104856;b4=.55*b4+w*.5329522;b5=-.7616*b5-w*.016898;d[i]=(b0+b1+b2+b3+b4+b5+b6+w*.5362)*.11;b6=w*.115926}
+      else{last=(last+.02*w)/1.02;d[i]=last*3.5}
+    }
+    return b;
+  }
+
+  /* ---- instruments: rendered once per note, then reused ---- */
+  function renderNote(kind,midi){
+    const key=kind+':'+midi;if(bufCache[key])return bufCache[key];
+    const sr=ctx.sampleRate,f=mtof(midi);
+    const dur=kind==='piano'?3.4:kind==='bell'?2.4:2.6;
+    const len=Math.floor(sr*dur),buf=ctx.createBuffer(1,len,sr),d=buf.getChannelData(0);
+    if(kind==='guitar'||kind==='harp'){
+      // plucked string (Karplus-Strong)
+      const per=Math.max(2,Math.round(sr/f)),ring=new Float32Array(per);
+      let lp=0;const bright=kind==='harp'?.8:.5;
+      for(let i=0;i<per;i++){const w=Math.random()*2-1;lp=lp*(1-bright)+w*bright;ring[i]=lp}
+      const damp=(kind==='harp'?.9985:.9965)-Math.max(0,midi-60)*.0003;
+      let idx=0;
+      for(let i=0;i<len;i++){const a=ring[idx],b=ring[(idx+1)%per];d[i]=a;ring[idx]=.5*(a+b)*damp;idx=(idx+1)%per}
+      for(let i=0;i<Math.min(len,Math.floor(sr*.003));i++)d[i]*=i/(sr*.003);
+    }else{
+      let parts;
+      if(kind==='bell'){
+        parts=[[1,1,1.5],[2,.42,.9],[3,.28,.55],[4.16,.2,.4],[5.43,.12,.28],[6.79,.07,.2]];
+      }else{
+        // piano: slightly stretched partials, upper ones fade faster
+        parts=[];const B=.00035,low=midi<60;
+        for(let n=1;n<=12;n++){
+          const r=n*Math.sqrt(1+B*n*n);if(f*r>sr*.45)break;
+          const amp=Math.pow(n,-1.3)*(n===1?1:.85)*Math.exp(-(n-1)*Math.max(0,midi-48)/70);
+          const tau=(low?3.4:2.6)*Math.pow(.985,midi-60)/(1+.42*(n-1));
+          parts.push([r,amp,tau]);
+        }
+      }
+      const strings=kind==='piano'?[1,1.0007]:[1];
+      parts.forEach(function(pt){
+        strings.forEach(function(det){
+          const w=2*Math.PI*f*pt[0]*det/sr,c=Math.cos(w),sn=Math.sin(w);
+          let x=0,y=1,e=pt[1]/strings.length;const k=Math.exp(-1/(pt[2]*sr));
+          for(let i=0;i<len;i++){const nx=x*c+y*sn;y=y*c-x*sn;x=nx;d[i]+=x*e;e*=k}
+        });
+      });
+      const att=Math.floor(sr*(kind==='bell'?.001:.004));
+      for(let i=0;i<att&&i<len;i++)d[i]*=i/att;
+      if(kind==='piano'){let lp=0;for(let i=0;i<Math.min(len,sr*.03);i++){lp=lp*.7+(Math.random()*2-1)*.3;d[i]+=lp*.06*Math.exp(-i/(sr*.004))}}
+    }
+    let peak=0;for(let i=0;i<len;i++){const a=Math.abs(d[i]);if(a>peak)peak=a}
+    if(peak>0){const g=.9/peak;for(let i=0;i<len;i++)d[i]*=g}
+    const fade=Math.floor(sr*.08);for(let i=0;i<fade;i++)d[len-1-i]*=i/fade;
+    bufCache[key]=buf;return buf;
+  }
+  function playNote(kind,midi,t,vel,pan,dest){
+    const s=ctx.createBufferSource();s.buffer=renderNote(kind,midi);
+    const g=ctx.createGain();g.gain.value=vel;s.connect(g);
+    if(ctx.createStereoPanner){const p=ctx.createStereoPanner();p.pan.value=pan;g.connect(p);p.connect(dest)}else g.connect(dest);
+    s.start(t);
+  }
+  function padChord(P,root,ch,t,len,dest){
+    const dur=len+3,kind=P.kind||'warm';
+    const voices=kind==='strings'?[[-9,-.5],[0,0],[9,.5]]:kind==='brass'?[[-6,-.3],[6,.3]]:[[-5,-.35],[5,.35]];
+    const att=kind==='brass'?.7:kind==='strings'?2.6:2.2;
+    ch.forEach(function(n,ni){
+      const f=mtof(root+n),peak=P.level/ch.length*1.7;
+      const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.Q.value=kind==='brass'?1.2:.5;
+      const env=ctx.createGain();
+      env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(peak,t+att);env.gain.setValueAtTime(peak,t+len);env.gain.linearRampToValueAtTime(0,t+dur);
+      if(kind==='brass'){lp.frequency.setValueAtTime(300,t);lp.frequency.linearRampToValueAtTime(P.cutoff*2,t+1.4);lp.frequency.linearRampToValueAtTime(P.cutoff,t+3.5)}
+      else{lp.frequency.setValueAtTime(P.cutoff,t);if(P.swell)lp.frequency.linearRampToValueAtTime(P.cutoff*2.2,t+len*.8)}
+      lp.connect(env);env.connect(dest);
+      let vg=null;
+      if(kind!=='warm'){const vib=ctx.createOscillator();vib.frequency.value=4.6+Math.random()*1.2;vg=ctx.createGain();vg.gain.value=kind==='strings'?6:4;vib.connect(vg);vib.start(t);vib.stop(t+dur+.1)}
+      voices.forEach(function(vv){
+        const o=ctx.createOscillator();o.type=kind==='warm'?'triangle':'sawtooth';o.frequency.value=f;o.detune.value=vv[0]+(Math.random()*4-2);
+        if(vg)vg.connect(o.detune);
+        const g=ctx.createGain();g.gain.value=1/voices.length;o.connect(g);
+        if(ctx.createStereoPanner){const pn=ctx.createStereoPanner();pn.pan.value=vv[1];g.connect(pn);pn.connect(lp)}else g.connect(lp);
+        o.start(t);o.stop(t+dur+.1);
+      });
+      if(kind==='warm'&&ni===0){const o=ctx.createOscillator();o.frequency.value=f/2;const g=ctx.createGain();g.gain.value=.5;o.connect(g);g.connect(lp);o.start(t);o.stop(t+dur+.1)}
+    });
+  }
+  function bassNote(midi,t,len,level,dest){
+    const f=mtof(midi),dur=len+2.5,lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=260;
+    const env=ctx.createGain();env.gain.setValueAtTime(0,t);env.gain.linearRampToValueAtTime(level,t+1.2);env.gain.setValueAtTime(level,t+len);env.gain.linearRampToValueAtTime(0,t+dur);
+    lp.connect(env);env.connect(dest);
+    [['sine',1],['triangle',.35]].forEach(function(w){const o=ctx.createOscillator();o.type=w[0];o.frequency.value=f;const g=ctx.createGain();g.gain.value=w[1];o.connect(g);g.connect(lp);o.start(t);o.stop(t+dur+.1)});
+  }
+  const degSemi=(deg,sc)=>{const o=Math.floor(deg/7),i=((deg%7)+7)%7;return sc[i]+12*o};
+  function snapToChord(deg,ch,sc){
+    const set=ch.map(n=>((n%12)+12)%12);
+    for(const o of [0,1,-1,2,-2]){if(set.indexOf(((degSemi(deg+o,sc)%12)+12)%12)>=0)return deg+o}
+    return deg;
+  }
+  function Voice(mood,ambOverride){
+    const v={nodes:[],timer:null,music:ctx.createGain(),amb:ctx.createGain(),chord:null};
+    v.music.gain.value=0;v.amb.gain.value=0;v.music.connect(musicBus);v.amb.connect(ambBus);
+    v.fx=ctx.createGain();v.fx.gain.value=0;v.fx.connect(delayIn);v.lead=ctx.createGain();v.lead.connect(v.music);v.lead.connect(v.fx);
+    const keep=n=>{v.nodes.push(n);return n};
+    const loop=kind=>{const s=keep(ctx.createBufferSource());s.buffer=noise[kind];s.loop=true;s.start(0,Math.random()*3);return s};
+    const filt=(type,f,q)=>{const n=ctx.createBiquadFilter();n.type=type;n.frequency.value=f;if(q!=null)n.Q.value=q;return n};
+    const osc=(f,type)=>{const o=keep(ctx.createOscillator());o.type=type||'sine';o.frequency.value=f;o.start();return o};
+    const mod=(o,depth,param)=>{const g=ctx.createGain();g.gain.value=depth;o.connect(g);g.connect(param)};
+    const sched=[];
+    const track=mood.track&&trackBuf[mood.track];
+    const ambSrc=track?(ambOverride||[]).filter(x=>(mood.has||[]).indexOf(x[0])<0).map(x=>[x[0],x[1]*.6]):(ambOverride||mood.amb||[]);
+    if(track)loopBuffer(sched,track,mood.trackLevel||.6,5,v.music);
+    ambSrc.forEach(function(pair){
+      const type=pair[0],lvl=pair[1];
+      const g=ctx.createGain();g.connect(v.amb);
+      if(type==='rain'){
+        const hp=filt('highpass',450),lp=filt('lowpass',6500);loop('pink').connect(hp);hp.connect(lp);lp.connect(g);g.gain.value=lvl*.55;
+        const bp=filt('bandpass',2600,.9),g2=ctx.createGain();g2.gain.value=lvl*.08;loop('white').connect(bp);bp.connect(g2);g2.connect(v.amb);
+        mod(osc(.23),lvl*.06,g2.gain);
+      }else if(type==='waves'){
+        const lp=filt('lowpass',700);loop('brown').connect(lp);lp.connect(g);g.gain.value=lvl*.5;
+        const o=osc(.085);mod(o,lvl*.42,g.gain);mod(o,380,lp.frequency);
+      }else if(type==='wind'){
+        const bp=filt('bandpass',600,.7);loop('pink').connect(bp);bp.connect(g);g.gain.value=lvl*.5;
+        mod(osc(.05),350,bp.frequency);mod(osc(.07),lvl*.28,g.gain);
+      }else if(type==='room'){
+        const bp=filt('bandpass',380,.6);loop('brown').connect(bp);bp.connect(g);g.gain.value=lvl*.55;mod(osc(.3),lvl*.1,g.gain);
+        const bp2=filt('bandpass',1200,2),g2=ctx.createGain();g2.gain.value=lvl*.06;loop('pink').connect(bp2);bp2.connect(g2);g2.connect(v.amb);mod(osc(.9),lvl*.04,g2.gain);
+      }else if(type==='fire'){
+        const lp=filt('lowpass',280);loop('brown').connect(lp);lp.connect(g);g.gain.value=lvl*.35;
+        sched.push({next:.1,fn:function(t){
+          const s=ctx.createBufferSource();s.buffer=noise.white;const hp=filt('highpass',1800+Math.random()*2500);const e=ctx.createGain();
+          const a=lvl*(.15+Math.random()*.45);e.gain.setValueAtTime(a,t);e.gain.exponentialRampToValueAtTime(.0001,t+.02+Math.random()*.04);
+          s.connect(hp);hp.connect(e);e.connect(v.amb);s.start(t,Math.random()*3,.08);
+          return t+.05+Math.random()*.28;
+        }});
+      }else if(type==='crickets'){
+        sched.push({next:.3,fn:function(t){
+          const f=4200+Math.random()*500,o=ctx.createOscillator();o.frequency.value=f;const e=ctx.createGain();e.gain.value=0;
+          const n=3+(Math.random()*3|0);
+          for(let i=0;i<n;i++){const s=t+i*.065;e.gain.setValueAtTime(0,s);e.gain.linearRampToValueAtTime(lvl*.05,s+.008);e.gain.linearRampToValueAtTime(0,s+.035)}
+          o.connect(e);e.connect(v.amb);o.start(t);o.stop(t+n*.065+.05);
+          return t+.7+Math.random()*.9;
+        }});
+      }else if(type==='heart'&&trackBuf[HEART]){
+        loopBuffer(sched,trackBuf[HEART],lvl*.55,.25,v.amb);
+      }else if(type==='heart'){
+        const bpm=62;
+        sched.push({next:.2,fn:function(t){
+          [[0,1],[.28,.7]].forEach(function(p){
+            const s=t+p[0],o=ctx.createOscillator();o.frequency.setValueAtTime(75,s);o.frequency.exponentialRampToValueAtTime(38,s+.16);
+            const e=ctx.createGain();e.gain.setValueAtTime(.0001,s);e.gain.exponentialRampToValueAtTime(lvl*.7*p[1],s+.012);e.gain.exponentialRampToValueAtTime(.0001,s+.28);
+            o.connect(e);e.connect(v.amb);o.start(s);o.stop(s+.32);
+          });
+          return t+60/bpm;
+        }});
+      }
+    });
+    const M=track?null:mood.music;
+    if(M){
+      const root=M.root,chordLen=8,scale=SCALES[M.scale]||SCALES.major;let ci=0;
+      if(M.drone){
+        const lp=filt('lowpass',220),g=ctx.createGain();g.gain.value=M.drone.level;
+        osc(mtof(root-12),'sawtooth').connect(lp);osc(mtof(root-12)*1.003,'sawtooth').connect(lp);lp.connect(g);g.connect(v.music);
+      }
+      sched.push({next:0,fn:function(t){
+        const ch=M.chords[ci%M.chords.length];ci++;v.chord=ch;
+        padChord(M.pad,root,ch,t,chordLen,v.music);
+        if(M.bass)bassNote(root+ch[0]-12,t,chordLen,M.bass,v.music);
+        return t+chordLen;
+      }});
+      if(M.lead){
+        const L=M.lead;let deg=2,left=0,ai=0,dir=1;
+        sched.push({next:1.2,fn:function(t){
+          const ch=v.chord||M.chords[0],pan=Math.random()*.6-.3,vel=L.level*(.72+Math.random()*.28);
+          if(L.style==='arp'){
+            if(Math.random()<.12)return t+L.beat;
+            const notes=ch.slice().sort((x,y)=>x-y);
+            ai+=dir;if(ai>=notes.length-1||ai<=0)dir=-dir;ai=Math.max(0,Math.min(notes.length-1,ai));
+            playNote(L.inst,root+L.oct+notes[ai],t,vel,pan,v.lead);
+            return t+L.beat;
+          }
+          if(L.style==='ostinato'){
+            const pat=[0,0,7,0,0,0,7,12],n=pat[ai%pat.length];ai++;
+            playNote(L.inst,root+L.oct+ch[0]+n,t,vel*(ai%4===1?1:.7),0,v.lead);
+            return t+L.beat;
+          }
+          if(left<=0){left=3+(Math.random()*4|0);return t+L.beat*(1.5+Math.random()*2.5)}
+          const steps=[-2,-1,-1,0,1,1,2];deg+=steps[Math.random()*steps.length|0];
+          if(deg>9)deg-=2;if(deg<-2)deg+=2;
+          if(left===1||Math.random()<.3)deg=snapToChord(deg,ch,scale);
+          playNote(L.inst,root+L.oct+degSemi(deg,scale),t,vel,pan,v.lead);
+          left--;
+          return t+L.beat*(Math.random()<.28?2:1)*(.94+Math.random()*.12);
+        }});
+      }
+    }
+    const t0=ctx.currentTime+.05;sched.forEach(s=>s.next=t0+s.next);
+    const tick=function(){const horizon=ctx.currentTime+1.6;sched.forEach(function(s){let g=0;while(s.next<horizon&&g++<60)s.next=s.fn(s.next)})};
+    tick();v.timer=setInterval(tick,300);
+    v.fadeIn=function(sec){const t=ctx.currentTime;[v.music,v.amb,v.fx].forEach(function(g){g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(1,t+sec)})};
+    v.stop=function(sec){
+      const t=ctx.currentTime;
+      [v.music,v.amb,v.fx].forEach(function(g){g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+sec)});
+      setTimeout(function(){clearInterval(v.timer);v.nodes.forEach(function(n){try{n.stop()}catch(e){}});try{v.music.disconnect();v.amb.disconnect();v.fx.disconnect()}catch(e){}},sec*1000+400);
+    };
+    return v;
+  }
+  function play(mood,amb,fade){
+    if(!init())return false;
+    const old=current,me=Voice(mood,amb);current=me;me.fadeIn(old?(fade||3):1.5);
+    if(old)old.stop(fade||3);
+    const missing=neededTracks(mood,amb).filter(u=>!trackBuf[u]);
+    if(missing.length)Promise.all(missing.map(loadTrack)).then(function(){if(current===me)play(mood,amb,2.5)}).catch(function(){});
+    return true;
+  }
+  function stop(fade){if(current){current.stop(fade||1.2);current=null}}
+  function preload(moods){if(!ctx)return;moods.forEach(function(m){neededTracks(m,m.amb).forEach(function(u){loadTrack(u).catch(function(){})})})}
+  return {init:init,play:play,stop:stop,setVol:setVol,preload:preload,available:function(){return !!(window.AudioContext||window.webkitAudioContext)}};
+})();
+
+/* ---------- state ---------- */
+const defaults={onboarded:false,wpm:240,autoAdvance:true,buzz:true,keepAwake:true,music:70,amb:45,name:''};
+const S={
+  view:'home',stack:[],
+  settings:Object.assign({},defaults,store.get('settings',{})),
+  shelf:store.get('shelf',[]),            // [{book, ch, pos}]
+  last:store.get('last',null),            // {book, ch}
+  votes:store.get('votes',{}),
+  stats:Object.assign({days:{},moods:{},chapters:0,scenes:0},store.get('stats',{})),
+  hintDone:store.get('hintDone',false),
+  bookId:null,pickCh:null,
+  session:null,preview:null,query:'',
+  pace:{phase:'ready',secs:0,start:0,wpm:0,from:'onboard'},
+  period:'week',confirmReset:false,lastCard:null
+};
+if(!S.settings.onboarded)S.view='welcome';
+Sound.setVol(S.settings.music/100,S.settings.amb/100);
+const saveSettings=()=>store.set('settings',S.settings);
+const saveShelf=()=>{store.set('shelf',S.shelf);store.set('last',S.last)};
+const saveStats=()=>store.set('stats',S.stats);
+
+/* ---------- AI scene maps ---------- */
+S.notes={};S.draft=null;S.adding=null;S.showAll=false;S.aiState='pending';
+let AI=null;
+(async function(){
+  try{if(window.claude&&typeof window.claude.use==='function')AI=await window.claude.use('sample')}catch(e){AI=null}
+  S.aiState=AI?'ready':'off';
+  if(S.view==='book')render();else if(S.view==='search')renderResults();
+})();
+function aiErr(e){
+  const c=e&&e.code;
+  if(c==='cancelled')return null;
+  if(c==='not_granted'||c==='sampling_disabled'||c==='not_declared'||c==='capability_disabled'||c==='capability_removed'){S.aiState='off';return 'AI mapping isn’t allowed in this view.'}
+  if(c==='rate_limited')return 'Too many requests right now. Try again in a minute.';
+  if(c==='session_expired')return 'Sign in to Claude again, then try once more.';
+  if(c==='invalid_json'||c==='empty_completion')return 'The draft came back incomplete. Try again.';
+  if(c==='refused')return 'The AI couldn’t map this chapter. Add a short note about what happens, then try again.';
+  return 'Couldn’t reach the AI. Check your connection and try again.';
+}
+const MOOD_GUIDE='rain (melancholy, grief, reflection, grey weather), sea (calm, open spaces, travel, water), wonder (awe, hope, beauty, discovery), tension (danger, fear, suspense, conflict, chase), hearth (warmth, comfort, friendship, love, home), night (mystery, eerie quiet, secrets, darkness), voyage (resolve, setting out, triumph), party (celebration, crowds, festivity)';
+const SOUND_NAMES={rain:'Rain',waves:'Waves',wind:'Wind',room:'Murmur',fire:'Fire',crickets:'Crickets',heart:'Heartbeat'};
+function normalizeMap(r){
+  if(!r||!Array.isArray(r.scenes))return null;
+  let words=Number(r.chapterWords);if(!(words>=500&&words<=30000))words=3500;
+  const sc=r.scenes.filter(s=>s&&typeof s==='object').slice(0,8);
+  if(!sc.length)return null;
+  const shares=sc.map(s=>{const v=Number(s.share);return v>0?v:1}),tot=shares.reduce((a,c)=>a+c,0);
+  return sc.map(function(s,i){
+    const mood=ALL[s.mood]?s.mood:'wonder';
+    const snd=(Array.isArray(s.sounds)?s.sounds:[]).filter(x=>x&&SOUND_NAMES[x.type]).slice(0,2).map(x=>[x.type,Math.max(.1,Math.min(1,Number(x.level)||.5))]);
+    const o={t:String(s.title||('Scene '+(i+1))).slice(0,40),mood:mood,d:String(s.summary||'').slice(0,90)||ALL[mood].name,w:Math.max(150,Math.round(words*shares[i]/tot))};
+    if(snd.length){o.amb=snd;o.snd=snd.map(x=>SOUND_NAMES[x[0]]).join(' · ')+' · '+((ALL[mood].inst.split('·')[1])||'').trim()}
+    return o;
+  });
+}
+async function draftMap(){
+  const b=bookById(S.bookId),ch=S.pickCh;
+  if(!AI||!b||(S.draft&&S.draft.status==='thinking'))return;
+  const ctl=new AbortController();S.draft={book:b.id,ch:ch,status:'thinking',ctl:ctl};render();
+  const note=(S.notes[b.id+'-'+ch]||'').trim().slice(0,800);
+  const ct=chTitle(b,ch),title=/^Chapter \d+$/.test(ct)?'':ct;
+  const prompt='You are writing a soundtrack map for someone reading a book. They hear background music that changes with each scene while they read.\n\n'
+    +'Book: "'+b.title+'" by '+b.author+'\nChapter: '+ch+(title?' ("'+title+'")':'')+'\n'
+    +(note?'The reader describes this chapter as: '+note+'\n':'')
+    +'\nSplit this chapter into 3 to 7 consecutive scenes in reading order, based on what you know of it'+(note?' and the reader’s description':'')+'. If you do not know this chapter, base it on the reader’s description or the book’s overall tone, and set confidence to "low".\n\n'
+    +'Write titles and summaries in your own words. Never quote the book. Do not reveal anything that happens after this chapter.\n\n'
+    +'For each scene choose exactly one mood id from this list:\n'+MOOD_GUIDE+'\n\n'
+    +'Optionally add up to 2 ambient sounds the setting clearly calls for, from: rain, waves, wind, room (indoor crowd murmur), fire, crickets, heart (heartbeat, for fear). Level is 0.1 to 1. Use an empty list when nothing fits.\n\n'
+    +'Reply with only JSON in this shape:\n{"chapterTitle": string or null, "chapterWords": estimated number of words in the chapter, "confidence": "high" | "medium" | "low", "scenes": [{"title": "2 to 5 words", "mood": "mood id", "summary": "under 12 words", "share": percent of the chapter, "sounds": [{"type": "rain", "level": 0.6}]}]}';
+  try{
+    const r=await AI.json(prompt,{signal:ctl.signal,cache:false});
+    const scenes=normalizeMap(r);
+    if(!scenes)throw {code:'invalid_json'};
+    const conf=['high','medium','low'].indexOf(r.confidence)>=0?r.confidence:'medium';
+    const meta={conf:conf};if(!(b.titles&&b.titles[ch-1])&&r.chapterTitle)meta.title=String(r.chapterTitle).slice(0,60);
+    saveMap(b,ch,scenes,true,meta);
+    if(b.remoteCh)delete b.remoteCh[ch];
+    if(canShare())pushMap(b.id,ch,AIMAPS[b.id][ch]);
+    S.draft=null;
+    toast('Chapter '+ch+' mapped: '+scenes.length+' scenes');
+  }catch(e){
+    const m=aiErr(e);S.draft=m?{book:b.id,ch:ch,status:'error',msg:m}:null;
+  }
+  render();
+}
+async function identifyBook(q){
+  if(!AI)return;
+  const ctl=new AbortController();S.adding={q:q,status:'thinking',ctl:ctl};renderResults();
+  try{
+    const r=await AI.json('A reader typed this into a book search: "'+q.slice(0,120)+'"\nIf it clearly identifies a real, published book, reply with only JSON: {"found": true, "title": string, "author": string, "chapters": number of chapters in the standard edition}\nIf you are not sure which book it is, reply with only: {"found": false}',{signal:ctl.signal,modelTier:'quick'});
+    if(r&&r.found&&r.title){
+      const n=Math.max(1,Math.min(300,parseInt(r.chapters,10)||30));
+      addCustom(String(r.title).slice(0,80),String(r.author||'Unknown author').slice(0,60),n,true);return;
+    }
+    S.adding={q:q,status:'manual'};
+  }catch(e){const m=aiErr(e);S.adding=m?{q:q,status:'manual',msg:m}:null}
+  if(S.view==='search')renderResults();
+}
+function addCustom(title,author,chapters,known){
+  const existing=BOOKS.find(b=>b.title.toLowerCase()===title.toLowerCase());
+  S.adding=null;
+  if(existing){A.openBook(existing.id);return}
+  const id='c'+Date.now().toString(36);
+  const cobj={id:id,title:title,author:author,chapters:chapters,known:known};CUSTOM.push(cobj);store.set('custom',CUSTOM);
+  if(canShare())pushBook(cobj);
+  COL[id]=COL[PALETTE[hashIdx(title)]];
+  BOOKS.push({id:id,title:title,author:author,chapters:chapters,custom:true,mine:true,known:known,maps:{},aiCh:{}});
+  toast('Added '+title);
+  A.openBook(id);
+}
+function renderResults(){const r=document.getElementById('results');if(r)r.innerHTML=resultsHTML()}
+
+/* ---------- shared library: books, chapter maps and votes shared by everyone with the link ---------- */
+let DB=null,UID=null,CANWRITE=null,migrated=false,AGG={};
+const ALIAS={};
+S.lib='pending';S.remote={books:{},maps:{},votes:{},booksReady:false,mapsReady:false};
+const mapKey=(bid,ch)=>bid+'~'+ch;
+const canShare=()=>!!(DB&&UID&&CANWRITE!==false&&S.lib==='on');
+function shareFail(e){
+  if(e&&e.code==='invalid_argument')CANWRITE=false;
+  if(e&&(e.code==='revoked'||e.code==='not_granted'||e.code==='capability_disabled'))S.lib='off';
+  if(!S.warned){S.warned=true;toast('Couldn’t save to the shared library. Your copy is saved on this phone.')}
+}
+function refreshView(){if(S.view==='search')renderResults();else if(['book','player','home','profile'].indexOf(S.view)>=0)render()}
+function pushBook(c){DB.doc('books/'+c.id).set({title:c.title,author:c.author,chapters:c.chapters,known:!!c.known,by:UID,at:Date.now()}).catch(shareFail)}
+function pushMap(bid,ch,e){
+  DB.doc('maps/'+mapKey(bid,ch)).set({book:bid,ch:ch,scenes:e.scenes,title:e.title||null,conf:e.conf||'medium',by:UID,at:Date.now()}).catch(shareFail);
+}
+function applyRemote(){
+  Object.keys(S.remote.books).forEach(function(id){
+    const x=S.remote.books[id];if(bookById(id))return;
+    const same=BOOKS.find(b=>b.title.toLowerCase()===String(x.title).toLowerCase());
+    if(same){ALIAS[id]=same.id;return}
+    COL[id]=COL[PALETTE[hashIdx(String(x.title))]];
+    BOOKS.push({id:id,title:String(x.title).slice(0,80),author:String(x.author||'Unknown author').slice(0,60),chapters:Math.max(1,Math.min(300,+x.chapters||30)),custom:true,shared:true,mine:x.by===UID,known:!!x.known,maps:{},aiCh:{}});
+  });
+  Object.keys(S.remote.maps).forEach(function(k){
+    const x=S.remote.maps[k],b=bookById(ALIAS[x.book]||x.book),ch=+x.ch;
+    if(!b||!(ch>0)||(HAND[b.id]&&HAND[b.id][ch]))return;
+    b.maps[ch]=x.scenes;b.aiCh[ch]=true;b.remoteCh=b.remoteCh||{};b.remoteCh[ch]=x;
+  });
+  refreshView();
+}
+function maybeMigrate(){
+  if(migrated||!canShare()||!S.remote.mapsReady||!S.remote.booksReady)return;migrated=true;
+  CUSTOM.forEach(function(c){if(!S.remote.books[c.id]&&!Object.keys(ALIAS).some(k=>ALIAS[k]===c.id))pushBook(c)});
+  Object.keys(AIMAPS).forEach(function(bid){Object.keys(AIMAPS[bid]).forEach(function(ch){
+    const e=AIMAPS[bid][ch];if(e&&e.ai&&Array.isArray(e.scenes)&&!S.remote.maps[mapKey(bid,ch)])pushMap(bid,+ch,e);
+  })});
+  if(Object.keys(S.votes).some(k=>k.indexOf('~')>0))syncVotes();
+}
+function agg(){
+  AGG={};
+  Object.keys(S.remote.votes).forEach(function(u){
+    if(u===UID)return;const v=S.remote.votes[u];
+    Object.keys(v).forEach(function(k){
+      const a=AGG[k]||(AGG[k]={yes:0,no:0,picks:{}}),x=v[k];
+      if(x==='yes')a.yes++;else if(x==='no')a.no++;else if(ALL[x])a.picks[x]=(a.picks[x]||0)+1;
+    });
+  });
+}
+/* a scene's mood after this reader's own pick, or a pick at least two other readers agree on */
+function resolveScene(s,i){
+  const sc=s.scenes[i],k=s.book+'~'+s.ch+'~'+i,mine=S.votes[k],a=AGG[k];
+  let mood=sc.mood,by=null;
+  if(mine&&ALL[mine]&&mine!==sc.mood){mood=mine;by='you'}
+  else if(mine!=='yes'&&a){
+    let best=null,bc=0;Object.keys(a.picks).forEach(function(m){if(a.picks[m]>bc){bc=a.picks[m];best=m}});
+    if(best&&bc>=2&&bc>a.yes&&best!==sc.mood){mood=best;by='readers'}
+  }
+  if(!by)return sc;
+  const r=Object.assign({},sc,{mood:mood,by:by});delete r.amb;delete r.snd;return r;
+}
+let vWriting=false,vDirty=false;
+function syncVotes(){
+  store.set('votes',S.votes);
+  if(!canShare())return;
+  vDirty=true;if(vWriting)return;vWriting=true;
+  (async function(){
+    while(vDirty){
+      vDirty=false;const clean={};
+      Object.keys(S.votes).forEach(function(k){const v=S.votes[k];if(v&&k.indexOf('~')>0)clean[k]=v});
+      try{await DB.doc('votes/'+UID).set({v:clean,at:Date.now()})}catch(e){shareFail(e);break}
+    }
+    vWriting=false;
+  })();
+}
+(async function(){
+  try{
+    if(window.claude&&typeof window.claude.use==='function'){
+      const r=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
+      DB=r[0];const u=r[1];
+      if(u){try{UID=await u.id()}catch(e){UID=null}try{CANWRITE=await u.can('data.write')}catch(e){CANWRITE=null}}
+    }
+  }catch(e){DB=null}
+  if(!DB){S.lib='off';return}
+  S.lib='on';
+  const dead=function(e){if(e&&(e.code==='revoked'||e.code==='not_granted'||e.code==='capability_disabled'))S.lib='off'};
+  DB.collection('books').onSnapshot(function(snap){
+    const m={};snap.docs.forEach(function(d){const x=d.data();if(x&&typeof x.title==='string')m[d.id]=x});
+    S.remote.books=m;S.remote.booksReady=true;applyRemote();maybeMigrate();
+  },dead);
+  DB.collection('maps').onSnapshot(function(snap){
+    const m={};snap.docs.forEach(function(d){const x=d.data();if(x&&Array.isArray(x.scenes)&&x.scenes.length&&x.book)m[d.id]=x});
+    S.remote.maps=m;S.remote.mapsReady=true;applyRemote();maybeMigrate();
+  },dead);
+  DB.collection('votes').onSnapshot(function(snap){
+    const m={};snap.docs.forEach(function(d){const x=d.data();if(x&&x.v&&typeof x.v==='object')m[d.id]=x.v});
+    S.remote.votes=m;agg();refreshView();
+  },dead);
+})();
+
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad2=n=>String(n).padStart(2,'0');
+const dayKey=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const I={
+  back:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  play:s=>`<svg aria-hidden="true" width="${s||16}" height="${s||16}" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>`,
+  pause:s=>`<svg aria-hidden="true" width="${s||16}" height="${s||16}" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>`,
+  arrow:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  chev:'<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E8E96" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  user:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+  search:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E8E96" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+  plus:'<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  prev:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg>',
+  next:'<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg>',
+  up:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 10v11H4V10zM7 10l4-7c1.5 0 2.5 1 2.5 2.5V9h5.5a2 2 0 0 1 2 2.3l-1.3 7.5a2 2 0 0 1-2 1.7H7"/></svg>',
+  down:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 14V3h3v11zM17 14l-4 7c-1.5 0-2.5-1-2.5-2.5V15H5a2 2 0 0 1-2-2.3l1.3-7.5A2 2 0 0 1 6.3 3.5H17"/></svg>',
+  check:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  x:'<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  spark:'<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2l1.9 6.1L19 10l-6.1 1.9L11 18l-1.9-6.1L3 10l6.1-1.9z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></svg>',
+  note:'<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>'
+};
+function wave(id,m){
+  return `<svg class="wave" aria-hidden="true" width="32" height="20" viewBox="0 0 32 20" fill="none" style="filter:drop-shadow(0 0 5px rgba(${m.c},.75))">
+    <defs><linearGradient id="g-${id}" x1="0" y1="0" x2="32" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".6" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <mask id="m-${id}"><rect width="32" height="20" fill="url(#g-${id})"/></mask></defs>
+    <g mask="url(#m-${id})"><path d="M-20 10 C-16 2,-12 2,-9 10 S-2 18,1 10 S5 2,12 10 S19 18,22 10 S26 2,33 10 S40 18,43 10 S47 2,54 10" stroke="${m.b}" stroke-width="2" stroke-linecap="round"/></g></svg>`;
+}
+
+let toastTimer=null;
+function toast(msg){
+  const slot=document.getElementById('toast-slot');
+  slot.innerHTML=`<div class="toast" role="status">${esc(msg)}</div>`;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{slot.innerHTML=''},2800);
+}
+
+/* ---------- navigation ---------- */
+function go(view,push){
+  if(S.view==='sounds'&&view!=='sounds'&&S.preview){S.preview=null;if(!(S.session&&S.session.playing))Sound.stop(.8)}
+  if(push!==false)S.stack.push(S.view);
+  S.view=view;render();window.scrollTo(0,0);
+}
+function back(){const v=S.stack.pop()||'home';go(v,false)}
+
+/* ---------- shelf + session ---------- */
+function shelfEntry(bookId){return S.shelf.find(e=>e.book===bookId)}
+function addToShelf(bookId,ch,pos){
+  let e=shelfEntry(bookId);
+  if(!e){e={book:bookId,ch:ch,pos:pos||0};S.shelf.unshift(e)}else{e.ch=ch;e.pos=pos||0}
+  S.last={book:bookId,ch:ch};saveShelf();
+}
+function openSession(bookId,ch){
+  const b=bookById(bookId),scenes=b.maps[ch];if(!scenes)return;
+  const e=shelfEntry(bookId);
+  const pos=(e&&e.ch===ch&&e.pos<chWords(scenes)-30)?e.pos:0;
+  if(S.session&&S.session.playing&&(S.session.book!==bookId||S.session.ch!==ch)){Sound.stop(1.2);releaseWake()}
+  if(!(S.session&&S.session.book===bookId&&S.session.ch===ch)){
+    S.session={book:bookId,ch:ch,scenes:scenes,total:chWords(scenes),pos:pos,playing:false,done:false,idx:sceneAt(scenes,pos)};
+  }
+  addToShelf(bookId,ch,S.session.pos);
+}
+function sceneAt(scenes,pos){let acc=0;for(let i=0;i<scenes.length;i++){acc+=scenes[i].w;if(pos<acc)return i}return scenes.length-1}
+function sceneStart(scenes,i){let acc=0;for(let k=0;k<i;k++)acc+=scenes[k].w;return acc}
+function playScene(fade){
+  const s=S.session,sc=resolveScene(s,s.idx),m=ALL[sc.mood];
+  if(!Sound.play(m,sc.amb,fade)){toast('This browser can’t play the soundtrack.');return false}
+  Sound.preload(s.scenes.map(function(x,i){const r=resolveScene(s,i);return Object.assign({},ALL[r.mood],r.amb?{amb:r.amb}:{})}));
+  return true;
+}
+function setScene(i,opts){
+  const s=S.session;i=Math.max(0,Math.min(s.scenes.length-1,i));
+  const changed=i!==s.idx;s.idx=i;
+  if(!(opts&&opts.keepPos))s.pos=sceneStart(s.scenes,i);
+  s.done=false;
+  if(changed&&s.playing){playScene(3);S.stats.scenes++;saveStats();if(S.settings.buzz&&navigator.vibrate){try{navigator.vibrate(25)}catch(e){}}}
+  syncShelf();
+}
+function syncShelf(){const s=S.session;if(!s)return;const e=shelfEntry(s.book);if(e){e.ch=s.ch;e.pos=Math.floor(s.pos)}S.last={book:s.book,ch:s.ch};saveShelf()}
+function togglePlay(){
+  const s=S.session;if(!s)return;
+  if(s.done){s.pos=0;s.idx=0;s.done=false}
+  if(s.playing){s.playing=false;Sound.stop(1.2);releaseWake();syncShelf()}
+  else{if(S.preview)S.preview=null;if(!playScene(2))return;s.playing=true;s.lastTick=Date.now();requestWake()}
+  render();
+}
+
+/* wake lock */
+let wake=null;
+async function requestWake(){if(!S.settings.keepAwake||!('wakeLock' in navigator))return;try{wake=await navigator.wakeLock.request('screen')}catch(e){wake=null}}
+function releaseWake(){try{wake&&wake.release()}catch(e){}wake=null}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.session&&S.session.playing&&!wake)requestWake()});
+
+/* ticker */
+let saveCount=0;
+setInterval(function(){
+  const s=S.session;
+  if(s&&s.playing){
+    const now=Date.now(),dt=Math.min(10,(now-(s.lastTick||now))/1000);s.lastTick=now;
+    const wpm=S.settings.wpm;
+    let pos=s.pos+wpm/60*dt;
+    if(!S.settings.autoAdvance){const end=sceneStart(s.scenes,s.idx)+s.scenes[s.idx].w-1;pos=Math.min(pos,end)}
+    s.pos=pos;
+    const k=dayKey(new Date());S.stats.days[k]=(S.stats.days[k]||0)+dt;
+    const mood=resolveScene(s,s.idx).mood;S.stats.moods[mood]=(S.stats.moods[mood]||0)+dt;
+    if(s.pos>=s.total){
+      s.pos=s.total;s.playing=false;s.done=true;Sound.stop(5);releaseWake();S.stats.chapters++;saveStats();syncShelf();
+      if(S.view==='player')render();return;
+    }
+    const ni=sceneAt(s.scenes,s.pos);
+    if(ni!==s.idx){setScene(ni,{keepPos:true});if(S.view==='player')render();}
+    else if(S.view==='player')livePlayer();
+    if(++saveCount%5===0){saveStats();syncShelf()}
+  }
+  if(S.view==='pace'&&S.pace.phase==='reading'){S.pace.secs=Math.floor((Date.now()-S.pace.start)/1000);const el=document.getElementById('pace-big');if(el)el.textContent=fmtClock(S.pace.secs)}
+},1000);
+const fmtClock=t=>pad2(Math.floor(t/60))+':'+pad2(t%60);
+
+/* ---------- views ---------- */
+function greet(){const h=new Date().getHours();return h<5?'Good night':h<12?'Good morning':h<18?'Good afternoon':'Good evening'}
+function tabbar(cur){
+  const t=(id,label)=>`<button type="button" data-act="tab" data-arg="${id}" ${cur===id?'aria-current="page"':''}>${label}</button>`;
+  return `<nav class="tabbar" aria-label="Main">${t('home','Read')}${t('sounds','Sounds')}${t('stats','Stats')}</nav>`;
+}
+function backBtn(label){return `<button type="button" class="iconbtn" data-act="back" aria-label="${label||'Back'}">${I.back}</button>`}
+
+function vWelcome(){
+  const m1=MOODS.rain,m2=MOODS.hearth,m3=MOODS.sea;
+  return `<div class="screen no-nav" style="padding-top:0;padding-left:0;padding-right:0">
+    <div class="glow grain" style="--c:84,186,198;--c2:232,128,64;--b:#B9F1F0;--base:#07101A;height:430px;flex-shrink:0;border-radius:0 0 40px 40px;box-shadow:none;
+      background:radial-gradient(42% 34% at 50% 52%, rgba(3,3,5,.98) 0%, rgba(3,3,5,.75) 55%, rgba(3,3,5,0) 100%), radial-gradient(80% 60% at 50% 64%, #B9F1F0 0%, rgba(84,186,198,.85) 28%, rgba(84,186,198,0) 70%), radial-gradient(70% 55% at 10% 20%, rgba(128,116,214,.85) 0%, rgba(128,116,214,0) 65%), radial-gradient(70% 55% at 95% 30%, rgba(232,128,64,.7) 0%, rgba(232,128,64,0) 62%), #07101A">
+      <svg aria-hidden="true" viewBox="0 0 390 430" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" fill="none">
+        <circle cx="195" cy="232" r="78" stroke="rgba(255,255,255,.22)"/><circle cx="195" cy="232" r="128" stroke="rgba(255,255,255,.14)" stroke-dasharray="2 6"/><circle cx="195" cy="232" r="182" stroke="rgba(255,255,255,.08)"/>
+      </svg>
+      <div style="position:absolute;left:max(20px, env(safe-area-inset-left, 0px));top:24px;font-size:17px;font-weight:600">Underscore</div>
+      <svg aria-hidden="true" width="80" height="44" viewBox="0 0 80 44" fill="#F2F2F0" style="position:absolute;left:calc(50% - 40px);top:210px;filter:drop-shadow(0 0 10px rgba(185,241,240,.8))"><rect x="0" y="18" width="3" height="8" rx="1.5"/><rect x="11" y="10" width="3" height="24" rx="1.5"/><rect x="22" y="4" width="3" height="36" rx="1.5"/><rect x="33" y="0" width="3" height="44" rx="1.5"/><rect x="44" y="8" width="3" height="28" rx="1.5"/><rect x="55" y="2" width="3" height="40" rx="1.5"/><rect x="66" y="12" width="3" height="20" rx="1.5"/><rect x="77" y="18" width="3" height="8" rx="1.5"/></svg>
+      <div class="chip dark" style="position:absolute;left:8%;top:104px;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12)"><span style="width:8px;height:8px;border-radius:4px;background:${m1.b}"></span>Rain on the harbor</div>
+      <div class="chip dark" style="position:absolute;right:6%;top:160px;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12)"><span style="width:8px;height:8px;border-radius:4px;background:${m2.b}"></span>Strings swelling</div>
+      <div class="chip dark" style="position:absolute;left:14%;top:350px;display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12)"><span style="width:8px;height:8px;border-radius:4px;background:${m3.b}"></span>Waves at dusk</div>
+    </div>
+    <div style="flex-grow:1;display:flex;flex-direction:column;padding:32px max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px))">
+      <h1 class="h1" style="font-size:34px">Every scene,<br>its own soundtrack</h1>
+      <p class="sub" style="margin-top:16px;font-size:16px">Tell us what you’re reading. We play music that matches each scene as you turn the pages, on paper or Kindle.</p>
+      <div style="margin-top:auto;padding-top:28px;display:flex;flex-direction:column;gap:8px">
+        <button type="button" class="cta" data-act="startPace" data-arg="onboard">Get started<span class="dot">${I.arrow}</span></button>
+        <button type="button" class="textbtn" data-act="skipOnboard">Skip for now</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function vPace(){
+  const p=S.pace,ph=p.phase;
+  const instr=ph==='ready'?'Tap Start, read the passage at your normal speed, then tap Done. We use this to keep the music in step with your pages.'
+    :ph==='reading'?'Read at your usual pace. No rush, this isn’t a test.'
+    :'We’ll use this pace to time each scene. You can redo it any time in your profile.';
+  const onboarding=p.from==='onboard';
+  return `<div class="screen no-nav">
+    <div class="row" style="gap:16px">
+      ${backBtn()}
+      ${onboarding?`<div style="flex-grow:1;display:flex;gap:6px" role="img" aria-label="Step 2 of 2"><div style="flex:1;height:4px;border-radius:2px;background:var(--lime)"></div><div style="flex:1;height:4px;border-radius:2px;background:${ph==='done'?'var(--lime)':'#2C2C32'}"></div></div>
+      <button type="button" class="textbtn" style="height:44px;padding-left:8px" data-act="skipOnboard">Skip</button>`:'<div class="title">Reading pace</div>'}
+    </div>
+    <h1 class="h1" style="margin-top:24px;font-size:28px">Let’s find your<br>reading pace</h1>
+    <p class="sub" style="margin-top:8px">${instr}</p>
+    <div style="margin-top:20px;padding:20px;border-radius:24px;background:var(--surface);border:1px solid #1E1E23">
+      <p style="margin:0;font-size:17px;line-height:1.65;color:#E4E4E7;transition:filter .4s, opacity .4s;${ph==='ready'?'filter:blur(6px);opacity:.6':''}">Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation.</p>
+      <div class="cap" style="margin-top:12px">From Moby-Dick · 58 words</div>
+    </div>
+    <div style="flex-grow:1;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px" aria-live="polite">
+      <div class="num" id="pace-big" style="font-size:72px;${ph==='done'?'text-shadow:0 0 28px rgba(214,242,106,.45)':''}">${ph==='done'?p.wpm:fmtClock(p.secs)}</div>
+      <div style="font-size:14px;color:var(--fg-2)">${ph==='done'?'words per minute':ph==='reading'?'reading…':'timer'}</div>
+    </div>
+    ${ph==='done'?`<div style="display:flex;flex-direction:column;gap:8px">
+        <button type="button" class="cta" data-act="paceAccept">Sounds right<span class="dot">${I.arrow}</span></button>
+        <button type="button" class="textbtn" data-act="paceReset">Try again</button></div>`
+      :`<button type="button" class="cta" data-act="${ph==='reading'?'paceDone':'paceStart'}">${ph==='reading'?'Done reading':'Start'}<span class="dot" style="${ph==='reading'?'background:var(--lime)':''}">${ph==='reading'?I.check:I.play()}</span></button>`}
+  </div>`;
+}
+
+function vHome(){
+  let card;
+  if(S.last&&bookById(S.last.book)&&bookById(S.last.book).maps[S.last.ch]){
+    const b=bookById(S.last.book),sc=b.maps[S.last.ch],e=shelfEntry(b.id);
+    const pos=(S.session&&S.session.book===b.id&&S.session.ch===S.last.ch)?S.session.pos:(e?e.pos:0);
+    const total=chWords(sc),idx=sceneAt(sc,pos),left=Math.max(0,Math.ceil((total-pos)/S.settings.wpm));
+    const playing=S.session&&S.session.playing&&S.session.book===b.id;
+    card=`<button type="button" class="glow grain" data-act="resume" style="${vars(COL[b.id])};height:236px;flex-shrink:0;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;border:none;color:var(--fg);text-align:left;width:100%">
+      <div class="between" style="align-items:center;width:100%"><div style="font-size:15px;font-weight:500">${playing?'Now playing':'Continue reading'}</div><div class="chip">Scene ${idx+1} of ${sc.length}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%"><div class="num" style="font-size:64px;text-shadow:0 0 24px rgba(${COL[b.id].c},.55)">${pad2(left)}</div><div style="font-size:13px;color:#D5DEDF">min left in chapter</div></div>
+      <div class="between" style="align-items:center;width:100%">
+        <div style="min-width:0"><div style="font-size:19px;font-weight:500">${esc(b.title)}</div><div style="font-size:13px;color:#E2ECEC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ch. ${S.last.ch} · ${esc(sc[idx].t)}</div></div>
+        <span style="display:flex;align-items:center;gap:10px;padding:5px 5px 5px 16px;border-radius:999px;background:rgba(6,10,12,.55);font-size:14px;font-weight:500;flex-shrink:0">${playing?'Open':'Resume'}<span style="width:36px;height:36px;border-radius:18px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center">${playing?I.pause(14):I.play(14)}</span></span>
+      </div></button>`;
+  }else{
+    card=`<button type="button" class="glow grain" data-act="openBook" data-arg="moby" style="${vars(COL.moby)};height:236px;flex-shrink:0;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;border:none;color:var(--fg);text-align:left;width:100%">
+      <div class="between" style="align-items:center;width:100%"><div style="font-size:15px;font-weight:500">Start here</div><div class="chip">4 scenes</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:100%"><div class="num" style="font-size:64px;text-shadow:0 0 24px rgba(185,241,240,.45)">01</div><div style="font-size:13px;color:#D5DEDF">chapter one, Loomings</div></div>
+      <div class="between" style="align-items:center;width:100%"><div><div style="font-size:19px;font-weight:500">Moby-Dick</div><div style="font-size:13px;color:#E2ECEC">Grab a copy and press play</div></div>
+      <span style="display:flex;align-items:center;gap:10px;padding:5px 5px 5px 16px;border-radius:999px;background:rgba(6,10,12,.55);font-size:14px;font-weight:500">Begin<span style="width:36px;height:36px;border-radius:18px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center">${I.play(14)}</span></span></div></button>`;
+  }
+  const onShelf=S.shelf.map(e=>bookById(e.book)).filter(Boolean);
+  const list=onShelf.length?onShelf:BOOKS.filter(b=>mappedChapters(b).length);
+  const tiles=list.slice(0,3).map(b=>{
+    const e=shelfEntry(b.id),ch=e?e.ch:mappedChapters(b)[0];
+    return `<button type="button" class="glow corner grain tile" data-act="openBook" data-arg="${b.id}" style="${vars(COL[b.id])}">
+      <span style="font-size:14px;font-weight:500;line-height:1.2">${esc(b.title)}</span>
+      <span style="display:flex;align-items:baseline;gap:6px"><span class="num" style="font-size:26px">${pad2(ch)}</span><span style="font-size:12px">chapter</span></span></button>`;
+  }).join('');
+  return `<div class="screen" style="gap:20px">
+    <div class="between" style="align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:13px;color:var(--fg-3)">${greet()}${S.settings.name?', '+esc(S.settings.name):''}</div><h1 class="h1">Read with<br>a soundtrack</h1></div>
+      <button type="button" class="iconbtn" style="width:48px;height:48px;border-radius:24px" data-act="nav" data-arg="profile" aria-label="Profile">${I.user}</button>
+    </div>
+    ${card}
+    <button type="button" class="search-link" data-act="nav" data-arg="search">${I.search}Find a book or author</button>
+    <div class="between"><h2 class="h2" style="font-weight:500">${onShelf.length?'Your shelf':'Ready to try'}</h2><div class="cap">${onShelf.length?onShelf.length+(onShelf.length===1?' book':' books'):'Scene maps ready'}</div></div>
+    <div class="shelf">${tiles}<button type="button" class="addtile" data-act="nav" data-arg="search">${I.plus}Add a book</button></div>
+    ${tabbar('home')}
+  </div>`;
+}
+
+function vSearch(){
+  return `<div class="screen no-nav">
+    <div class="row">${backBtn('Back')}
+      <div class="field">${I.search}<label for="q" class="sr">Search books</label>
+        <input id="q" type="search" placeholder="Title or author" autocomplete="off" value="${esc(S.query)}">
+        <button type="button" class="iconbtn" id="q-clear" data-act="clearQ" aria-label="Clear search" style="width:32px;height:32px;border-radius:16px;background:#2C2C32;border:none;${S.query?'':'visibility:hidden'}">${I.x}</button>
+      </div>
+    </div>
+    <div id="results">${resultsHTML()}</div>
+  </div>`;
+}
+function resultsHTML(){
+  const raw=S.query.trim(),q=raw.toLowerCase();
+  const list=q?BOOKS.filter(b=>(b.title+' '+b.author).toLowerCase().indexOf(q)!==-1):BOOKS;
+  let add='';
+  if(raw){
+    const a=S.adding&&S.adding.q===raw?S.adding:null;
+    if(a&&a.status==='thinking')add=`<div class="addbox"><div class="row"><span style="flex-grow:1" role="status">Looking up “${esc(raw)}”…</span><button type="button" class="textbtn" data-act="stopAdd">Stop</button></div></div>`;
+    else if(a&&a.status==='manual')add=`<div class="addbox">
+        ${a.msg?`<p class="err" role="alert">${esc(a.msg)}</p>`:'<p class="sub">We couldn’t pin down that book. Add its details and the AI will map chapters from your notes.</p>'}
+        <label for="add-title" class="cap">Title</label><input id="add-title" class="inp" value="${esc(raw)}" autocomplete="off">
+        <label for="add-author" class="cap">Author</label><input id="add-author" class="inp" placeholder="Author name" autocomplete="off">
+        <label for="add-ch" class="cap">Number of chapters</label><input id="add-ch" class="inp" type="number" inputmode="numeric" min="1" max="300" value="30">
+        <button type="button" class="cta" style="margin-top:8px" data-act="addManual">Add to my books<span class="dot">${I.plus}</span></button></div>`;
+    else if(S.aiState==='ready')add=`<button type="button" class="cta" style="margin-top:20px" data-act="identify"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${list.length?'Not here? ':''}Add “${esc(raw)}”</span><span class="dot">${I.spark}</span></button>`;
+    else if(S.aiState==='off')add='<p class="sub" style="margin-top:20px">Adding new books uses AI, which works when Underscore is opened inside Claude.</p>';
+  }
+  const rows=list.map(b=>{
+    const n=mappedChapters(b).length,c=COL[b.id];
+    return `<button type="button" class="result" data-act="openBook" data-arg="${b.id}">
+      <span class="swatch" aria-hidden="true" style="background:radial-gradient(120% 90% at 100% 110%, ${c.b} 0%, rgba(${c.c},.9) 35%, rgba(${c.c},0) 80%), ${c.base};box-shadow:inset 0 1px 0 rgba(255,255,255,.12)"></span>
+      <span style="flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+        <span style="font-size:16px;font-weight:600;line-height:1.3">${esc(b.title)}</span>
+        <span style="font-size:14px;color:var(--fg-2);line-height:1.3">${esc(b.author)} · ${b.chapters} chapters</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fg-3);margin-top:2px"><span style="width:8px;height:8px;border-radius:4px;background:${n?'var(--lime)':'var(--amber)'}"></span>${n?(n===1?'1 chapter mapped':n+' chapters mapped'):(b.custom?(b.mine?'Added by you · ':'Added by a reader · '):'')+'Map any chapter with AI'}</span>
+      </span>${I.chev}</button>`;
+  }).join('');
+  return `<div class="between" style="padding:28px 0 8px"><h1 class="h2">${q?'Results':'Books'}</h1><div class="cap" style="font-size:14px" aria-live="polite">${q?(list.length===1?'1 book':list.length+' books'):''}</div></div>
+    ${rows||`<p class="sub" style="padding-top:8px">No match for “${esc(raw)}” in your library yet.</p>`}${add}`;
+}
+
+function vBook(){
+  const b=bookById(S.bookId),mapped=mappedChapters(b),c=COL[b.id];
+  if(S.pickCh==null){const e=shelfEntry(b.id);S.pickCh=(e&&b.maps[e.ch])?e.ch:(mapped[0]||1)}
+  const n0=S.pickCh,isMapped=!!b.maps[n0],isAI=!!b.aiCh[n0],meta0=(b.remoteCh&&b.remoteCh[n0])||(AIMAPS[b.id]&&AIMAPS[b.id][n0])||{};
+  const fromOther=!!(b.remoteCh&&b.remoteCh[n0]&&b.remoteCh[n0].by&&b.remoteCh[n0].by!==UID);
+  const d=S.draft,drafting=!!(d&&d.status==='thinking'),errHere=!!(d&&d.status==='error'&&d.book===b.id&&d.ch===n0);
+  const show=S.showAll?b.chapters:Math.min(b.chapters,Math.max(12,(mapped[mapped.length-1]||0)+3,n0+2));
+  let rows='';
+  for(let n=1;n<=show;n++){
+    const sc=b.maps[n],on=n===n0,busy=drafting&&d.book===b.id&&d.ch===n;
+    const meta=busy?'Drafting scenes…':sc?Math.max(1,Math.round(chWords(sc)/S.settings.wpm))+' min · '+sc.length+' scenes'+(b.aiCh[n]?(b.remoteCh&&b.remoteCh[n]&&b.remoteCh[n].by!==UID?' · shared by a reader':' · AI draft'):''):'Not mapped yet';
+    rows+=`<button type="button" class="chrow${sc?'':' unmapped'}" data-act="pickCh" data-arg="${n}" aria-pressed="${on}">
+      <span class="n">${pad2(n)}</span>
+      <span style="flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500;line-height:1.3">${esc(chTitle(b,n))}</span><span style="font-size:14px;line-height:1.3;color:${busy?'var(--amber)':'var(--fg-3)'}">${meta}</span></span>
+      ${on?`<span style="color:var(--lime)">${I.check}</span>`:''}</button>`;
+  }
+  let panel='';
+  if(!isMapped){
+    panel=`<div class="draftcard">
+      <h2 class="h2">Chapter ${n0} isn’t mapped yet</h2>
+      <p class="sub">${S.aiState==='off'?'Drafting scene maps with AI works when Underscore is opened inside Claude.':'AI can draft its scenes and moods. It usually takes under a minute'+(canShare()?', and the map is shared with every reader.':'.')}</p>
+      ${S.aiState!=='off'?`<label for="draft-note" style="font-size:14px;font-weight:500;color:var(--fg-2)">What happens in this chapter? <span style="font-weight:400;color:var(--fg-3)">Optional. Helps with newer or lesser-known books.</span></label>
+      <textarea id="draft-note" rows="3" maxlength="800" placeholder="She arrives at the old house in a storm and meets the housekeeper">${esc(S.notes[b.id+'-'+n0]||'')}</textarea>`:''}
+      ${errHere?`<p class="err" role="alert">${esc(d.msg)}</p>`:''}
+    </div>`;
+  }else if(isAI){
+    panel=`<div class="row" style="justify-content:space-between;margin-top:16px">
+      <span class="cap" style="font-size:14px">${(fromOther?'Another reader drafted chapter '+n0+' with AI. ':'Chapter '+n0+' was drafted by AI'+(canShare()?' and shared with everyone. ':'. '))+(meta0.conf==='low'?'It’s a rough guess, so fix moods from the player as you read.':'Fix any mood from the player.')}</span>
+      ${S.aiState==='ready'?`<button type="button" class="textbtn" style="flex-shrink:0;height:44px;color:var(--fg)" data-act="draft" ${drafting?'disabled':''}>Redraft</button>`:''}</div>
+      ${errHere?`<p class="err" role="alert">${esc(d.msg)}</p>`:''}`;
+  }
+  let dock='';
+  if(drafting)dock=`<button type="button" class="cta" data-act="stopDraft"><span role="status">Drafting chapter ${d.ch}…</span><span class="dot">${I.x}<span class="sr">Stop</span></span></button>`;
+  else if(isMapped)dock=`<button type="button" class="cta" data-act="startCh">Start chapter ${n0}<span class="dot">${I.play()}</span></button>`;
+  else if(S.aiState!=='off')dock=`<button type="button" class="cta" data-act="draft" ${S.aiState==='pending'?'disabled':''}>Draft chapter ${n0} with AI<span class="dot">${I.spark}</span></button>`;
+  return `<div class="screen has-dock">
+    <div class="row">${backBtn()}<div class="title">Choose your chapter</div></div>
+    <div class="glow grain" style="${vars(c)};margin-top:24px;height:196px;flex-shrink:0;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;
+      background:radial-gradient(60% 70% at 30% 42%, rgba(3,4,6,.95) 0%, rgba(3,4,6,.6) 45%, rgba(3,4,6,0) 82%), radial-gradient(90% 100% at 105% 105%, var(--b) 0%, rgba(var(--c),.85) 30%, rgba(var(--c),0) 70%), radial-gradient(80% 80% at 100% 0%, rgba(var(--c2),.8) 0%, rgba(var(--c2),0) 62%), radial-gradient(70% 80% at 0% 105%, rgba(var(--c),.8) 0%, rgba(var(--c),0) 62%), var(--base)">
+      <div><h1 style="margin:0;font-size:28px;font-weight:300;line-height:1.15">${esc(b.title)}</h1><div style="font-size:15px;color:#D5DEDF">${esc(b.author)} · ${b.chapters} chapters</div></div>
+      <div class="between" style="align-items:flex-end">
+        <div><div class="num" style="font-size:48px">${S.settings.wpm}</div><div style="font-size:14px;color:#D5DEDF">words per minute · your pace</div></div>
+        <div class="chip dark">${mapped.length?mapped.length+' mapped':'Not mapped yet'}</div>
+      </div>
+    </div>
+    ${panel}
+    <h2 style="margin:0;padding:28px 0 12px;font-size:15px;font-weight:500;color:var(--fg-2)">Which chapter are you on?</h2>
+    <div style="display:flex;flex-direction:column;gap:8px">${rows}</div>
+    ${b.chapters>show?`<button type="button" class="textbtn" style="width:100%;margin-top:8px" data-act="showAll">Show all ${b.chapters} chapters</button>`:''}
+    ${dock?`<div class="dock">${dock}</div>`:''}
+  </div>`;
+}
+
+function rulerHTML(s){
+  const pos=s.pos/s.total,mk=Math.round(pos*40);let ticks='';
+  for(let t=0;t<=40;t++)ticks+=`<i class="${t%5===0?'major':''} ${t<mk?'done':''}"></i>`;
+  return ticks+`<span class="mark" style="left:${(pos*100).toFixed(2)}%"></span>`;
+}
+function vPlayer(){
+  const s=S.session,b=bookById(s.book),sc=resolveScene(s,s.idx),m=ALL[sc.mood];
+  const pages=Math.max(1,Math.ceil(s.total/WORDS_PER_PAGE)),page=Math.min(pages,Math.floor(s.pos/WORDS_PER_PAGE)+1);
+  const left=Math.max(0,Math.ceil((s.total-s.pos)/S.settings.wpm));
+  const prevCard=S.lastCard&&S.lastCard!==sc.mood?ALL[S.lastCard]:null;S.lastCard=sc.mood;
+  const vk=s.book+'~'+s.ch+'~'+s.idx,vote=S.votes[vk],ag=AGG[vk];
+  const nextMapped=mappedChapters(b).find(n=>n>s.ch);
+  const dots=s.scenes.map((x,i)=>`<button type="button" class="sdot" data-act="scene" data-arg="${i}" aria-pressed="${i===s.idx}" aria-label="Scene ${i+1}, ${esc(x.t)}">${i+1}</button>`).join('');
+  return `<div class="screen no-nav" style="min-height:100%;gap:0">
+    <div class="row">${backBtn('Back to chapters')}<div class="sdots" role="group" aria-label="Jump to scene">${dots}</div></div>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:14px;color:var(--fg-2);line-height:1.3">${esc(b.title)} · Chapter ${s.ch}, ${esc(chTitle(b,s.ch))}${b.aiCh[s.ch]?' · <span style="color:var(--amber)">AI draft</span>':''}${sc.by==='readers'?' · <span style="color:var(--lime)">mood picked by readers</span>':''}</div>
+      <h1 style="margin:0;font-size:28px;font-weight:300;line-height:1.15;letter-spacing:-.01em">${s.done?'Chapter complete':esc(sc.t)}</h1>
+    </div>
+    <div class="scene-card" style="margin-top:20px;box-shadow:0 30px 70px -26px rgba(${m.c},.65)">
+      ${prevCard?`<div class="layer glow" style="${vars(prevCard)}"></div>`:''}
+      <div class="layer glow grain ${prevCard?'in':''}" style="${vars(m)}"></div>
+      <div class="content">
+        <div class="between" style="align-items:center"><div style="font-size:15px;font-weight:500">Scene ${s.idx+1} of ${s.scenes.length}</div><div class="chip dark">${s.done?'Finished':s.playing?'Playing':'Paused'}</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div class="num" id="p-left" style="font-size:88px;text-shadow:0 0 28px rgba(${m.c},.6)">${pad2(left)}</div>
+          <div style="font-size:14px;color:#E2E4E6">min left in chapter</div>
+        </div>
+        <div class="glassbox">
+          <div style="font-size:16px;font-weight:500;line-height:1.35">${esc(sc.d)}</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#C9CDD0">${I.note}${esc(sc.snd||m.inst)}</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px">
+      <div class="ruler" id="ruler" role="slider" tabindex="0" aria-label="Where you are in the chapter" aria-valuemin="1" aria-valuemax="${pages}" aria-valuenow="${page}" aria-valuetext="Page ${page} of ${pages}">${rulerHTML(s)}</div>
+      <div class="between" style="font-size:13px;color:var(--fg-3)"><span>p. 1</span><span id="p-page" style="color:var(--lime);font-weight:500">You’re around page ${page}</span><span>p. ${pages}</span></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px">
+      <button type="button" class="roundbtn" data-act="prevScene" aria-label="Previous scene" ${s.idx===0?'disabled':''}>${I.prev}</button>
+      ${s.done&&nextMapped?`<button type="button" class="playbtn" data-act="nextCh" data-arg="${nextMapped}">Next chapter<span class="dot">${I.arrow}</span></button>`
+        :`<button type="button" class="playbtn" data-act="toggle">${s.done?'Play again':s.playing?'Pause soundtrack':'Play soundtrack'}<span class="dot">${s.playing?I.pause():I.play()}</span></button>`}
+      <button type="button" class="roundbtn" data-act="nextScene" aria-label="Next scene" ${s.idx===s.scenes.length-1?'disabled':''}>${I.next}</button>
+    </div>
+    ${s.playing&&!S.hintDone?`<div class="hint" style="margin-top:12px"><span style="flex-grow:1">No sound on iPhone? Turn off Silent mode, then tap Play again.</span><button type="button" class="iconbtn" style="width:36px;height:36px;border-radius:18px" data-act="hintOk" aria-label="Dismiss tip">${I.x}</button></div>`:''}
+    <div class="vote" style="margin-top:12px">
+      <div style="flex-grow:1;font-size:15px;color:var(--fg-2)" aria-live="polite">${vote==='yes'?'Thanks, noted for this scene':vote==='no'?'Pick a mood that fits better':ALL[vote]?'You changed this to '+ALL[vote].name:sc.by==='readers'?'Readers picked this mood. Does it fit?':ag&&ag.yes?'Does it fit? '+ag.yes+(ag.yes===1?' reader likes it':' readers like it'):'Does the music fit?'}</div>
+      <button type="button" class="yes" data-act="vote" data-arg="yes" aria-pressed="${vote==='yes'}" aria-label="Music fits this scene">${I.up}</button>
+      <button type="button" class="no" data-act="vote" data-arg="no" aria-pressed="${vote==='no'}" aria-label="Music does not fit this scene">${I.down}</button>
+    </div>
+    ${vote==='no'?`<div class="moodpick" role="group" aria-label="Choose a better mood">${Object.keys(ALL).filter(k=>k!==sc.mood).map(k=>`<button type="button" data-act="remood" data-arg="${k}"><span style="background:${ALL[k].b}"></span>${ALL[k].name}</button>`).join('')}</div>`:''}
+  </div>`;
+}
+function livePlayer(){
+  const s=S.session;if(!s)return;
+  const pages=Math.max(1,Math.ceil(s.total/WORDS_PER_PAGE)),page=Math.min(pages,Math.floor(s.pos/WORDS_PER_PAGE)+1);
+  const l=document.getElementById('p-left');if(l)l.textContent=pad2(Math.max(0,Math.ceil((s.total-s.pos)/S.settings.wpm)));
+  const p=document.getElementById('p-page');if(p)p.textContent='You’re around page '+page;
+  const r=document.getElementById('ruler');if(r){r.innerHTML=rulerHTML(s);r.setAttribute('aria-valuenow',page);r.setAttribute('aria-valuetext','Page '+page+' of '+pages)}
+}
+
+function vSounds(){
+  const rows=Object.keys(MOODS).map(id=>{
+    const m=MOODS[id],on=S.preview===id;
+    return `<button type="button" class="moodrow" data-act="preview" data-arg="${id}" aria-pressed="${on}" aria-label="${on?'Stop preview of ':'Preview '}${m.name}">
+      ${wave(id,m)}
+      <span style="flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500;line-height:1.3">${m.name}</span><span style="font-size:13px;line-height:1.3;color:${on?'var(--lime)':'var(--fg-3)'}">${on?'Previewing · ':''}${m.inst}</span></span>
+      <span class="pp" aria-hidden="true">${on?I.pause(12):I.play(12)}</span></button>`;
+  }).join('');
+  return `<div class="screen">
+    <h1 class="h1">Sounds</h1>
+    <p class="sub" style="margin-top:8px">The moods we score your scenes with: recorded tracks for five of them, the rest generated live on your phone.</p>
+    <section aria-label="Sound mix" style="margin-top:20px;padding:16px 20px;border-radius:24px;background:var(--surface);border:1px solid #1E1E23;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:6px"><div class="between" style="font-size:15px"><label for="vol-music" style="font-weight:500">Music</label><span id="vol-music-v" style="color:var(--fg-2)">${S.settings.music}%</span></div>
+        <input id="vol-music" type="range" min="0" max="100" value="${S.settings.music}"></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><div class="between" style="font-size:15px"><label for="vol-amb" style="font-weight:500">Ambient sounds</label><span id="vol-amb-v" style="color:var(--fg-2)">${S.settings.amb}%</span></div>
+        <input id="vol-amb" type="range" min="0" max="100" value="${S.settings.amb}"></div>
+    </section>
+    <div class="between" style="margin:24px 0 12px"><h2 class="h2">Moods</h2><div class="cap" style="font-size:14px">Tap to preview</div></div>
+    <div class="group">${rows}</div>
+    ${tabbar('sounds')}
+  </div>`;
+}
+
+function statsData(){
+  const days=S.stats.days,now=new Date(),P=S.period;let bars=[],label='';
+  const sumDay=d=>(days[dayKey(d)]||0)/60;
+  if(P==='week'){
+    for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);bars.push(['SMTWTFS'[d.getDay()],sumDay(d)])}
+    label='minutes read in the last 7 days';
+  }else if(P==='month'){
+    for(let w=3;w>=0;w--){let t=0,start;for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-w*7-i);if(i===6)start=d;t+=sumDay(d)}bars.push([(start.getMonth()+1)+'/'+start.getDate(),t])}
+    label='minutes read in the last 4 weeks';
+  }else{
+    const y=now.getFullYear();
+    for(let mo=0;mo<=now.getMonth();mo++){let t=0;Object.keys(days).forEach(k=>{const p=k.split('-');if(+p[0]===y&&+p[1]===mo+1)t+=days[k]/60});bars.push(['JFMAMJJASOND'[mo],t])}
+    label='minutes read this year';
+  }
+  const total=Math.round(bars.reduce((s,b)=>s+b[1],0));
+  let streak=0;for(let i=0;i<400;i++){const d=new Date(now);d.setDate(now.getDate()-i);if((days[dayKey(d)]||0)>=30)streak++;else if(i>0)break}
+  const mt=S.stats.moods,mk=Object.keys(mt).sort((a,b)=>mt[b]-mt[a]),msum=mk.reduce((s,k)=>s+mt[k],0);
+  return {bars,label,total,streak,moods:mk.slice(0,3).map(k=>[ALL[k].name,Math.round(mt[k]/msum*100),ALL[k].b])};
+}
+function vStats(){
+  const d=statsData(),max=Math.max(1,...d.bars.map(b=>b[1])),last=d.bars.length-1;
+  const bars=d.bars.map((b,i)=>{const h=b[1]<.5?4:Math.max(6,Math.round(b[1]/max*72));return `<div><b style="height:${h}px;background:${b[1]<.5?'rgba(255,255,255,.18)':i===last?'var(--lime)':'rgba(255,255,255,.75)'}"></b><span>${b[0]}</span></div>`}).join('');
+  const seg=['week','month','year'].map(p=>`<button type="button" data-act="period" data-arg="${p}" aria-pressed="${S.period===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('');
+  const tile=(l,v,u)=>`<div class="stat"><div style="font-size:13px;font-weight:500;color:var(--fg-2)">${l}</div><div style="display:flex;align-items:baseline;gap:6px"><span class="num" style="font-size:30px;font-weight:200">${v}</span><span class="cap">${u}</span></div></div>`;
+  const empty=!Object.keys(S.stats.days).length;
+  return `<div class="screen">
+    <h1 class="h1">Your reading</h1>
+    <div class="seg" role="group" aria-label="Time period" style="margin-top:16px">${seg}</div>
+    <div class="glow grain" style="--c:92,176,128;--c2:60,140,150;--b:#CFF5D8;--base:#071610;margin-top:20px;height:220px;flex-shrink:0;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+      <div><div class="num" style="font-size:56px;text-shadow:0 0 26px rgba(207,245,216,.45)">${d.total.toLocaleString('en-US')}</div><div style="font-size:14px;color:#D8E4DC">${d.label}</div></div>
+      <div class="bars" role="img" aria-label="Minutes read: ${d.bars.map(b=>b[0]+' '+Math.round(b[1])).join(', ')}">${bars}</div>
+    </div>
+    ${empty?'<p class="sub" style="margin-top:12px">Play a chapter and your reading time shows up here.</p>':''}
+    <div style="margin-top:12px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px">
+      ${tile('Chapters finished',S.stats.chapters,'')}${tile('Reading streak',d.streak,d.streak===1?'day':'days')}${tile('Scenes heard',S.stats.scenes,'')}${tile('Your pace',S.settings.wpm,'wpm')}
+    </div>
+    ${d.moods.length?`<h2 class="h2" style="margin:20px 0 10px">Moods you read with most</h2><div style="display:flex;gap:8px;flex-wrap:wrap">${d.moods.map(m=>`<div style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;box-sizing:border-box;border-radius:18px;background:var(--raised);border:1px solid var(--line-2);font-size:14px"><span style="width:8px;height:8px;border-radius:4px;background:${m[2]}"></span>${m[0]}<span style="color:var(--fg-3)">${m[1]}%</span></div>`).join('')}</div>`:''}
+    ${tabbar('stats')}
+  </div>`;
+}
+
+function vProfile(){
+  const sw=(key,label,hint)=>`<div class="listrow"><div style="flex-grow:1;display:flex;flex-direction:column;gap:2px;padding:10px 0"><div id="lbl-${key}">${label}</div><div class="cap" style="line-height:1.35">${hint}</div></div>
+    <button type="button" class="switch" role="switch" aria-checked="${!!S.settings[key]}" aria-labelledby="lbl-${key}" data-act="flip" data-arg="${key}"><span></span></button></div>`;
+  return `<div class="screen no-nav">
+    <div class="row">${backBtn('Back')}<h1 class="title">Profile</h1></div>
+    <div style="margin-top:20px;display:flex;align-items:center;gap:16px;padding:12px 16px 12px 12px;border-radius:24px;background:var(--surface);border:1px solid #1E1E23">
+      <div class="glow" style="--c:84,186,198;--c2:128,116,214;--b:#B9F1F0;--base:#07202A;width:56px;height:56px;flex-shrink:0;border-radius:28px;box-shadow:none;display:flex;align-items:center;justify-content:center">${I.user}</div>
+      <div style="flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+        <label for="profile-name" class="cap">Your name</label>
+        <input id="profile-name" type="text" autocomplete="given-name" placeholder="Add your name" value="${esc(S.settings.name)}" style="width:100%;box-sizing:border-box;background:transparent;border:none;border-bottom:1px solid var(--line-2);padding:4px 0;color:var(--fg);font:inherit;font-size:17px;font-weight:600;outline:none">
+      </div>
+    </div>
+    <h2 class="label" style="margin:24px 0 8px 4px">Reading</h2>
+    <div class="group">
+      <button type="button" class="listrow" data-act="startPace" data-arg="profile"><span style="flex-grow:1">Reading pace</span><span style="color:var(--fg-2);font-size:15px">${S.settings.wpm} wpm</span>${I.chev}</button>
+      ${sw('autoAdvance','Auto-advance scenes','Moves to the next scene at your pace')}
+      ${sw('keepAwake','Keep screen on while playing','Stops your phone sleeping mid-chapter')}
+    </div>
+    <h2 class="label" style="margin:24px 0 8px 4px">Sound</h2>
+    <div class="group">
+      <button type="button" class="listrow" data-act="nav" data-arg="sounds"><span style="flex-grow:1">Sound mix</span><span style="color:var(--fg-2);font-size:15px">Music ${S.settings.music}%</span>${I.chev}</button>
+      ${sw('buzz','Gentle buzz on new scene','A light vibration when the music changes, on phones that support it')}
+    </div>
+    <p class="cap" style="margin:16px 4px 0;line-height:1.5">${canShare()?'Your shelf and stats stay on this phone. Chapter maps you draft, books you add and mood picks you make are shared with everyone who uses this link.':S.lib==='on'?'You can use the shared chapter maps. Your own drafts and mood picks stay on this phone.':'Your shelf, stats, maps and votes are saved on this phone.'}</p>
+    <div style="margin-top:auto;padding-top:24px;display:flex;justify-content:center">
+      ${S.confirmReset?`<div class="row" style="flex-wrap:wrap;justify-content:center"><span style="font-size:15px;color:var(--fg-2)">Erase everything on this phone?</span><button type="button" class="textbtn" style="color:var(--danger)" data-act="resetYes">Erase</button><button type="button" class="textbtn" data-act="resetNo">Cancel</button></div>`
+        :`<button type="button" class="textbtn" style="color:var(--danger)" data-act="resetAsk">Clear my data</button>`}
+    </div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const v=S.view;
+  if(v==='player'&&!S.session){S.view='home'}
+  if(v==='book'&&!S.bookId){S.view='home'}
+  const html={welcome:vWelcome,pace:vPace,home:vHome,search:vSearch,book:vBook,player:vPlayer,sounds:vSounds,stats:vStats,profile:vProfile}[S.view]();
+  const app=document.getElementById('app');
+  const active=document.activeElement&&document.activeElement.id;
+  app.innerHTML=html;
+  if(active){const el=document.getElementById(active);if(el&&el.tagName==='INPUT')el.focus()}
+  if(S.view!=='player')S.lastCard=null;
+}
+
+/* ---------- actions ---------- */
+const A={
+  tab(id){go(id,false);S.stack=[]},
+  nav(id){go(id)},
+  back(){back()},
+  startPace(from){S.pace={phase:'ready',secs:0,start:0,wpm:0,from:from};go('pace')},
+  skipOnboard(){S.settings.onboarded=true;saveSettings();S.stack=[];go('home',false)},
+  paceStart(){Sound.init();S.pace.phase='reading';S.pace.start=Date.now();S.pace.secs=0;render()},
+  paceDone(){const secs=Math.max(1,(Date.now()-S.pace.start)/1000);S.pace.wpm=Math.min(600,Math.max(80,Math.round(58/(secs/60))));S.pace.phase='done';render()},
+  paceReset(){S.pace.phase='ready';S.pace.secs=0;render()},
+  paceAccept(){S.settings.wpm=S.pace.wpm;const onboard=S.pace.from==='onboard';S.settings.onboarded=true;saveSettings();
+    if(onboard){S.stack=[];go('home',false)}else{back()}toast('Pace saved: '+S.pace.wpm+' words per minute')},
+  openBook(id){S.bookId=id;S.pickCh=null;S.showAll=false;if(S.draft&&S.draft.status==='error')S.draft=null;go('book')},
+  pickCh(n){S.pickCh=+n;if(S.draft&&S.draft.status==='error')S.draft=null;render()},
+  showAll(){S.showAll=true;render()},
+  draft(){draftMap()},
+  stopDraft(){if(S.draft&&S.draft.ctl)S.draft.ctl.abort()},
+  identify(){const q=S.query.trim();if(q)identifyBook(q)},
+  stopAdd(){if(S.adding&&S.adding.ctl)S.adding.ctl.abort()},
+  addManual(){
+    const t=(document.getElementById('add-title')||{}).value||'',au=(document.getElementById('add-author')||{}).value||'',n=parseInt((document.getElementById('add-ch')||{}).value,10);
+    if(!t.trim()){toast('Add the book’s title first.');return}
+    addCustom(t.trim().slice(0,80),au.trim().slice(0,60)||'Unknown author',Math.max(1,Math.min(300,n||30)),false);
+  },
+  remood(id){
+    const s=S.session;if(!s||!ALL[id])return;
+    S.votes[s.book+'~'+s.ch+'~'+s.idx]=id;syncVotes();
+    if(s.playing)playScene(2.5);
+    render();toast('Changed to '+ALL[id].name+(canShare()?'. Your pick helps other readers.':'.'));
+  },
+
+  startCh(){openSession(S.bookId,S.pickCh);go('player')},
+  resume(){const l=S.last;S.bookId=l.book;openSession(l.book,l.ch);go('player')},
+  toggle(){togglePlay()},
+  scene(i){setScene(+i);render()},
+  prevScene(){setScene(S.session.idx-1);render()},
+  nextScene(){setScene(S.session.idx+1);render()},
+  nextCh(n){const s=S.session;openSession(s.book,+n);S.session.playing=false;togglePlay()},
+  vote(v){const s=S.session,k=s.book+'~'+s.ch+'~'+s.idx;if(S.votes[k]===v)delete S.votes[k];else S.votes[k]=v;syncVotes();render()},
+  hintOk(){S.hintDone=true;store.set('hintDone',true);render()},
+  preview(id){
+    if(S.preview===id){S.preview=null;Sound.stop(1)}
+    else{if(S.session&&S.session.playing){S.session.playing=false;releaseWake();syncShelf()}S.preview=id;Sound.play(MOODS[id],null,1.5)}
+    render();
+  },
+  period(p){S.period=p;render()},
+  flip(k){S.settings[k]=!S.settings[k];saveSettings();if(k==='keepAwake'){if(!S.settings[k])releaseWake();else if(S.session&&S.session.playing)requestWake()}render()},
+  clearQ(){S.query='';render();const q=document.getElementById('q');if(q)q.focus()},
+  resetAsk(){S.confirmReset=true;render()},
+  resetNo(){S.confirmReset=false;render()},
+  resetYes(){store.clear();Sound.stop(.3);releaseWake();location.reload()}
+};
+document.addEventListener('click',function(e){
+  const el=e.target.closest('[data-act]');if(!el||el.disabled)return;
+  const f=A[el.dataset.act];if(f){e.preventDefault();f(el.dataset.arg)}
+});
+document.addEventListener('input',function(e){
+  const t=e.target;
+  if(t.id==='q'){S.query=t.value;const r=document.getElementById('results');if(r)r.innerHTML=resultsHTML();const c=document.getElementById('q-clear');if(c)c.style.visibility=S.query?'visible':'hidden'}
+  else if(t.id==='vol-music'||t.id==='vol-amb'){
+    const key=t.id==='vol-music'?'music':'amb';S.settings[key]=+t.value;
+    const lab=document.getElementById(t.id+'-v');if(lab)lab.textContent=t.value+'%';
+    Sound.setVol(S.settings.music/100,S.settings.amb/100);saveSettings();
+  }else if(t.id==='profile-name'){S.settings.name=t.value.slice(0,40);saveSettings()}
+  else if(t.id==='draft-note'&&S.bookId){S.notes[S.bookId+'-'+S.pickCh]=t.value}
+});
+/* ruler: tap or drag to say where you are */
+function rulerSet(e){
+  const r=document.getElementById('ruler'),s=S.session;if(!r||!s)return;
+  const rect=r.getBoundingClientRect(),f=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  s.pos=Math.min(s.total-1,f*s.total);s.done=false;
+  const ni=sceneAt(s.scenes,s.pos);
+  if(ni!==s.idx){setScene(ni,{keepPos:true});render()}else{livePlayer();syncShelf()}
+}
+let dragging=false;
+document.addEventListener('pointerdown',e=>{if(e.target.closest('#ruler')){dragging=true;rulerSet(e)}});
+document.addEventListener('pointermove',e=>{if(dragging)rulerSet(e)});
+document.addEventListener('pointerup',()=>{dragging=false});
+document.addEventListener('keydown',function(e){
+  if(e.target.id!=='ruler'||!S.session)return;
+  const s=S.session,step=WORDS_PER_PAGE;
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();s.pos=Math.max(0,Math.min(s.total-1,s.pos+(e.key==='ArrowRight'?step:-step)));
+    const ni=sceneAt(s.scenes,s.pos);if(ni!==s.idx){setScene(ni,{keepPos:true});render();const r=document.getElementById('ruler');if(r)r.focus()}else livePlayer()}
+});
+window.addEventListener('pagehide',()=>{saveStats();syncShelf()});
+
+render();
+})();
+</script>
+</body>
+</html>
