@@ -322,6 +322,10 @@
   }
   :root{ --grain-opacity: .11; }
   [data-theme="dark"]{ --grain-opacity: .6; }
+
+  /* Two links side by side under a project */
+  .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
+  .entry-links .entry-readlink{ margin-top: 0; }
 </style>
 </head>
 <body>
@@ -353,10 +357,10 @@
       <li><a href="#proj-mycourses" class="title-link" data-target="proj-mycourses"><span class="n">001</span>MyCourses</a></li>
       <li><a href="#proj-tigertrack" class="title-link" data-target="proj-tigertrack"><span class="n">002</span>Tiger Track</a></li>
       <li><a href="#proj-starpath" class="title-link" data-target="proj-starpath"><span class="n">003</span>StarPath</a></li>
-      <li><a href="#proj-pending" class="title-link is-pending"><span class="n">004</span>In progress</a></li>
+      <li><a href="#proj-underscore" class="title-link" data-target="proj-underscore"><span class="n">004</span>Underscore</a></li>
     </ul>
     <div class="titles-panel-footer">
-      03 case studies live / 01 pending<br>
+      04 projects / 02 case studies<br>
       <a href="mailto:tp1035@g.rit.edu">Get in touch →</a>
     </div>
   </aside>
@@ -364,7 +368,7 @@
   <main>
     <div class="work-head">
       <h1>Selected Work</h1>
-      <p>A handful of product design projects — some shipped, some concepts — spanning academic tools, campus fintech, and a bit of speculative sci-curiosity.</p>
+      <p>A handful of product design projects — some shipped, some concepts — spanning academic tools, campus fintech, reading, and a bit of speculative sci-curiosity.</p>
     </div>
 
     <section class="log">
@@ -426,11 +430,30 @@
         </div>
       </article>
 
-      <article class="entry is-pending" id="proj-pending">
-        <div class="entry-index">004 <span class="stat pending">In progress</span></div>
-        <h3 class="entry-heading">Next case study — in progress</h3>
-        <p class="entry-description">I'm writing this one up now. Check back soon, or get in touch if you'd like a preview before it's posted.</p>
-        <div class="entry-meta">Coming soon</div>
+      <article class="entry" id="proj-underscore">
+        <div class="entry-visual">
+          <img src="assets/img/underscore-thumbnail.webp" alt="Underscore: every scene, its own soundtrack. The app’s now-playing screen on an iPhone with floating cards for the next scene and AI chapter mapping.">
+        </div>
+        <div class="entry-content">
+          <div class="entry-index">004 <span class="stat">New · working prototype</span></div>
+          <h3 class="entry-heading">Underscore: background music that follows the scene you’re reading</h3>
+          <div class="entry-tags">
+            <span class="tag">Product Design</span>
+          <span class="tag">UI Design</span>
+          <span class="tag">AI Features</span>
+          <span class="tag">Prototyping</span>
+          </div>
+          <p class="entry-description">I missed my bus, put on a reading playlist at a noisy stop, and the music happened to match the scene I was reading: a walk on the beach at dusk. Underscore makes that happen on purpose. You pick your book and chapter, and the soundtrack changes with each scene while you read on paper or Kindle. I designed nine screens around a glowing, mood-colored visual system, then built a working prototype with live soundscapes, AI-drafted scene maps for any book, and a shared library where readers’ votes tune the music.</p>
+          <div class="entry-result">
+              <div><div class="num">9</div><div class="lbl">screens designed</div></div>
+              <div><div class="num">8</div><div class="lbl">scene moods</div></div>
+              <div><div class="num">4 days</div><div class="lbl">idea to working prototype</div></div>
+            </div>
+          <div class="entry-links">
+              <a href="underscore.html" class="entry-readlink">Read the case study →</a>
+              <a href="underscore/" class="entry-readlink" target="_blank" rel="noopener">Try the prototype ↗</a>
+            </div>
+        </div>
       </article>
     </section>
   </main>
