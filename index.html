@@ -1308,6 +1308,26 @@
   /* Two links side by side under a project */
   .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
   .entry-links .entry-readlink{ margin-top: 0; }
+
+  /* Description and results side by side on wider screens */
+  @media (min-width: 1000px){
+    .entry-main:has(> .entry-result){
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+      column-gap: 56px;
+      grid-template-rows: auto 1fr;
+      align-items: start;
+    }
+    .entry-main:has(> .entry-result) > .entry-desc-row{ grid-column: 1; grid-row: 1; }
+    .entry-main:has(> .entry-result) > .entry-result{
+      grid-column: 2; grid-row: 1 / span 2;
+      flex-direction: column; flex-wrap: nowrap; gap: 22px;
+      padding: 4px 0 4px 28px;
+      border-top: 0; border-left: 1px solid var(--line);
+    }
+    .entry-main:has(> .entry-result) > .entry-readlink,
+    .entry-main:has(> .entry-result) > .entry-links{ grid-column: 1; grid-row: 2; align-self: start; }
+  }
 </style>
 </head>
 <body>
