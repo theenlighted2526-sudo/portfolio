@@ -1308,6 +1308,30 @@
   /* Two links side by side under a project */
   .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
   .entry-links .entry-readlink{ margin-top: 0; }
+
+  /* ---------- Minimal orange glow (hero + footer) ---------- */
+  :root{ --glow-strength: 16%; }
+  [data-theme="dark"]{ --glow-strength: 30%; }
+  .hero, footer{ position: relative; isolation: isolate; }
+  .hero::before{
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(70% 55% at 50% 100%, color-mix(in srgb, var(--signal) var(--glow-strength), transparent) 0%, transparent 72%);
+  }
+  .hero::after{
+    content: ''; position: absolute; left: 8%; right: 8%; bottom: -1px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--signal), transparent);
+    opacity: .75;
+  }
+  footer{ overflow: hidden; }
+  footer::before{
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(60% 45% at 20% 0%, color-mix(in srgb, var(--signal) 32%, transparent) 0%, transparent 70%);
+  }
+  footer::after{
+    content: ''; position: absolute; left: 0; right: 30%; top: 0; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, var(--signal), transparent);
+    opacity: .8;
+  }
 </style>
 </head>
 <body>
