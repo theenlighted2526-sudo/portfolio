@@ -1319,6 +1319,20 @@
       radial-gradient(90% 55% at 50% 112%, color-mix(in srgb, var(--signal) var(--bloom), transparent) 0%, transparent 70%),
       radial-gradient(55% 40% at 100% -5%, color-mix(in srgb, var(--signal) var(--bloom-top), transparent) 0%, transparent 70%);
   }
+
+  /* ---------- Gradient on large orange text ---------- */
+  :root{ --accent-grad: linear-gradient(100deg, #F2682A 0%, #E8481A 45%, #C8281E 100%); }
+  [data-theme="dark"]{ --accent-grad: linear-gradient(100deg, #FFC08F 0%, #FF7A47 45%, #FF4B3A 100%); }
+  #rotator, .footer-head .accent, .entry-result .num{
+    background: var(--accent-grad);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  /* keep the full word inside the gradient box so each line shows the whole sweep */
+  #rotator, .footer-head .accent{ display: inline-block; padding-bottom: .06em; }
+  @media (forced-colors: active){
+    #rotator, .footer-head .accent, .entry-result .num{ -webkit-text-fill-color: currentColor; color: CanvasText; background: none; }
+  }
 </style>
 </head>
 <body>
