@@ -1332,6 +1332,26 @@
     background: linear-gradient(90deg, var(--signal), transparent);
     opacity: .8;
   }
+
+  /* ---------- Glow carried through the middle sections ---------- */
+  :root{ --glow-soft: 9%; --glow-card: 35%; }
+  [data-theme="dark"]{ --glow-soft: 16%; --glow-card: 55%; }
+  /* Section dividers: the same glowing line as the hero, with a faint glow spreading down */
+  .section-divider{ position: relative; isolation: isolate; border-top-color: transparent; }
+  .section-divider::before{
+    content: ''; position: absolute; left: 8%; right: 8%; top: -1px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--signal), transparent);
+    opacity: .55;
+  }
+  .section-divider::after{
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 260px; z-index: -1; pointer-events: none;
+    background: radial-gradient(45% 100% at 50% 0%, color-mix(in srgb, var(--signal) var(--glow-soft), transparent) 0%, transparent 75%);
+  }
+  /* Project images sit on a soft orange glow */
+  .entry-visual{ box-shadow: 0 40px 90px -55px color-mix(in srgb, var(--signal) var(--glow-card), transparent); }
+  /* Tool tiles and research cards warm up from the bottom on hover */
+  .tool-tile, .paper-card{ background-image: linear-gradient(to top, color-mix(in srgb, var(--signal) 0%, transparent), transparent); transition: background-image .3s ease, border-color .2s ease, transform .2s ease; }
+  .tool-tile:hover, .paper-card:hover{ background-image: linear-gradient(to top, color-mix(in srgb, var(--signal) 16%, transparent), transparent 70%); }
 </style>
 </head>
 <body>
