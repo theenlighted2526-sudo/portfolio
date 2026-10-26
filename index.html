@@ -1308,9 +1308,21 @@
   /* Two links side by side under a project */
   .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
   .entry-links .entry-readlink{ margin-top: 0; }
+
+  /* ---------- Grainy gradient background ----------
+     One fixed bloom rising from the bottom of the screen, under the grain layer. */
+  :root{ --bloom: 18%; --bloom-top: 6%; }
+  [data-theme="dark"]{ --bloom: 42%; --bloom-top: 12%; }
+  #bg-gradient{
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(90% 55% at 50% 112%, color-mix(in srgb, var(--signal) var(--bloom), transparent) 0%, transparent 70%),
+      radial-gradient(55% 40% at 100% -5%, color-mix(in srgb, var(--signal) var(--bloom-top), transparent) 0%, transparent 70%);
+  }
 </style>
 </head>
 <body>
+<div id="bg-gradient" aria-hidden="true"></div>
 <div id="backdrop" aria-hidden="true"></div>
 
 <!-- ░░ INTRO ANIMATION OVERLAY ░░ -->
