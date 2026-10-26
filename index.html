@@ -1308,27 +1308,6 @@
   /* Two links side by side under a project */
   .entry-links{ display:flex; flex-wrap:wrap; gap: 8px 28px; margin-top: 22px; }
   .entry-links .entry-readlink{ margin-top: 0; }
-
-  /* Description and results in one row on wide screens */
-  @media (min-width: 1280px){
-    .entry-main:has(> .entry-result){
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-rows: auto 1fr;
-      column-gap: 48px;
-      align-items: start;
-    }
-    .entry-main:has(> .entry-result) > .entry-desc-row{ grid-column: 1; grid-row: 1; }
-    .entry-main:has(> .entry-result) > .entry-result{
-      grid-column: 2; grid-row: 1 / span 2;
-      flex-wrap: nowrap; gap: 36px;
-      padding: 4px 0 4px 36px;
-      border-top: 0; border-left: 1px solid var(--line);
-    }
-    .entry-main:has(> .entry-result) > .entry-result .lbl{ max-width: 13ch; line-height: 1.5; }
-    .entry-main:has(> .entry-result) > .entry-readlink,
-    .entry-main:has(> .entry-result) > .entry-links{ grid-column: 1; grid-row: 2; align-self: start; }
-  }
 </style>
 </head>
 <body>
