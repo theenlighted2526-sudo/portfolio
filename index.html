@@ -1260,21 +1260,11 @@
     footer{ padding: 56px 20px 28px; }
   }
 
-  /* One-line proof under the hero buttons */
-  .hero-proof{
-    margin-top: 28px;
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--body-text);
-  }
-  .hero-proof span{ color: var(--signal); margin-right: 10px; }
   /* Phones: keep the three results side by side */
   @media (max-width: 560px){
     .entry-result{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .entry-result .num{ font-size: 24px; }
     .entry-result .lbl{ font-size: 10px; letter-spacing: 0.03em; }
-    .hero-proof span{ display: block; margin: 0 0 4px; }
   }
 
   /* Tools: letter badge when a logo isn't available; light-on-dark for black logos */
@@ -1336,6 +1326,46 @@
 
   /* About photo in black and white */
   .about-simple-photo img{ filter: grayscale(1) contrast(1.05); }
+
+  /* ---------- Thumbnail hover: image stays clear, dark fade at the bottom, label in the corner ---------- */
+  .entry-visual::after{
+    inset: auto 0 0 0; height: 38%;
+    display: flex; align-items: flex-end; justify-content: flex-end;
+    padding: 0 22px 18px;
+    font-size: 12px; letter-spacing: .08em;
+    background: linear-gradient(to top, rgba(10,10,12,.72) 0%, rgba(10,10,12,.32) 55%, transparent 100%);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .entry:hover .entry-visual::after,
+  [data-theme="dark"] .entry:hover .entry-visual::after{
+    background: linear-gradient(to top, rgba(10,10,12,.72) 0%, rgba(10,10,12,.32) 55%, transparent 100%);
+    opacity: 1; transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){ .entry-visual::after{ transform: none; } }
+
+  /* ---------- Research cards: line-illustration thumbnail + quick facts ---------- */
+  .paper-thumb{
+    margin: -26px -26px 22px; height: 170px;
+    border-bottom: 1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    background: color-mix(in srgb, var(--ink) 3%, transparent);
+    overflow: hidden;
+  }
+  .paper-thumb svg{ width: 100%; height: 100%; max-width: 300px; padding: 14px 0; box-sizing: border-box; overflow: visible; }
+  .paper-thumb .ln{ stroke: var(--ink); stroke-width: 1.5; opacity: .7; }
+  .paper-thumb .ln.dash{ stroke-dasharray: 3 5; }
+  .paper-thumb .ln.faint{ opacity: .3; stroke-dasharray: 2 5; }
+  .paper-thumb .ac{ fill: color-mix(in srgb, var(--signal) 18%, transparent); }
+  .paper-thumb .ac{ stroke: var(--signal); stroke-width: 1.5; }
+  .paper-thumb .ac-fill{ fill: var(--signal); }
+  .paper-thumb .tx{ fill: var(--stone); font-family: var(--mono); font-size: 14px; letter-spacing: .1em; }
+  .paper-card:hover .paper-thumb .ln{ opacity: .95; }
+  .paper-card p{ margin-top: 4px; }
+  .paper-facts{ display:grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 8px 32px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .paper-facts .v{ font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink); }
+  .paper-facts .k{ font-family: var(--mono); font-size: 11px; color: var(--stone); margin-top: 4px; letter-spacing: .03em; }
+  @media (max-width: 560px){ .paper-facts{ grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -1792,7 +1822,6 @@
         <a href="#work" class="btn btn-fill">Read Case Studies</a>
         <a href="/Tanmay_Padekar_Resume_HCI.pdf" download class="btn btn-ghost">Download Résumé</a>
       </div>
-      <p class="hero-proof"><span>Recent results</span> 1.75× faster assignment submission · 30% adoption in 3 months</p>
     </section>
 
     <div class="section-head" id="work">
@@ -1937,25 +1966,32 @@
     </div>
     <section class="research">
       <div class="paper-card">
+        <div class="paper-thumb" aria-hidden="true">
+          <svg viewBox="31 -29 333 172" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon class="ln" points="118.0,29.0 171.7,60.0 98.9,102.0 45.3,71.0"/><polyline class="ln" points="171.7,60.0 171.7,67.0 98.9,109.0 45.3,78.0 45.3,71.0"/><polyline class="ln" points="98.9,109.0 98.9,102.0"/><polyline class="ln" points="112.8,42.0 149.2,63.0"/><polyline class="ln" points="102.4,48.0 130.1,64.0"/><polyline class="ln" points="92.0,54.0 128.4,75.0"/><polyline class="ln" points="81.6,60.0 109.3,76.0"/><polyline class="ln" points="71.2,66.0 107.6,87.0"/><polyline class="ln" points="118.0,29.0 45.3,71.0"/><polygon class="ac" points="161.3,52.0 166.5,55.0 147.4,66.0 148.3,62.5 142.2,63.0"/><polygon class="ln" points="262.0,48.0 341.7,94.0 288.0,125.0 208.3,79.0"/><polyline class="ln" points="341.7,94.0 341.7,98.0 288.0,129.0 208.3,83.0 208.3,79.0"/><polyline class="ln" points="288.0,129.0 288.0,125.0"/><polygon class="ln" points="262.0,48.0 341.7,94.0 350.3,31.0 270.7,-15.0"/><polyline class="ln" points="280.2,10.9 328.7,38.9"/><polyline class="ln" points="278.5,23.5 316.6,45.5"/><polyline class="ln" points="276.7,36.1 330.4,67.1"/><polyline class="ac" points="333.9,61.1 333.9,71.1"/><polygon class="ln" points="268.9,74.0 296.6,90.0 277.6,101.0 249.9,85.0"/></svg>
+        </div>
         <div class="paper-top">
           <span class="paper-type">Experimental Study</span>
           <span class="paper-date">Fall 2024</span>
         </div>
         <h3>Impact of note-taking medium on memory retention</h3>
         <div class="paper-meta">HCI Research Methods</div>
-        <div class="paper-section-label">Abstract</div>
-        <p>A controlled experimental study with 8 participants comparing paper-based (PB) and paperless (PL) note-taking during a slideshow lecture and follow-up quiz, measuring memory retention scores and completion time using Welch's t-test and the Mann-Whitney U test.</p>
-        <div class="paper-section-label">Key finding</div>
-        <p>Neither medium showed a statistically significant advantage — PB and PL scored similarly without notes (8.5 vs. 8.75) and with notes (9.75 vs. 9.0, p = 0.18), and completion times didn't differ significantly either (p = 1.0), suggesting both are similarly effective for short-term retention and task completion.</p>
+        <p>Paper vs. paperless notes during a lecture, then a quiz on what people remembered and how fast they finished.</p>
+        <div class="paper-facts">
+          <div><div class="v">8</div><div class="k">participants</div></div>
+          <div><div class="v">p = 0.18</div><div class="k">score difference</div></div>
+          <div><div class="v">No winner</div><div class="k">both equally effective</div></div>
+        </div>
       </div>
 
       <div class="paper-card is-pending">
+        <div class="paper-thumb" aria-hidden="true">
+          <svg viewBox="73 -12 192 147" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon class="ln faint" points="132.0,26.0 251.5,95.0 206.5,121.0 87.0,52.0"/><polygon class="ln" points="132.0,14.0 152.8,26.0 132.0,38.0 111.2,26.0"/><polyline class="ln" points="152.8,26.0 152.8,52.0 132.0,64.0 111.2,52.0 111.2,26.0"/><polyline class="ln" points="132.0,64.0 132.0,38.0"/><polygon class="ln" points="166.6,12.0 187.4,24.0 166.6,36.0 145.9,24.0"/><polyline class="ln" points="187.4,24.0 187.4,72.0 166.6,84.0 145.9,72.0 145.9,24.0"/><polyline class="ln" points="166.6,84.0 166.6,36.0"/><polygon class="ac" points="201.3,2.0 222.1,14.0 201.3,26.0 180.5,14.0"/><polyline class="ln dash" points="222.1,14.0 222.1,92.0 201.3,104.0 180.5,92.0 180.5,14.0"/><polyline class="ln dash" points="201.3,104.0 201.3,26.0"/></svg>
+        </div>
         <div class="paper-top">
           <span class="paper-type pending">In progress</span>
         </div>
-        <h3>Next research piece — in progress</h3>
-        <div class="paper-section-label">Status</div>
-        <p>A second study is underway. It'll land here once it's ready to share.</p>
+        <h3>Next research piece</h3>
+        <p>A second study is underway. It’ll land here once it’s ready to share.</p>
       </div>
     </section>
 
