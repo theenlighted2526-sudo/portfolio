@@ -1336,6 +1336,23 @@
 
   /* About photo in black and white */
   .about-simple-photo img{ filter: grayscale(1) contrast(1.05); }
+
+  /* ---------- Thumbnail hover: image stays clear, dark fade at the bottom, label in the corner ---------- */
+  .entry-visual::after{
+    inset: auto 0 0 0; height: 38%;
+    display: flex; align-items: flex-end; justify-content: flex-end;
+    padding: 0 22px 18px;
+    font-size: 12px; letter-spacing: .08em;
+    background: linear-gradient(to top, rgba(10,10,12,.72) 0%, rgba(10,10,12,.32) 55%, transparent 100%);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .entry:hover .entry-visual::after,
+  [data-theme="dark"] .entry:hover .entry-visual::after{
+    background: linear-gradient(to top, rgba(10,10,12,.72) 0%, rgba(10,10,12,.32) 55%, transparent 100%);
+    opacity: 1; transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){ .entry-visual::after{ transform: none; } }
 </style>
 </head>
 <body>
