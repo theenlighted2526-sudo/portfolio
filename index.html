@@ -1346,15 +1346,17 @@
 
   /* ---------- Research cards: line-illustration thumbnail + quick facts ---------- */
   .paper-thumb{
-    margin: -26px -26px 22px; height: 150px;
+    margin: -26px -26px 22px; height: 170px;
     border-bottom: 1px solid var(--line);
     display:flex; align-items:center; justify-content:center;
     background: color-mix(in srgb, var(--ink) 3%, transparent);
     overflow: hidden;
   }
-  .paper-thumb svg{ width: 100%; height: 100%; max-width: 380px; }
+  .paper-thumb svg{ width: 100%; height: 100%; max-width: 300px; padding: 14px 0; box-sizing: border-box; overflow: visible; }
   .paper-thumb .ln{ stroke: var(--ink); stroke-width: 1.5; opacity: .7; }
-  .paper-thumb .ln.dash path:last-child{ stroke-dasharray: 3 6; }
+  .paper-thumb .ln.dash{ stroke-dasharray: 3 5; }
+  .paper-thumb .ln.faint{ opacity: .3; stroke-dasharray: 2 5; }
+  .paper-thumb .ac{ fill: color-mix(in srgb, var(--signal) 18%, transparent); }
   .paper-thumb .ac{ stroke: var(--signal); stroke-width: 1.5; }
   .paper-thumb .ac-fill{ fill: var(--signal); }
   .paper-thumb .tx{ fill: var(--stone); font-family: var(--mono); font-size: 14px; letter-spacing: .1em; }
@@ -1965,24 +1967,7 @@
     <section class="research">
       <div class="paper-card">
         <div class="paper-thumb" aria-hidden="true">
-          <svg viewBox="0 0 400 170" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <!-- paper notebook -->
-            <g class="ln">
-              <rect x="56" y="34" width="96" height="110" rx="6"/>
-              <path d="M56 50 H48 M56 70 H48 M56 90 H48 M56 110 H48 M56 130 H48"/>
-              <path d="M72 58 H136 M72 74 H128 M72 90 H138 M72 106 H118 M72 122 H130"/>
-            </g>
-            <path class="ac" d="M150 36 L176 122 L171 132 L164 124 L139 40 Z"/>
-            <!-- vs -->
-            <text class="tx" x="200" y="96" text-anchor="middle">vs</text>
-            <!-- laptop -->
-            <g class="ln">
-              <rect x="246" y="44" width="110" height="72" rx="5"/>
-              <path d="M232 126 H370 L362 136 H240 Z"/>
-              <path d="M262 62 H322 M262 76 H338 M262 90 H310 M262 104 H330"/>
-            </g>
-            <rect class="ac-fill" x="330" y="96" width="2" height="12"/>
-          </svg>
+          <svg viewBox="31 -29 333 172" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon class="ln" points="118.0,29.0 171.7,60.0 98.9,102.0 45.3,71.0"/><polyline class="ln" points="171.7,60.0 171.7,67.0 98.9,109.0 45.3,78.0 45.3,71.0"/><polyline class="ln" points="98.9,109.0 98.9,102.0"/><polyline class="ln" points="112.8,42.0 149.2,63.0"/><polyline class="ln" points="102.4,48.0 130.1,64.0"/><polyline class="ln" points="92.0,54.0 128.4,75.0"/><polyline class="ln" points="81.6,60.0 109.3,76.0"/><polyline class="ln" points="71.2,66.0 107.6,87.0"/><polyline class="ln" points="118.0,29.0 45.3,71.0"/><polygon class="ac" points="161.3,52.0 166.5,55.0 147.4,66.0 148.3,62.5 142.2,63.0"/><polygon class="ln" points="262.0,48.0 341.7,94.0 288.0,125.0 208.3,79.0"/><polyline class="ln" points="341.7,94.0 341.7,98.0 288.0,129.0 208.3,83.0 208.3,79.0"/><polyline class="ln" points="288.0,129.0 288.0,125.0"/><polygon class="ln" points="262.0,48.0 341.7,94.0 350.3,31.0 270.7,-15.0"/><polyline class="ln" points="280.2,10.9 328.7,38.9"/><polyline class="ln" points="278.5,23.5 316.6,45.5"/><polyline class="ln" points="276.7,36.1 330.4,67.1"/><polyline class="ac" points="333.9,61.1 333.9,71.1"/><polygon class="ln" points="268.9,74.0 296.6,90.0 277.6,101.0 249.9,85.0"/></svg>
         </div>
         <div class="paper-top">
           <span class="paper-type">Experimental Study</span>
@@ -2000,18 +1985,7 @@
 
       <div class="paper-card is-pending">
         <div class="paper-thumb" aria-hidden="true">
-          <svg viewBox="0 0 400 170" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <g class="ln dash">
-              <path d="M70 138 H330"/>
-              <path d="M70 138 V32"/>
-              <path d="M84 120 C120 112 140 84 172 92 S228 60 258 66 S300 42 322 40"/>
-            </g>
-            <g class="ln">
-              <circle cx="232" cy="78" r="30"/>
-              <path d="M254 100 L284 130"/>
-            </g>
-            <circle class="ac-fill" cx="232" cy="78" r="3.5"/>
-          </svg>
+          <svg viewBox="73 -12 192 147" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon class="ln faint" points="132.0,26.0 251.5,95.0 206.5,121.0 87.0,52.0"/><polygon class="ln" points="132.0,14.0 152.8,26.0 132.0,38.0 111.2,26.0"/><polyline class="ln" points="152.8,26.0 152.8,52.0 132.0,64.0 111.2,52.0 111.2,26.0"/><polyline class="ln" points="132.0,64.0 132.0,38.0"/><polygon class="ln" points="166.6,12.0 187.4,24.0 166.6,36.0 145.9,24.0"/><polyline class="ln" points="187.4,24.0 187.4,72.0 166.6,84.0 145.9,72.0 145.9,24.0"/><polyline class="ln" points="166.6,84.0 166.6,36.0"/><polygon class="ac" points="201.3,2.0 222.1,14.0 201.3,26.0 180.5,14.0"/><polyline class="ln dash" points="222.1,14.0 222.1,92.0 201.3,104.0 180.5,92.0 180.5,14.0"/><polyline class="ln dash" points="201.3,104.0 201.3,26.0"/></svg>
         </div>
         <div class="paper-top">
           <span class="paper-type pending">In progress</span>
