@@ -280,6 +280,16 @@
   }
   :root{ --grain-opacity: .11; }
   [data-theme="dark"]{ --grain-opacity: .6; }
+  /* Lab: wrap the project cards and size them so five fit on a laptop row */
+  .project-row{ flex-wrap: wrap; overflow-x: visible; max-width: 1360px; }
+  .project-row .float-card{ width: clamp(160px, 20vw, 250px); }
+  a.float-card{ display: block; color: inherit; text-decoration: none; cursor: pointer; }
+  a.float-card.is-link .float-card-cap{ color: var(--ink); }
+  a.float-card.is-link:hover .float-card-cap{ color: var(--signal); }
+  @media (max-width: 860px){ .project-row .float-card{ width: 100%; max-width: 320px; } }
+  .project-row .float-card img{ aspect-ratio: 16 / 9; object-fit: cover; object-position: center top; }
+  .project-row .float-card-cap{ white-space: normal; line-height: 1.45; }
+
 </style>
 </head>
 <body>
@@ -329,6 +339,11 @@
       <img src="assets/img/starpath-app-screenshot-c29190.webp" alt="StarPath app thumbnail">
       <div class="float-card-cap">StarPath — stargazing concept</div>
     </div>
+
+    <a class="float-card is-link" href="housie/" target="_blank" rel="noopener">
+      <img src="assets/img/design-housie-thumbnail.webp" alt="Design Housie: a tambola game with a ticket of design-life terms like Quick sync, Design debt and Make the logo bigger">
+      <div class="float-card-cap">Design Housie — tambola for designers ↗</div>
+    </a>
     </div>
 
     <div class="logo-row">
