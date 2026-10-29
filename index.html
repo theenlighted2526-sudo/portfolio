@@ -1274,7 +1274,7 @@
     font-family: var(--display); font-weight: 600; font-size: 16px;
     background: var(--ink); color: var(--paper);
   }
-  [data-theme="dark"] .tool-tile.mono img{ filter: invert(1); }
+  [data-theme="dark"] .tool-tile.mono img{ filter: invert(1) hue-rotate(180deg) brightness(1.1); }
 
   /* Status panel spans the full width when it sits below the intro */
   @media (max-width: 980px){
@@ -1976,24 +1976,24 @@
     </div>
 
     <div class="tools-grid">
-      <div class="tool-tile" data-initial="F"><img src="https://cdn.simpleicons.org/figma" alt="" loading="lazy"><span class="tool-name">Figma</span></div>
-      <div class="tool-tile mono" data-initial="F"><img src="https://cdn.simpleicons.org/framer" alt="" loading="lazy"><span class="tool-name">Framer</span></div>
-      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/protopie" alt="" loading="lazy"><span class="tool-name">ProtoPie</span></div>
-      <div class="tool-tile" data-initial="S"><img src="https://cdn.simpleicons.org/spline" alt="" loading="lazy"><span class="tool-name">Spline</span></div>
-      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/adobephotoshop" alt="" loading="lazy"><span class="tool-name">Photoshop</span></div>
-      <div class="tool-tile" data-initial="I"><img src="https://cdn.simpleicons.org/adobeillustrator" alt="" loading="lazy"><span class="tool-name">Illustrator</span></div>
-      <div class="tool-tile mono" data-initial="M"><img src="https://cdn.simpleicons.org/maze" alt="" loading="lazy"><span class="tool-name">Maze</span></div>
-      <div class="tool-tile mono" data-initial="D"><img src="https://cdn.simpleicons.org/dovetail" alt="" loading="lazy"><span class="tool-name">Dovetail</span></div>
-      <div class="tool-tile" data-initial="M"><img src="https://cdn.simpleicons.org/miro" alt="" loading="lazy"><span class="tool-name">Miro</span></div>
-      <div class="tool-tile mono" data-initial="N"><img src="https://cdn.simpleicons.org/notion" alt="" loading="lazy"><span class="tool-name">Notion</span></div>
-      <div class="tool-tile" data-initial="H"><img src="https://cdn.simpleicons.org/hotjar" alt="" loading="lazy"><span class="tool-name">Hotjar</span></div>
-      <div class="tool-tile" data-initial="C"><img src="https://cdn.simpleicons.org/claude" alt="" loading="lazy"><span class="tool-name">Claude</span></div>
-      <div class="tool-tile mono" data-initial="C"><img src="https://cdn.simpleicons.org/openai" alt="" loading="lazy"><span class="tool-name">ChatGPT</span></div>
-      <div class="tool-tile mono" data-initial="C"><img src="https://cdn.simpleicons.org/cursor" alt="" loading="lazy"><span class="tool-name">Cursor</span></div>
-      <div class="tool-tile mono" data-initial="v"><img src="https://cdn.simpleicons.org/v0" alt="" loading="lazy"><span class="tool-name">v0</span></div>
-      <div class="tool-tile" data-initial="L"><img src="https://cdn.simpleicons.org/lovable" alt="" loading="lazy"><span class="tool-name">Lovable</span></div>
-      <div class="tool-tile" data-initial="P"><img src="https://cdn.simpleicons.org/perplexity" alt="" loading="lazy"><span class="tool-name">Perplexity</span></div>
-      <div class="tool-tile" data-initial="W"><img src="https://cdn.simpleicons.org/webflow" alt="" loading="lazy"><span class="tool-name">Webflow</span></div>
+      <div class="tool-tile" data-initial="F"><img src="assets/icons/tools/figma.svg" alt="" loading="lazy"><span class="tool-name">Figma</span></div>
+      <div class="tool-tile mono" data-initial="F"><img src="assets/icons/tools/framer.svg" alt="" loading="lazy"><span class="tool-name">Framer</span></div>
+      <div class="tool-tile" data-initial="P"><span class="tool-initial" aria-hidden="true">P</span><span class="tool-name">ProtoPie</span></div>
+      <div class="tool-tile" data-initial="S"><span class="tool-initial" aria-hidden="true">S</span><span class="tool-name">Spline</span></div>
+      <div class="tool-tile" data-initial="P"><img src="assets/icons/tools/photoshop.svg" alt="" loading="lazy"><span class="tool-name">Photoshop</span></div>
+      <div class="tool-tile" data-initial="I"><img src="assets/icons/tools/illustrator.svg" alt="" loading="lazy"><span class="tool-name">Illustrator</span></div>
+      <div class="tool-tile mono" data-initial="M"><img src="assets/icons/tools/maze.svg" alt="" loading="lazy"><span class="tool-name">Maze</span></div>
+      <div class="tool-tile mono" data-initial="D"><img src="assets/icons/tools/dovetail.svg" alt="" loading="lazy"><span class="tool-name">Dovetail</span></div>
+      <div class="tool-tile" data-initial="M"><img src="assets/icons/tools/miro.svg" alt="" loading="lazy"><span class="tool-name">Miro</span></div>
+      <div class="tool-tile" data-initial="N"><img src="assets/icons/tools/notion.svg" alt="" loading="lazy"><span class="tool-name">Notion</span></div>
+      <div class="tool-tile" data-initial="H"><img src="assets/icons/tools/hotjar.svg" alt="" loading="lazy"><span class="tool-name">Hotjar</span></div>
+      <div class="tool-tile" data-initial="C"><img src="assets/icons/tools/claude.svg" alt="" loading="lazy"><span class="tool-name">Claude</span></div>
+      <div class="tool-tile mono" data-initial="C"><img src="assets/icons/tools/chatgpt.svg" alt="" loading="lazy"><span class="tool-name">ChatGPT</span></div>
+      <div class="tool-tile mono" data-initial="C"><img src="assets/icons/tools/cursor.svg" alt="" loading="lazy"><span class="tool-name">Cursor</span></div>
+      <div class="tool-tile mono" data-initial="v"><img src="assets/icons/tools/v0.svg" alt="" loading="lazy"><span class="tool-name">v0</span></div>
+      <div class="tool-tile" data-initial="L"><img src="assets/icons/tools/lovable.svg" alt="" loading="lazy"><span class="tool-name">Lovable</span></div>
+      <div class="tool-tile" data-initial="P"><img src="assets/icons/tools/perplexity.svg" alt="" loading="lazy"><span class="tool-name">Perplexity</span></div>
+      <div class="tool-tile" data-initial="W"><img src="assets/icons/tools/webflow.svg" alt="" loading="lazy"><span class="tool-name">Webflow</span></div>
     </div>
 
 
