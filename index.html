@@ -1345,12 +1345,12 @@
   /* fine dot grid over the glow, like the reference card */
   #bg-gradient::after{
     content: ''; position: absolute; inset: 0; pointer-events: none;
-    background-image: radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.3px);
-    background-size: 7px 7px;
+    background-image: var(--dots-dark, none);
+    background-size: 280px 280px;
     -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.5) 35%, transparent 65%);
             mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,.5) 35%, transparent 65%);
   }
-  :root:not([data-theme="dark"]) #bg-gradient::after{ background-image: radial-gradient(rgba(120,50,20,.10) 1px, transparent 1.3px); }
+  :root:not([data-theme="dark"]) #bg-gradient::after{ background-image: var(--dots-light, none); }
   #bg-gradient .bloom-b{
     right: -30vw; top: -35vh; width: 80vw; height: 70vh;
     background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--signal) var(--bloom-top), transparent) 0%, transparent 70%);
@@ -2704,6 +2704,30 @@ document.querySelectorAll('.tool-tile img').forEach(img => {
 })();
 </script>
 
+
+<script>
+// Dot pattern for the glow: a 280px tile of dots on a 7px grid, each with its own random opacity (0-100%).
+(function(){
+  const bg = document.getElementById('bg-gradient'); if (!bg) return;
+  let seed = 1029;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const alphas = [];
+  for (let i = 0; i < 40 * 40; i++) alphas.push(rnd());
+  function tile(rgb, maxA){
+    const dpr = 2, size = 280, step = 7, c = document.createElement('canvas');
+    c.width = c.height = size * dpr;
+    const x = c.getContext('2d'); x.scale(dpr, dpr);
+    for (let r = 0; r < 40; r++) for (let q = 0; q < 40; q++){
+      const a = alphas[r * 40 + q] * maxA; if (a < 0.01) continue;
+      x.fillStyle = `rgba(${rgb},${a.toFixed(3)})`;
+      x.beginPath(); x.arc(q * step + 3.5, r * step + 3.5, 1, 0, Math.PI * 2); x.fill();
+    }
+    return `url(${c.toDataURL('image/png')})`;
+  }
+  bg.style.setProperty('--dots-dark',  tile('255,255,255', 0.45));
+  bg.style.setProperty('--dots-light', tile('120,50,20', 0.30));
+})();
+</script>
 
 </body>
 </html>
