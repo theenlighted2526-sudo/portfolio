@@ -1306,6 +1306,21 @@
   #bg-gradient{ position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
   /* Two blooms on their own layers, moved with transforms (cheap to animate) */
   #bg-gradient .bloom{ position: absolute; will-change: transform; }
+  /* Slow, soothing drift: long ease-in-out cycles that never quite line up */
+  @media (prefers-reduced-motion: no-preference){
+    #bg-gradient .bloom-a{ animation: bloom-drift-a 38s ease-in-out infinite alternate; }
+    #bg-gradient .bloom-b{ animation: bloom-drift-b 46s ease-in-out infinite alternate; }
+  }
+  @keyframes bloom-drift-a{
+    0%   { transform: translate3d(-8vw, 0, 0) scale(1); }
+    50%  { transform: translate3d(3vw, -4vh, 0) scale(1.06); }
+    100% { transform: translate3d(9vw, -1vh, 0) scale(.97); }
+  }
+  @keyframes bloom-drift-b{
+    0%   { transform: translate3d(0, 0, 0); }
+    50%  { transform: translate3d(-6vw, 5vh, 0); }
+    100% { transform: translate3d(-2vw, -3vh, 0); }
+  }
   #bg-gradient .bloom-a{
     left: -25%; right: -25%; bottom: -45vh; height: 110vh;
     background: radial-gradient(50% 50% at 50% 60%, color-mix(in srgb, var(--signal) var(--bloom), transparent) 0%, transparent 70%);
@@ -2663,37 +2678,6 @@ document.querySelectorAll('.tool-tile img').forEach(img => {
 })();
 </script>
 
-<script>
-// Gradient background: slow drift on its own, and a gentle lean toward the pointer.
-(function(){
-  const a = document.querySelector('#bg-gradient .bloom-a');
-  const b = document.querySelector('#bg-gradient .bloom-b');
-  if (!a || !b || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let tx = 0, ty = 0, x = 0, y = 0;            // pointer target and eased position, in -1..1
-  window.addEventListener('pointermove', e => {
-    tx = (e.clientX / innerWidth) * 2 - 1;
-    ty = (e.clientY / innerHeight) * 2 - 1;
-  }, { passive: true });
-  document.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
-  const t0 = performance.now();
-  function frame(now){
-    const t = (now - t0) / 1000;
-    x += (tx - x) * 0.04; y += (ty - y) * 0.04;  // ease toward the pointer
-    const W = innerWidth, H = innerHeight;
-    // bottom bloom: wanders side to side and breathes, leans toward the pointer
-    const ax = Math.sin(t * 0.31) * W * 0.10 + x * W * 0.14;
-    const ay = Math.sin(t * 0.23) * H * 0.04 - (y + 1) * H * 0.05;
-    const as = 1 + Math.sin(t * 0.41) * 0.06;
-    a.style.transform = `translate3d(${ax.toFixed(1)}px, ${ay.toFixed(1)}px, 0) scale(${as.toFixed(3)})`;
-    // top-right bloom: drifts the other way, smaller pull
-    const bx = Math.cos(t * 0.27) * W * 0.06 - x * W * 0.06;
-    const by = Math.sin(t * 0.35) * H * 0.05 - y * H * 0.04;
-    b.style.transform = `translate3d(${bx.toFixed(1)}px, ${by.toFixed(1)}px, 0)`;
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-})();
-</script>
 
 </body>
 </html>
