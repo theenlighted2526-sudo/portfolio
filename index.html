@@ -1313,34 +1313,19 @@
   }
   @keyframes bloom-drift-a{
     0%   { transform: translate3d(-8vw, 0, 0) scale(1); }
-    50%  { transform: translate3d(3vw, -2vh, 0) scale(1.05); }
+    50%  { transform: translate3d(3vw, -4vh, 0) scale(1.06); }
     100% { transform: translate3d(9vw, -1vh, 0) scale(.97); }
   }
   /* breathing: the light swells and fades */
-  @keyframes bloom-glow{ 0%{ opacity: .55; } 100%{ opacity: 1; } }
+  @keyframes bloom-glow{ 0%{ opacity: .4; } 100%{ opacity: 1; } }
   @keyframes bloom-drift-b{
     0%   { transform: translate3d(0, 0, 0); }
     50%  { transform: translate3d(-6vw, 5vh, 0); }
     100% { transform: translate3d(-2vw, -3vh, 0); }
   }
-  /* Bottom bloom in the style of a glowing card: cream core, orange, deep brown, into black */
-  :root{
-    --glow-core: rgba(255, 214, 176, .55);
-    --glow-mid:  rgba(255, 110, 52, .30);
-    --glow-deep: rgba(150, 48, 18, .14);
-  }
-  [data-theme="dark"]{
-    --glow-core: rgba(255, 222, 186, .80);
-    --glow-mid:  rgba(255, 108, 50, .62);
-    --glow-deep: rgba(110, 34, 10, .45);
-  }
   #bg-gradient .bloom-a{
-    left: -20%; right: -20%; bottom: -8vh; height: 78vh;
-    background: radial-gradient(48% 56% at 50% 100%,
-      var(--glow-core) 0%,
-      var(--glow-mid) 26%,
-      var(--glow-deep) 52%,
-      transparent 78%);
+    left: -25%; right: -25%; bottom: -45vh; height: 110vh;
+    background: radial-gradient(50% 50% at 50% 60%, color-mix(in srgb, var(--signal) var(--bloom), transparent) 0%, transparent 70%);
   }
   #bg-gradient .bloom-b{
     right: -30vw; top: -35vh; width: 80vw; height: 70vh;
