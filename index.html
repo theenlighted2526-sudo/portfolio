@@ -1301,21 +1301,23 @@
 
   /* ---------- Grainy gradient background ----------
      One fixed bloom rising from the bottom of the screen, under the grain layer. */
-  :root{ --bloom: 18%; --bloom-top: 6%; }
-  [data-theme="dark"]{ --bloom: 42%; --bloom-top: 12%; }
+  :root{ --bloom: 22%; --bloom-top: 8%; }
+  [data-theme="dark"]{ --bloom: 52%; --bloom-top: 15%; }
   #bg-gradient{ position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
   /* Two blooms on their own layers, moved with transforms (cheap to animate) */
   #bg-gradient .bloom{ position: absolute; will-change: transform; }
   /* Slow, soothing drift: long ease-in-out cycles that never quite line up */
   @media (prefers-reduced-motion: no-preference){
-    #bg-gradient .bloom-a{ animation: bloom-drift-a 38s ease-in-out infinite alternate; }
-    #bg-gradient .bloom-b{ animation: bloom-drift-b 46s ease-in-out infinite alternate; }
+    #bg-gradient .bloom-a{ animation: bloom-drift-a 38s ease-in-out infinite alternate, bloom-glow 9s ease-in-out infinite alternate; }
+    #bg-gradient .bloom-b{ animation: bloom-drift-b 46s ease-in-out infinite alternate, bloom-glow 12s ease-in-out -4s infinite alternate; }
   }
   @keyframes bloom-drift-a{
     0%   { transform: translate3d(-8vw, 0, 0) scale(1); }
     50%  { transform: translate3d(3vw, -4vh, 0) scale(1.06); }
     100% { transform: translate3d(9vw, -1vh, 0) scale(.97); }
   }
+  /* breathing: the light swells and fades */
+  @keyframes bloom-glow{ 0%{ opacity: .4; } 100%{ opacity: 1; } }
   @keyframes bloom-drift-b{
     0%   { transform: translate3d(0, 0, 0); }
     50%  { transform: translate3d(-6vw, 5vh, 0); }
