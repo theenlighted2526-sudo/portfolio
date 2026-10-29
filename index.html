@@ -2461,7 +2461,15 @@
   }
   #cursor-ring.is-cta #cursor-label{ opacity: 1; }
 
-  #cursor-dot.is-hidden{ opacity: 0; }
+  /* Nav links: small hollow ring so the tab name stays readable */
+  #cursor-ring.is-nav{
+    width: 52px; height: 52px;
+    background: transparent;
+    border-color: var(--signal);
+  }
+  #cursor-ring.is-nav #cursor-label{ opacity: 0; }
+
+  #cursor-dot.is-hidden{ opacity: 0 !important; } /* beats the inline opacity set on mouseenter */
   #cursor-dot.is-clicking{
     transform: translate(-50%, -50%) scale(0.4);
   }
@@ -2595,9 +2603,12 @@
 
   // Also handle dynamically — re-apply on any nav hover
   document.querySelectorAll('.nav-links a').forEach(el => {
-    el.addEventListener('mouseenter', () => applyHover('is-hover', 'Go'));
+    el.addEventListener('mouseenter', () => applyHover('is-nav', ''));
     el.addEventListener('mouseleave', clearHover);
   });
+  // Theme button in the nav: same light-touch ring, so its icon stays visible
+  const navToggle = document.getElementById('theme-toggle');
+  if (navToggle) navToggle.addEventListener('mouseenter', () => applyHover('is-nav', ''));
 })();
 </script>
 
