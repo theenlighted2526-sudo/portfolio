@@ -14,10 +14,10 @@
 <style>
   /* Layout: one sticky full-screen stage inside a tall scroller; scroll position drives the scene. */
   :root{
-    --sky-top:#0f2329;
-    --sky-low:#2b5753;
+    --sky-top:#3f4283;
+    --sky-low:#9a86b9;
     --ink:#EEF3EF;
-    --muted:#9DBAB4;
+    --muted:#C3BEE6;
     --lamp:#FFC97A;
     --signal:#FF7A47;
     --display:'Space Grotesk', system-ui, sans-serif;
@@ -25,29 +25,34 @@
     color-scheme: dark;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
-  html, body{ background: var(--sky-top); color: var(--ink); }
+  html, body{ background: #2c2f5a; color: var(--ink); }
   body{ font-family: var(--display); -webkit-font-smoothing: antialiased; }
 
   .scroller{ height: 720vh; position: relative; }
   .stage{
     position: sticky; top: 0; height: 100vh; height: 100svh; width: 100%; overflow: hidden;
-    background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-low) 70%, #234a47 100%);
+    background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-low) 70%, #e4a7ae 100%);
   }
   canvas#scene{ position:absolute; inset:0; width:100%; height:100%; display:block; }
 
   /* foreground: hill, palms, street-light bokeh (parallaxes away as the camera flies in) */
   .fg{
-    position:absolute; left:-4%; right:-4%; bottom:-2px; width:108%; height:42vh;
+    position:absolute; left:-4%; right:-4%; bottom:-2px; width:108%; height:100%;
     pointer-events:none; transform-origin: 50% 100%; will-change: transform, opacity;
   }
   .haze{
     position:absolute; left:0; right:0; bottom:0; height:55vh; pointer-events:none;
-    background: linear-gradient(to top, rgba(70,130,120,.22), rgba(70,130,120,0));
+    background: linear-gradient(to top, rgba(232,160,170,.18), rgba(150,130,200,0));
     will-change: opacity;
   }
   .vignette{
     position:absolute; inset:0; pointer-events:none;
-    background: radial-gradient(120% 90% at 60% 55%, transparent 55%, rgba(4,10,12,.55) 100%);
+    background: radial-gradient(120% 90% at 60% 55%, transparent 55%, rgba(20,16,48,.5) 100%);
+  }
+  /* painterly grain over everything */
+  .grain{
+    position:absolute; inset:0; pointer-events:none; opacity:.16; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   .home{
@@ -74,8 +79,9 @@
   .clock b{ color: var(--lamp); font-weight:500; }
 
   .copy{
-    position:absolute; z-index:4; left: clamp(24px, 7vw, 120px); top: 50%;
+    position:absolute; z-index:4; left: clamp(24px, 7vw, 120px); top: 22%;
     transform: translateY(-50%); max-width: 34rem; pointer-events:none;
+    text-shadow: 0 2px 30px rgba(40,34,90,.45);
     opacity:0;
   }
   .copy .eyebrow{
@@ -114,8 +120,9 @@
   <div class="stage" id="stage">
     <canvas id="scene" aria-hidden="true"></canvas>
     <div class="haze" id="haze"></div>
-    <svg class="fg" id="fg" viewBox="0 0 1600 420" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+    <svg class="fg" id="fg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
     <div class="vignette"></div>
+    <div class="grain"></div>
 
     <a class="home" href="/">← Tanmay P.</a>
     <div class="clock" id="clock" aria-hidden="true">11:48 PM</div>
@@ -143,44 +150,58 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const lerp = (a, b, t) => a + (b - a) * t;
 function mulberry32(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
-/* ---------------- foreground: hill, palms, bokeh ---------------- */
+/* ---------------- foreground: near rooftops, out of focus ---------------- */
 (function buildForeground(){
-  const svg = $('fg'), r = mulberry32(11), NS = 'http://www.w3.org/2000/svg';
-  let html = `<defs>
-    <radialGradient id="bk-w"><stop offset="0" stop-color="#FFE7B0" stop-opacity="1"/><stop offset=".35" stop-color="#FFD08A" stop-opacity=".75"/><stop offset="1" stop-color="#FFC070" stop-opacity="0"/></radialGradient>
-    <radialGradient id="bk-p"><stop offset="0" stop-color="#FFD6E6" stop-opacity="1"/><stop offset=".35" stop-color="#F7A8C8" stop-opacity=".7"/><stop offset="1" stop-color="#F7A8C8" stop-opacity="0"/></radialGradient>
-    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#143036"/><stop offset="1" stop-color="#0a1a1d"/></linearGradient>
+  const svg = $('fg'), r = mulberry32(11);
+  let h = `<defs>
+    <filter id="dof1" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <filter id="dof2" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
+    <radialGradient id="warmglow"><stop offset="0" stop-color="#FFB86A" stop-opacity=".75"/><stop offset=".45" stop-color="#FF8A5A" stop-opacity=".25"/><stop offset="1" stop-color="#FF8A5A" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pane" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b9ae0"/><stop offset=".55" stop-color="#5a68b4"/><stop offset="1" stop-color="#3b4385"/></linearGradient>
+    <linearGradient id="paneWarm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC27A"/><stop offset="1" stop-color="#FF8F4E"/></linearGradient>
+    <linearGradient id="roofLit" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3c4280"/><stop offset="1" stop-color="#5a5f9e"/></linearGradient>
   </defs>`;
-  // back hill (left) and front hill (right), like the reference
-  html += `<path d="M0 300 C 160 270 300 300 420 330 C 520 352 600 360 700 372 L 700 420 L 0 420 Z" fill="#163238" opacity=".95"/>`;
-  html += `<path d="M560 420 C 700 360 820 330 980 300 C 1120 270 1240 210 1380 170 C 1470 145 1540 140 1600 136 L 1600 420 Z" fill="url(#hill)"/>`;
-  html += `<path d="M0 360 C 220 345 420 380 640 395 L 640 420 L 0 420 Z" fill="#0d2125"/>`;
-  // palms
-  function palm(x, base, h, s, lean){
-    const top = base - h, tx = x + lean;
-    let d = `<path d="M${x} ${base} Q ${x + lean*0.2} ${base - h*0.55} ${tx} ${top}" stroke="#0b1c1f" stroke-width="${3.2*s}" fill="none" stroke-linecap="round"/>`;
-    const n = 8;
-    for (let i = 0; i < n; i++){
-      const a = -Math.PI + (i / (n - 1)) * Math.PI + (r() - .5) * .3;
-      const L = (26 + r()*14) * s, ex = tx + Math.cos(a) * L, ey = top + Math.sin(a) * L * .55 + L*0.32;
-      const cx = tx + Math.cos(a) * L * .55, cy = top + Math.sin(a) * L * .7 - 4*s;
-      d += `<path d="M${tx} ${top} Q ${cx} ${cy} ${ex} ${ey} Q ${cx + 3*s} ${cy + 6*s} ${tx} ${top + 2*s} Z" fill="#0b1c1f"/>`;
+
+  // low rooftops across the bottom
+  h += `<g filter="url(#dof1)">`;
+  const blocks = [[230,700,150,'#2a2e62'],[370,660,120,'#323770'],[480,690,170,'#2c3066'],[640,640,130,'#363b76'],[760,700,160,'#2a2e62'],[910,670,140,'#33386f'],[1040,710,170,'#2b2f64'],[1200,650,120,'#373c78'],[1310,690,150,'#2a2e62'],[1450,660,160,'#323770']];
+  blocks.forEach(([x, y, w, c]) => {
+    h += `<rect x="${x}" y="${y}" width="${w}" height="${900 - y}" fill="${c}"/>`;
+    h += `<rect x="${x + w - 10}" y="${y}" width="10" height="${900 - y}" fill="#6a6fae" opacity=".35"/>`;      // sunset rim on the right edge
+    h += `<rect x="${x - 3}" y="${y - 6}" width="${w + 6}" height="7" fill="#2d3166"/>`;                          // parapet
+    for (let yy = y + 40; yy < 880; yy += 54) for (let xx = x + 16; xx < x + w - 30; xx += 38){
+      const lit = r() < .12;
+      h += `<rect x="${xx}" y="${yy}" width="22" height="28" fill="${lit ? 'url(#paneWarm)' : (r() < .5 ? '#23275a' : '#3d4890')}"/>`;
+      if (lit) h += `<circle cx="${xx + 11}" cy="${yy + 14}" r="34" fill="url(#warmglow)"/>`;
     }
-    return d;
-  }
-  [[140,372,120,1,-6],[205,380,90,.8,5],[318,392,135,1.1,8],[470,392,82,.75,-4],[820,350,150,1.15,-10],[930,330,108,.9,6],[1240,214,104,.9,-4],[1350,176,128,1,7],[1480,150,96,.85,-6]]
-    .forEach(([x,b,h,s,l]) => html += palm(x,b,h,s,l));
-  // round street-light bokeh along the hills
-  const spots = [];
-  for (let i = 0; i < 46; i++){
-    const x = r() * 1600;
-    const yHill = x < 640 ? 330 + (x/640)*55 : 410 - ((x-640)/960) * 260;
-    const y = yHill + 10 + r() * (420 - yHill);
-    const big = r() < .18;
-    spots.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(big ? 16 + r()*12 : 4 + r()*6).toFixed(1)}" fill="url(#${r() < .22 ? 'bk-p' : 'bk-w'})" opacity="${(.55 + r()*.45).toFixed(2)}"/>`);
-  }
-  html += `<g id="bokeh">${spots.join('')}</g>`;
-  svg.innerHTML = html;
+  });
+  // satellite dish, water tank, railing, chimney
+  h += `<g fill="#2b2f63"><ellipse cx="560" cy="636" rx="34" ry="20" transform="rotate(-24 560 636)"/><rect x="556" y="640" width="6" height="52"/><rect x="528" y="684" width="60" height="8"/></g>`;
+  h += `<line x1="585" y1="618" x2="606" y2="594" stroke="#2b2f63" stroke-width="3"/>`;
+  h += `<g fill="#30346c"><rect x="1220" y="590" width="58" height="56" rx="6"/><rect x="1226" y="646" width="6" height="10"/><rect x="1266" y="646" width="6" height="10"/></g>`;
+  h += `<g stroke="#2b2f63" stroke-width="3">${Array.from({length: 13}, (_, i) => `<line x1="${770 + i * 12}" y1="676" x2="${770 + i * 12}" y2="700"/>`).join('')}<line x1="764" y1="676" x2="920" y2="676"/></g>`;
+  h += `<rect x="1100" y="668" width="16" height="44" fill="#2f3369"/>`;
+  h += `</g>`;
+
+  // near tower on the left, slightly out of focus
+  h += `<g filter="url(#dof1)">`;
+  h += `<rect x="0" y="0" width="220" height="900" fill="#2e3266"/>`;
+  h += `<rect x="208" y="0" width="12" height="900" fill="#5b609c" opacity=".55"/>`;
+  [[0, 210], [300, 520]].forEach(([y0, y1]) => {
+    h += `<rect x="18" y="${y0 + 14}" width="182" height="${y1 - y0 - 40}" fill="#9aa4dc" opacity=".9"/>`;
+    for (let i = 0; i < 4; i++) h += `<rect x="${24 + i * 44}" y="${y0 + 20}" width="38" height="${y1 - y0 - 52}" fill="url(#pane)"/>`;
+    h += `<rect x="18" y="${y0 + 74}" width="182" height="5" fill="#9aa4dc"/>`;
+    h += `<rect x="0" y="${y1 - 26}" width="220" height="26" fill="#252957"/>`;           // balcony slab
+  });
+  h += `<rect x="168" y="456" width="22" height="20" fill="url(#paneWarm)"/>`;
+  h += `<rect x="20" y="760" width="160" height="140" fill="url(#paneWarm)"/><rect x="96" y="760" width="6" height="140" fill="#7a3f3a"/>`;
+  h += `<circle cx="100" cy="830" r="150" fill="url(#warmglow)"/>`;
+  h += `<rect x="0" y="730" width="220" height="22" fill="#242853"/>`;
+  h += `</g>`;
+
+  // nearest ledge, heavily blurred
+  h += `<g filter="url(#dof2)"><rect x="660" y="842" width="1000" height="80" fill="#3a3558"/><rect x="660" y="836" width="1000" height="10" fill="#8e7aa5" opacity=".6"/><circle cx="1180" cy="870" r="70" fill="url(#warmglow)" opacity=".7"/></g>`;
+  svg.innerHTML = h;
 })();
 
 /* ---------------- renderer ---------------- */
@@ -194,27 +215,42 @@ try {
 }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x0f2329, 1);
+renderer.setClearColor(0x2c2f5a, 1);
 
 const scene = new THREE.Scene();
-const FOG = new THREE.Color('#24494b');
-scene.fog = new THREE.FogExp2(FOG, 0.0011);
+const FOG = new THREE.Color('#8a82bf');
+scene.fog = new THREE.FogExp2(FOG, 0.0013);
 const camera = new THREE.PerspectiveCamera(38, 1, 0.3, 6000);
 
 /* ---------------- sky ---------------- */
 const sky = new THREE.Mesh(
-  new THREE.SphereGeometry(4000, 32, 16),
+  new THREE.SphereGeometry(4000, 48, 24),
   new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
-    uniforms: {},
     vertexShader: `varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`,
     fragmentShader: `varying vec3 vP;
+      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+        return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y); }
+      float fbm(vec2 p){ float s = 0., a = .5; for (int i = 0; i < 5; i++){ s += a * vnoise(p); p *= 2.03; a *= .5; } return s; }
       void main(){
-        float h = normalize(vP).y;
-        vec3 zen = vec3(0.055,0.13,0.155), mid = vec3(0.12,0.27,0.29), hor = vec3(0.20,0.40,0.38);
-        vec3 c = mix(hor, mid, smoothstep(0.0, 0.18, h));
-        c = mix(c, zen, smoothstep(0.15, 0.6, h));
-        c = mix(vec3(0.09,0.19,0.2), c, smoothstep(-0.05, 0.0, h));
+        vec3 d = normalize(vP); float h = d.y; float az = atan(d.x, -d.z);
+        vec3 top = vec3(0.27,0.28,0.55), mid = vec3(0.42,0.40,0.67), haze = vec3(0.58,0.52,0.74);
+        vec3 pinkB = vec3(0.92,0.60,0.68), peach = vec3(0.99,0.80,0.66);
+        vec3 c = mix(mid, top, smoothstep(0.08, 0.55, h));
+        // sunset band along the horizon
+        float band = exp(-pow((h - 0.045) / 0.055, 2.));
+        c = mix(c, mix(pinkB, peach, exp(-pow((h - 0.03) / 0.025, 2.))), band * 0.9);
+        // warm glow behind the city
+        c += vec3(0.22, 0.12, 0.06) * exp(-pow(az / 0.7, 2.)) * exp(-pow((h - 0.02) / 0.09, 2.));
+        // painterly cloud streaks
+        float cl = fbm(vec2(az * 3.2, h * 26.0) + vec2(3.1, 0.0));
+        cl = smoothstep(0.52, 0.78, cl) * smoothstep(0.0, 0.05, h) * (1.0 - smoothstep(0.16, 0.34, h));
+        vec3 cloudCol = mix(vec3(0.96,0.70,0.72), vec3(0.40,0.38,0.66), smoothstep(0.03, 0.22, h));
+        c = mix(c, cloudCol, cl * 0.75);
+        c = mix(haze, c, smoothstep(-0.03, 0.01, h));
+        // brush grain
+        c += (hash(floor(vec2(az, h) * 900.0)) - 0.5) * 0.018;
         gl_FragColor = vec4(c, 1.);
       }`
   })
@@ -232,12 +268,12 @@ scene.add(sky);
   const m = new THREE.ShaderMaterial({ transparent:true, depthWrite:false, fog:false, uniforms:{ uTime:{value:0} },
     vertexShader:`attribute float aPh; uniform float uTime; varying float vA; void main(){ vA = .35 + .35*sin(uTime*.8 + aPh); gl_PointSize = 1.6; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
     fragmentShader:`varying float vA; void main(){ gl_FragColor = vec4(vec3(0.85,0.95,0.92), vA); }` });
-  const stars = new THREE.Points(g, m); stars.userData.mat = m; scene.add(stars); scene.userData.stars = m;
+  const stars = new THREE.Points(g, m); stars.visible = false; scene.add(stars); scene.userData.stars = m;
 }
 
 // ground
 {
-  const g = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), new THREE.MeshBasicMaterial({ color: '#0d2024' }));
+  const g = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), new THREE.MeshBasicMaterial({ color: '#2a2b55' }));
   g.rotation.x = -Math.PI/2; scene.add(g);
 }
 
@@ -258,63 +294,123 @@ const cityUniforms = {
 };
 
 const cityVert = `
-  attribute float aSeed; attribute vec3 aOrigin; attribute float aHeight;
-  varying vec3 vWP; varying vec3 vN; varying float vSeed; varying vec3 vO; varying float vH;
+  attribute float aSeed; attribute vec3 aOrigin; attribute float aHeight; attribute vec2 aSize;
+  varying vec3 vWP; varying vec3 vN; flat varying float vSeed; flat varying vec3 vO; flat varying float vH; flat varying vec2 vSize;
   void main(){
     vec4 wp = modelMatrix * vec4(position, 1.0);
-    vWP = wp.xyz; vN = normal; vSeed = aSeed; vO = aOrigin; vH = aHeight;
+    vWP = wp.xyz; vN = normal; vSeed = aSeed; vO = aOrigin; vH = aHeight; vSize = aSize;
     gl_Position = projectionMatrix * viewMatrix * wp;
   }`;
 const cityFrag = `
   uniform float uOff, uReveal, uTime; uniform vec3 uFog; uniform vec2 uHeroCell; uniform vec3 uHeroWin;
-  varying vec3 vWP; varying vec3 vN; varying float vSeed; varying vec3 vO; varying float vH;
+  varying vec3 vWP; varying vec3 vN; flat varying float vSeed; flat varying vec3 vO; flat varying float vH; flat varying vec2 vSize;
   float h1(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+    return mix(mix(h1(i), h1(i+vec2(1,0)), f.x), mix(h1(i+vec2(0,1)), h1(i+vec2(1,1)), f.x), f.y); }
+  const float CW = ${CW.toFixed(1)}, CH = ${CH.toFixed(1)};
+
+  // how lit a window cell is (0..1), after the lights-off sweep
+  float litOf(vec2 cell, float face, float cols){
+    if (cell.x < 0.0 || cell.x >= cols || cell.y < 1.0 || (cell.y + 1.0) * CH > vH - 0.5) return 0.0;
+    vec2 key = cell + vec2(face * 97.0 + vSeed * 13.7, vSeed * 7.31);
+    float dens = 0.12 + 0.22 * h1(vec2(vSeed, 3.3));
+    float on = step(h1(key), dens) * (1.0 - smoothstep(h1(key + 19.19) - 0.03, h1(key + 19.19) + 0.03, uOff * 1.06));
+    #ifdef HERO
+      if (face < 0.5 && cell == uHeroCell) on = 1.0;
+    #endif
+    return on;
+  }
+
   void main(){
     vec3 n = normalize(vN);
     vec3 lp = vWP - vO;
-    vec3 col; float face = 0.0; vec2 uv = vec2(0.0);
-    // flat-illustration facade tones (light from the left)
-    if (n.y > 0.5){ col = vec3(0.085,0.17,0.19); }
-    else if (n.z > 0.5){ col = vec3(0.17,0.32,0.36); face = 0.0; uv = vec2(lp.x, lp.y); }
-    else if (n.z < -0.5){ col = vec3(0.10,0.20,0.23); face = 1.0; uv = vec2(lp.x, lp.y); }
-    else if (n.x < -0.5){ col = vec3(0.24,0.42,0.46); face = 2.0; uv = vec2(lp.z, lp.y); }
-    else { col = vec3(0.12,0.24,0.28); face = 3.0; uv = vec2(lp.z, lp.y); }
-    // haze lifts the lower floors, crowns go a touch darker
-    col = mix(col, vec3(0.26,0.47,0.45), (1.0 - smoothstep(0.0, 70.0, vWP.y)) * 0.32);
-    col *= mix(1.0, 0.86, smoothstep(0.55, 1.0, lp.y / max(vH, 1.0)));
+    float face = 0.0, faceW = 1.0; vec2 uv = vec2(0.0);
+    vec3 col;
+    // dusk light comes from the right and behind: right faces catch it, left faces fall into indigo shadow
+    if (n.y > 0.5){ col = vec3(0.20,0.22,0.44); }
+    else if (n.z > 0.5){ col = vec3(0.22,0.26,0.52); face = 0.0; uv = vec2(lp.x, lp.y); faceW = vSize.x; }
+    else if (n.z < -0.5){ col = vec3(0.30,0.31,0.56); face = 1.0; uv = vec2(vSize.x - lp.x, lp.y); faceW = vSize.x; }
+    else if (n.x < -0.5){ col = vec3(0.14,0.16,0.35); face = 2.0; uv = vec2(lp.z, lp.y); faceW = vSize.y; }
+    else { col = vec3(0.40,0.42,0.70); face = 3.0; uv = vec2(vSize.y - lp.z, lp.y); faceW = vSize.y; }
 
-    bool isWall = n.y < 0.5;
-    if (isWall){
-      vec2 g = uv / vec2(${CW.toFixed(1)}, ${CH.toFixed(1)});
+    float dist = distance(vWP, cameraPosition);
+    float detail = 1.0 - smoothstep(120.0, 520.0, dist);         // fine detail fades with distance
+
+    if (n.y < 0.5){
+      // painterly weathering: soft blotches and vertical grime
+      float blot = vnoise(uv * vec2(0.35, 0.22) + vSeed) * 0.6 + vnoise(uv * vec2(1.4, 0.9) + vSeed * 3.0) * 0.4;
+      col *= 0.90 + 0.18 * blot;
+      col *= 1.0 - 0.10 * detail * smoothstep(0.55, 0.95, vnoise(vec2(uv.x * 2.2, uv.y * 0.08) + vSeed));
+      // ground occlusion and a warm rim on the lit corner
+      col *= mix(0.62, 1.0, smoothstep(0.0, 28.0, vWP.y));
+      float rim = (face == 0.0) ? smoothstep(0.9, 0.0, faceW - uv.x) : 0.0;
+      col += vec3(0.20, 0.13, 0.16) * rim;
+
+      vec2 g = uv / vec2(CW, CH);
       vec2 cell = floor(g), f = fract(g);
-      float inWin = step(0.15, f.x) * step(f.x, 0.85) * step(0.40, f.y) * step(f.y, 0.70) * step(1.0, cell.y);
-      inWin *= step(lp.y, vH - 1.0);
-      vec2 key = cell + vec2(face * 97.0 + vSeed * 13.7, vSeed * 7.31);
-      float r1 = h1(key), r2 = h1(key + 19.19), r3 = h1(key + 41.7);
-      float density = 0.28 + 0.30 * h1(vec2(vSeed, 3.3));
-      float lit = step(r1, density);
-      float on = lit * (1.0 - smoothstep(r2 - 0.03, r2 + 0.03, uOff * 1.06));
-      vec3 wc = r3 < 0.55 ? vec3(1.0, 0.88, 0.62) : (r3 < 0.82 ? vec3(1.0, 0.95, 0.78) : (r3 < 0.94 ? vec3(0.72, 0.95, 0.80) : vec3(0.68, 0.86, 0.96)));
+      float cols = floor(faceW / CW + 0.5);
+
+      // floor slabs: a shadow line under each ledge and a lit lip on top
+      float ledge = step(f.y, 0.06) * step(1.0, cell.y);
+      float lip = step(0.06, f.y) * step(f.y, 0.10) * step(1.0, cell.y);
+      col *= 1.0 - 0.28 * ledge * detail;
+      col *= 1.0 + 0.16 * lip * detail;
+
+      // window: frame, four panes
+      float inFrame = step(0.13, f.x) * step(f.x, 0.87) * step(0.20, f.y) * step(f.y, 0.84);
+      float inGlass = step(0.17, f.x) * step(f.x, 0.83) * step(0.25, f.y) * step(f.y, 0.80);
+      float mull = 1.0 - (step(0.485, f.x) * step(f.x, 0.515) + step(0.60, f.y) * step(f.y, 0.63)) * detail;
+      inGlass *= clamp(mull, 0.0, 1.0);
+      float exists = step(1.0, cell.y) * step((cell.y + 1.0) * CH, vH - 0.5) * step(cell.x, cols - 1.0);
+      inFrame *= exists; inGlass *= exists;
+
+      float on = litOf(cell, face, cols);
+      float r3 = h1(cell + vec2(face * 31.0 + vSeed, 41.7));
+      vec3 warm = r3 < 0.45 ? vec3(1.0, 0.70, 0.38) : (r3 < 0.72 ? vec3(1.0, 0.56, 0.30) : (r3 < 0.9 ? vec3(1.0, 0.84, 0.60) : vec3(1.0, 0.55, 0.50)));
+      // a little interior depth: brighter low and centre, curtains on some
+      warm *= 0.82 + 0.3 * (1.0 - abs(f.x - 0.5) * 2.0) * (1.0 - f.y * 0.4);
+      if (h1(cell + vec2(7.7, vSeed)) < 0.3 && f.x > 0.5) warm *= 0.55;
       #ifdef HERO
-        bool heroCell = face < 0.5 && cell.x == uHeroCell.x && cell.y == uHeroCell.y;
-        if (heroCell){ on = 1.0; wc = vec3(1.0, 0.80, 0.50) * 1.12; }
-        // open the corner office: dissolve outward from the lit window
+        if (face < 0.5 && cell == uHeroCell) warm = vec3(1.0, 0.76, 0.46) * 1.15;
+      #endif
+      // dark glass reflects the dusk sky
+      float rr = h1(cell + vec2(face * 13.0, vSeed + 5.0));
+      vec3 refl = mix(vec3(0.09, 0.11, 0.27), vec3(0.30, 0.36, 0.68), smoothstep(0.3, 0.95, f.y + (rr - 0.5) * 0.3));
+      if (rr > 0.82) refl = mix(refl, vec3(0.52, 0.60, 0.90), 0.55);
+      refl = mix(refl, vec3(0.86, 0.62, 0.70), 0.18 * smoothstep(0.6, 0.85, f.y) * step(0.6, rr));
+      if (rr < 0.28) refl = vec3(0.08, 0.09, 0.21);
+      vec3 glass = mix(refl, warm, on);
+      vec3 frame = col * 1.12 + vec3(0.02);
+      col = mix(col, frame, inFrame * detail);
+      col = mix(col, glass, inGlass);
+
+      // warm halo spilling onto the facade around lit windows
+      float halo = 0.0;
+      for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++){
+        vec2 c2 = cell + vec2(float(dx), float(dy));
+        float o = litOf(c2, face, cols);
+        vec2 ctr = (c2 + vec2(0.5, 0.52)) * vec2(CW, CH);
+        vec2 dd = (uv - ctr) / vec2(2.6, 2.0);
+        halo += o * exp(-dot(dd, dd));
+      }
+      col += vec3(1.0, 0.52, 0.32) * min(halo, 1.2) * 0.32 * (1.0 - inGlass * on);
+
+      #ifdef HERO
         bool inFloor = vWP.y > 105.0 && vWP.y < 108.5;
         bool front = face < 0.5 && lp.x < 12.0;
         bool left  = face > 1.5 && face < 2.5 && lp.z > 20.0;
         if (inFloor && (front || left) && distance(vWP, uHeroWin) < uReveal * 30.0) discard;
       #endif
-      vec3 glass = col * 0.70 + vec3(0.015, 0.04, 0.045);
-      vec3 winCol = mix(glass, wc, on);
-      col = mix(col, winCol, inWin);
-      // lit windows shine through the haze a little
-      float fogAmt = 1.0 - exp(-pow(distance(vWP, cameraPosition) * 0.0011, 1.5));
-      fogAmt *= mix(1.0, 0.45, inWin * on);
-      gl_FragColor = vec4(mix(col, uFog, fogAmt * 0.9), 1.0);
+
+      float lit = inGlass * on;
+      float fogAmt = 1.0 - exp(-pow(dist * 0.00092, 1.5));
+      vec3 fogCol = mix(vec3(0.84, 0.62, 0.72), vec3(0.50, 0.49, 0.76), smoothstep(5.0, 230.0, vWP.y));
+      gl_FragColor = vec4(mix(col, fogCol, fogAmt * mix(0.86, 0.45, lit)), 1.0);
       return;
     }
-    float fogAmt = 1.0 - exp(-pow(distance(vWP, cameraPosition) * 0.0011, 1.5));
-    gl_FragColor = vec4(mix(col, uFog, fogAmt * 0.9), 1.0);
+    float fogAmt = 1.0 - exp(-pow(dist * 0.00092, 1.5));
+    vec3 fogCol = mix(vec3(0.84, 0.62, 0.72), vec3(0.50, 0.49, 0.76), smoothstep(5.0, 230.0, vWP.y));
+    gl_FragColor = vec4(mix(col, fogCol, fogAmt * 0.86), 1.0);
   }`;
 
 function cityMaterial(hero){
@@ -322,13 +418,13 @@ function cityMaterial(hero){
 }
 
 function mergeBoxes(list){
-  const pos = [], nor = [], seed = [], org = [], hgt = [];
+  const pos = [], nor = [], seed = [], org = [], hgt = [], siz = [];
   for (const b of list){
     const g = new THREE.BoxGeometry(b.w, b.h, b.d).toNonIndexed();
     g.translate(b.x0 + b.w/2, b.h/2, b.z0 + b.d/2);
     const p = g.attributes.position.array, n = g.attributes.normal.array, c = p.length / 3;
     for (let i = 0; i < p.length; i++){ pos.push(p[i]); nor.push(n[i]); }
-    for (let i = 0; i < c; i++){ seed.push(b.seed); org.push(b.x0, 0, b.z0); hgt.push(b.h); }
+    for (let i = 0; i < c; i++){ seed.push(b.seed); org.push(b.x0, 0, b.z0); hgt.push(b.h); siz.push(b.w, b.d); }
     g.dispose();
   }
   const geo = new THREE.BufferGeometry();
@@ -337,6 +433,7 @@ function mergeBoxes(list){
   geo.setAttribute('aSeed', new THREE.Float32BufferAttribute(seed, 1));
   geo.setAttribute('aOrigin', new THREE.Float32BufferAttribute(org, 3));
   geo.setAttribute('aHeight', new THREE.Float32BufferAttribute(hgt, 1));
+  geo.setAttribute('aSize', new THREE.Float32BufferAttribute(siz, 2));
   return geo;
 }
 
@@ -397,7 +494,7 @@ const buildings = [];
   const g2 = new THREE.BufferGeometry(); g2.setAttribute('position', new THREE.BufferAttribute(sp,3));
   const m2 = new THREE.ShaderMaterial({ transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
     vertexShader:`void main(){ vec4 mv = modelViewMatrix*vec4(position,1.); gl_PointSize = clamp(500.0 / -mv.z, 1.0, 6.0); gl_Position = projectionMatrix*mv; }`,
-    fragmentShader:`void main(){ float d = length(gl_PointCoord - .5); gl_FragColor = vec4(1.0, 0.82, 0.55, smoothstep(.5, .0, d) * .55); }` });
+    fragmentShader:`void main(){ float d = length(gl_PointCoord - .5); gl_FragColor = vec4(1.0, 0.72, 0.55, smoothstep(.5, .0, d) * .45); }` });
   scene.add(new THREE.Points(g2, m2));
 }
 
@@ -409,7 +506,7 @@ function glowTexture(inner, outer){
   x.fillStyle = gr; x.fillRect(0,0,128,128);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
-const heroGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture('rgba(255,236,200,.9)', 'rgba(255,190,110,.35)'), blending: THREE.AdditiveBlending, depthWrite:false, transparent:true, fog:false }));
+const heroGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture('rgba(255,214,160,.9)', 'rgba(255,150,90,.35)'), blending: THREE.AdditiveBlending, depthWrite:false, transparent:true, fog:false }));
 heroGlow.position.copy(HERO_WIN).add(new THREE.Vector3(0, 0, 0.6));
 scene.add(heroGlow);
 
@@ -545,7 +642,7 @@ scene.add(room);
 
 /* ---------------- camera path ---------------- */
 const RC = new THREE.Vector3(-10, 106.75, 10);       // room centre
-const W0 = { pos: new THREE.Vector3(0, 62, 440), tgt: new THREE.Vector3(0, 82, 0) };
+const W0 = { pos: new THREE.Vector3(0, 48, 420), tgt: new THREE.Vector3(0, 96, 0) };
 const W1 = { pos: new THREE.Vector3(0, 80, 335), tgt: new THREE.Vector3(0, 96, 0) };
 const tmpP = new THREE.Vector3(), tmpT = new THREE.Vector3();
 
